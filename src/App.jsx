@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import BonusCard from './components/BonusCard';
 import StreamInfo from './components/StreamInfo';
@@ -10,6 +10,10 @@ function App() {
   const [isCollapsed, setIsCollapsed] = useState(true); // Sidebar state - Default Collapsed
 
   const t = translations[language];
+
+  useEffect(() => {
+    document.title = translations[language].logo;
+  }, [language]);
 
   // Specific bonuses requested by user
   const bonuses = [
