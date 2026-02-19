@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import BonusCard from './components/BonusCard';
 import StreamInfo from './components/StreamInfo';
+import MobileMenu from './components/MobileMenu'; // Import MobileMenu
 import { translations } from './translations';
 
 function App() {
@@ -84,17 +85,60 @@ function App() {
     }
   ];
 
+  const LanguageSwitcher = () => (
+    <div style={{
+      background: 'rgba(255,255,255,0.05)',
+      borderRadius: '8px',
+      padding: '4px',
+      display: 'flex',
+      gap: '5px'
+    }}>
+      <button
+        onClick={() => setLanguage('ru')}
+        style={{
+          background: language === 'ru' ? 'var(--accent-purple)' : 'transparent',
+          color: language === 'ru' ? '#fff' : 'var(--text-dim)',
+          border: 'none',
+          padding: '6px 10px',
+          borderRadius: '6px',
+          fontSize: '0.8rem',
+          fontWeight: language === 'ru' ? 'bold' : 'normal',
+          transition: 'all 0.2s'
+        }}
+      >
+        RU
+      </button>
+      <button
+        onClick={() => setLanguage('en')}
+        style={{
+          background: language === 'en' ? 'var(--accent-purple)' : 'transparent',
+          color: language === 'en' ? '#fff' : 'var(--text-dim)',
+          border: 'none',
+          padding: '6px 10px',
+          borderRadius: '6px',
+          fontSize: '0.8rem',
+          fontWeight: language === 'en' ? 'bold' : 'normal',
+          transition: 'all 0.2s'
+        }}
+      >
+        EN
+      </button>
+    </div>
+  );
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)' }}>
-      {/* Sidebar - Controlled by state */}
-      <Sidebar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        language={language}
-        setLanguage={setLanguage}
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-      />
+      {/* Sidebar - Desktop Only */}
+      <div className="desktop-only">
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          language={language}
+          setLanguage={setLanguage}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+        />
+      </div>
 
       {/* Main Content Area - Dynamic Margin */}
       <main style={{
@@ -117,7 +161,11 @@ function App() {
           <h2 style={{ fontSize: '1.8rem', fontWeight: '700' }}>
             {activeTab === 'bonuses' ? t.bonusesTitle : t.streamTitle}
           </h2>
-          {/* Auth buttons removed per request */}
+
+          {/* Language Switcher - Mobile Only */}
+          <div className="mobile-only">
+            <LanguageSwitcher />
+          </div>
         </div>
 
         {activeTab === 'bonuses' && (
@@ -160,6 +208,15 @@ function App() {
           </div>
         )}
       </main>
+
+      {/* Mobile Menu - Mobile Only */}
+      <div className="mobile-only">
+        <MobileMenu
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          language={language}
+        />
+      </div>
     </div>
   );
 }

@@ -20,6 +20,7 @@ export const translations = {
         instantPayouts: 'Instant Payouts',
         support247: '24/7 Support',
         verifiedSafe: 'Verified Safe',
+        bonusesShort: 'Bonuses',
 
         // Casino Specifics
         mad: {
@@ -76,6 +77,7 @@ export const translations = {
         instantPayouts: 'Быстрые выплаты',
         support247: 'Поддержка 24/7',
         verifiedSafe: 'Лицензионный софт',
+        bonusesShort: 'Бонусы',
 
         // Casino Specifics
         mad: {

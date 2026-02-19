@@ -74,3 +74,28 @@ button {
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+/* Responsive Utilities */
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Adjust main container margin on mobile */
+  main {
+    margin-left: 0 !important;
+    padding-bottom: 80px !important; /* Space for bottom menu */
+  }
+}
