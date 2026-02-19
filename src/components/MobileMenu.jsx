@@ -2,7 +2,7 @@ import React from 'react';
 import { Gift, Tv, Send, MessageCircle } from 'lucide-react';
 import { translations } from '../translations';
 
-const MobileMenu = ({ activeTab, setActiveTab, language }) => {
+const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
     const t = translations[language];
 
     const navItemStyle = (tabName) => ({
@@ -67,9 +67,23 @@ const MobileMenu = ({ activeTab, setActiveTab, language }) => {
                 <div style={activeTab === 'streams' ? {
                     background: 'rgba(39, 245, 107, 0.1)',
                     borderRadius: '12px',
-                    padding: '8px'
-                } : { padding: '8px' }}>
+                    padding: '8px',
+                    position: 'relative'
+                } : { padding: '8px', position: 'relative' }}>
                     <Tv size={24} style={iconStyle(activeTab === 'streams')} />
+                    {isLive && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '6px',
+                            right: '6px',
+                            width: '8px',
+                            height: '8px',
+                            background: 'var(--neon-green)',
+                            borderRadius: '50%',
+                            boxShadow: '0 0 5px var(--neon-green)',
+                            border: '1px solid var(--bg-card)'
+                        }} />
+                    )}
                 </div>
                 <span>{t.liveStream}</span>
             </button>

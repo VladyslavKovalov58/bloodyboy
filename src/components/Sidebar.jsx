@@ -2,7 +2,7 @@ import React from 'react';
 import { Home, Tv, Send, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { translations } from '../translations';
 
-const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, setIsCollapsed }) => {
+const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
     const t = translations[language];
 
     const buttonStyle = (tabName) => ({
@@ -133,8 +133,37 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                     className="sidebar-btn"
                     title={isCollapsed ? t.liveStream : ''}
                 >
-                    <Tv size={20} />
-                    {!isCollapsed && t.liveStream}
+                    <div style={{ position: 'relative' }}>
+                        <Tv size={20} />
+                        {isLive && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '-2px',
+                                right: '-2px',
+                                width: '8px',
+                                height: '8px',
+                                background: 'var(--neon-green)',
+                                borderRadius: '50%',
+                                boxShadow: '0 0 5px var(--neon-green)',
+                                border: '1px solid var(--bg-sidebar)'
+                            }} />
+                        )}
+                    </div>
+                    {!isCollapsed && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+                            {t.liveStream}
+                            {isLive && (
+                                <div style={{
+                                    width: '8px',
+                                    height: '8px',
+                                    background: 'var(--neon-green)',
+                                    borderRadius: '50%',
+                                    boxShadow: '0 0 5px var(--neon-green)',
+                                    marginLeft: 'auto'
+                                }} />
+                            )}
+                        </div>
+                    )}
                 </button>
             </nav>
 

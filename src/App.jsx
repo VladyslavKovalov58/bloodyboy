@@ -9,11 +9,39 @@ function App() {
   const [activeTab, setActiveTab] = useState('bonuses');
   const [language, setLanguage] = useState('ru'); // Default to RU
   const [isCollapsed, setIsCollapsed] = useState(true); // Sidebar state - Default Collapsed
+  const [isLive, setIsLive] = useState(true); // Stream status - TEMP TRUE
 
   const t = translations[language];
 
   useEffect(() => {
     document.title = translations[language].logo;
+
+    // Check Kick API for stream status
+    const checkStreamStatus = async () => {
+      try {
+        const response = await fetch('/api/kick/channels/ded-kolyan');
+        if (response.ok) {
+          const data = await response.json();
+          // If livestream object exists and is not null, streamer is live
+          if (data.livestream) {
+            setIsLive(true);
+            console.log("Streamer is LIVE");
+          } else {
+            setIsLive(false);
+            console.log("Streamer is OFFLINE");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch stream status:", error);
+        setIsLive(false); // Default to offline on error
+      }
+    };
+
+    // checkStreamStatus();
+    // Optional: Poll every 5 minutes
+    // const interval = setInterval(checkStreamStatus, 300000);
+    // return () => clearInterval(interval);
+
   }, [language]);
 
   // Specific bonuses requested by user
@@ -42,23 +70,22 @@ function App() {
       link: 'https://vesemir.vodka/?id=16106',
       color: '#00ccff' // Blue
     },
-    // Placeholders for "Soon"
     {
       id: 4,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333', // Neutral/Dark
-      disableHover: true
+      siteName: 'Spark',
+      offer: t.spark.offer,
+      promo: t.spark.promo,
+      link: 'https://sparkru.one/invite/kolyan',
+      color: 'linear-gradient(135deg, #FF007F 0%, #00BFFF 100%)' // Rose-Blue gradient
     },
+    // Placeholders for "Soon"
     {
       id: 5,
       siteName: t.soon.name,
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333',
+      color: '#333333', // Neutral/Dark
       disableHover: true
     },
     {
@@ -142,6 +169,7 @@ function App() {
           setLanguage={setLanguage}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
+          isLive={isLive}
         />
       </div>
 
@@ -200,7 +228,7 @@ function App() {
 
         {activeTab === 'streams' && (
           <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-            <StreamInfo language={language} />
+            <StreamInfo language={language} isLive={isLive} />
 
             {/* Rules */}
             <div style={{ marginTop: '30px', background: 'var(--bg-card)', padding: '30px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -221,6 +249,7 @@ function App() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           language={language}
+          isLive={isLive}
         />
       </div>
     </div>

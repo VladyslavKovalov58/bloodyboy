@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "/api/kick/*"
+  to = "https://kick.com/api/v1/:splat"
+  status = 200
+  force = true

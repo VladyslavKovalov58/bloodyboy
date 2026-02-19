@@ -26,7 +26,7 @@ export const translations = {
 
         // Casino Specifics
         mad: {
-            offer: '150% + 200 FS',
+            offer: '100% + 70 FS',
             promo: 'First Deposit Bonus'
         },
         cactus: {
@@ -34,8 +34,12 @@ export const translations = {
             promo: 'Promo code: KOLYAN'
         },
         vodka: {
-            offer: '150% + 50 FS',
+            offer: '125% to deposit',
             promo: 'Promo code: ALISA'
+        },
+        spark: {
+            offer: 'Up to 360 FS',
+            promo: 'Every week'
         },
         soon: {
             name: 'Coming Soon...',
@@ -52,8 +56,11 @@ export const translations = {
         watchMeLive: 'Watch me live',
         streamDesc: 'Streaming slots, blackjack, and roulette daily.',
         streamerLive: 'Streamer is live on Kick!',
+        streamerOffline: 'Streamer is resting...',
         joinAction: 'Join the action and win big.',
+        offlineMessage: 'Subscribe and wait for the next stream!',
         watchStream: 'Watch stream',
+        subscribe: 'Subscribe',
 
         // Footer
         footer: '© 2024 Casino Streamer. Gamble Responsibly. 18+'
@@ -85,7 +92,7 @@ export const translations = {
 
         // Casino Specifics
         mad: {
-            offer: '150% + 200 FS',
+            offer: '100% + 70 FS',
             promo: 'Бонус на первый депозит'
         },
         cactus: {
@@ -93,8 +100,12 @@ export const translations = {
             promo: 'Промокод: KOLYAN'
         },
         vodka: {
-            offer: '150% + 50 FS',
+            offer: '125% к депозиту',
             promo: 'Промокод: ALISA'
+        },
+        spark: {
+            offer: 'До 360 FS',
+            promo: 'Каждую неделю'
         },
         soon: {
             name: 'Скоро...',
@@ -111,8 +122,11 @@ export const translations = {
         watchMeLive: 'Смотри меня вживую',
         streamDesc: 'Стримлю слоты, блэкджек и рулетку каждый день.',
         streamerLive: 'Стример сейчас на Kick!',
+        streamerOffline: 'Стример отдыхает...',
         joinAction: 'Присоединяйся к экшену и выигрывай по-крупному.',
+        offlineMessage: 'Подпишись и жди трансляцию!',
         watchStream: 'Смотреть стрим',
+        subscribe: 'Подписаться',
 
         // Footer
         footer: '© 2024 Стример Казино. Играйте ответственно. 18+'
