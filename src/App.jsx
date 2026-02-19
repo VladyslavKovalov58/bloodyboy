@@ -125,7 +125,36 @@ function App() {
       name: 'Wild Bounty Showdown',
       image: 'https://i.ibb.co/4nBDdn4k/image.png',
       hasDemo: false,
-      link: '#'
+      link: '#',
+      provider: 'PG SOFT',
+      rtp: '96.75%'
+    },
+    {
+      id: 2,
+      name: 'Sweet Craze',
+      image: 'https://i.ibb.co/p667k4N/image.png',
+      hasDemo: true,
+      link: '#',
+      provider: 'Pragmatic Play',
+      rtp: '99.9%'
+    },
+    {
+      id: 3,
+      name: 'Big Bass Splash 1000',
+      image: 'https://i.ibb.co/ccpX8Hh/image.png',
+      hasDemo: true,
+      link: '#',
+      provider: 'Pragmatic Play',
+      rtp: '99.9%'
+    },
+    {
+      id: 4,
+      name: 'Fortune of Olympus',
+      image: 'https://i.ibb.co/F83mS00/image.png',
+      hasDemo: true,
+      link: '#',
+      provider: 'Pragmatic Play',
+      rtp: '99.9%'
     }
   ];
 
@@ -245,7 +274,7 @@ function App() {
             {/* Slots Grid */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
               gap: '20px'
             }}>
               {slots.map(slot => (
@@ -256,6 +285,8 @@ function App() {
                   hasDemo={slot.hasDemo}
                   link={slot.link}
                   language={language}
+                  rtp={slot.rtp}
+                  provider={slot.provider}
                 />
               ))}
             </div>
