@@ -131,12 +131,17 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 .slot-name-text {
                     margin: 0 0 4px 0;
                     color: #fff;
-                    font-size: 1.6rem;
+                    font-size: 1.25rem; /* Reduced from 1.6rem */
                     font-weight: 900;
                     text-transform: uppercase;
-                    line-height: 1;
+                    line-height: 1.1;
                     letter-spacing: -0.5px;
                     font-family: inherit;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
                 .slot-provider-text {
                     margin: 0;

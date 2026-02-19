@@ -131,12 +131,12 @@ function App() {
     },
     {
       id: 2,
-      name: 'Sweet Craze',
-      image: 'https://i.ibb.co/p667k4N/image.png',
+      name: 'Le Bandit',
+      image: 'https://i.ibb.co/1t06vgx1/image-1.jpg',
       hasDemo: true,
-      link: '#',
-      provider: 'Pragmatic Play',
-      rtp: '99.9%'
+      link: 'https://static-live.hacksawgaming.com/1309/1.22.0/index.html?language=en&channel=desktop&gameid=1309&mode=2&token=123131&lobbyurl=https%3A%2F%2Fwww.hacksawgaming.com&currency=EUR&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api',
+      provider: 'Hacksaw',
+      rtp: '96.34%'
     },
     {
       id: 3,
