@@ -8,6 +8,7 @@ export const translations = {
         liveStream: 'Live stream',
         socials: 'Socials',
         chatRules: 'Chat rules',
+        comingSoon: 'Coming Soon',
 
         // Contact
         collaboration: 'Collaboration',
@@ -80,6 +81,7 @@ export const translations = {
         liveStream: 'Прямой эфир',
         socials: 'Соцсети',
         chatRules: 'Правила чата',
+        comingSoon: 'Скоро выйдут',
 
         // Contact
         collaboration: 'Сотрудничество',

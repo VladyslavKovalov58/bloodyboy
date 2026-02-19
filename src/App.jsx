@@ -13,6 +13,8 @@ const AppContent = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLive, setIsLive] = useState(true);
 
+  const [slotCategory, setSlotCategory] = useState('best');
+
   const location = useLocation();
   const currentTab = location.pathname.split('/')[1] || 'bonuses';
   const t = translations[language];
@@ -203,6 +205,12 @@ const AppContent = () => {
     }
   ];
 
+  const categorySlots = slots.filter(s => {
+    if (slotCategory === 'best') return !s.isComingSoon;
+    if (slotCategory === 'soon') return s.isComingSoon;
+    return true;
+  });
+
   const LanguageSwitcher = () => (
     <div style={{
       background: 'rgba(255,255,255,0.05)',
@@ -286,11 +294,46 @@ const AppContent = () => {
           paddingBottom: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.05)'
         }}>
-          <h2 className="page-title">
-            {currentTab === 'bonuses' && t.bonusesTitle}
-            {currentTab === 'streams' && t.streamTitle}
-            {currentTab === 'slots' && `🎰 ${t.bestSlots}`}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {currentTab === 'slots' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <h2
+                  onClick={() => setSlotCategory('best')}
+                  className="page-title"
+                  style={{
+                    cursor: 'pointer',
+                    margin: 0,
+                    opacity: slotCategory === 'best' ? 1 : 0.4,
+                    transition: 'all 0.3s',
+                    fontSize: '1.5rem',
+                    color: slotCategory === 'best' ? '#fff' : 'var(--text-dim)'
+                  }}
+                >
+                  🎰 {t.bestSlots}
+                </h2>
+                <span style={{ fontSize: '1.5rem', opacity: 0.2, color: '#fff' }}>/</span>
+                <h2
+                  onClick={() => setSlotCategory('soon')}
+                  className="page-title"
+                  style={{
+                    cursor: 'pointer',
+                    margin: 0,
+                    opacity: slotCategory === 'soon' ? 1 : 0.4,
+                    transition: 'all 0.3s',
+                    fontSize: '1.5rem',
+                    color: slotCategory === 'soon' ? '#fff' : 'var(--text-dim)'
+                  }}
+                >
+                  🚀 {t.comingSoon}
+                </h2>
+              </div>
+            ) : (
+              <h2 className="page-title">
+                {currentTab === 'bonuses' && t.bonusesTitle}
+                {currentTab === 'streams' && t.streamTitle}
+              </h2>
+            )}
+          </div>
 
           <div className="mobile-only">
             <LanguageSwitcher />
@@ -330,18 +373,32 @@ const AppContent = () => {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                 gap: '20px'
               }}>
-                {slots.map(slot => (
-                  <SlotCard
-                    key={slot.id}
-                    name={slot.name}
-                    image={slot.image}
-                    hasDemo={slot.hasDemo}
-                    link={slot.link}
-                    language={language}
-                    rtp={slot.rtp}
-                    provider={slot.provider}
-                  />
-                ))}
+                {categorySlots.length > 0 ? (
+                  categorySlots.map(slot => (
+                    <SlotCard
+                      key={slot.id}
+                      name={slot.name}
+                      image={slot.image}
+                      hasDemo={slot.hasDemo}
+                      link={slot.link}
+                      language={language}
+                      rtp={slot.rtp}
+                      provider={slot.provider}
+                    />
+                  ))
+                ) : (
+                  <div style={{
+                    gridColumn: '1 / -1',
+                    padding: '60px',
+                    textAlign: 'center',
+                    background: 'rgba(255,255,255,0.02)',
+                    borderRadius: '20px',
+                    border: '1px dashed rgba(255,255,255,0.1)',
+                    color: 'var(--text-dim)'
+                  }} className="animate-fade-in">
+                    {language === 'ru' ? 'Здесь скоро появятся новинки...' : 'New slots coming soon...'}
+                  </div>
+                )}
               </div>
             </div>
           } />
