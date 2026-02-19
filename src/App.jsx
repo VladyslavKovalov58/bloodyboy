@@ -172,11 +172,16 @@ function App() {
           background: language === 'ru' ? 'var(--accent-purple)' : 'transparent',
           color: language === 'ru' ? '#fff' : 'var(--text-dim)',
           border: 'none',
-          padding: '6px 10px',
+          padding: '6px 12px',
           borderRadius: '6px',
           fontSize: '0.8rem',
           fontWeight: language === 'ru' ? 'bold' : 'normal',
-          transition: 'all 0.2s'
+          transition: 'all 0.2s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          lineHeight: 1,
+          cursor: 'pointer'
         }}
       >
         RU
@@ -187,11 +192,16 @@ function App() {
           background: language === 'en' ? 'var(--accent-purple)' : 'transparent',
           color: language === 'en' ? '#fff' : 'var(--text-dim)',
           border: 'none',
-          padding: '6px 10px',
+          padding: '6px 12px',
           borderRadius: '6px',
           fontSize: '0.8rem',
           fontWeight: language === 'en' ? 'bold' : 'normal',
-          transition: 'all 0.2s'
+          transition: 'all 0.2s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          lineHeight: 1,
+          cursor: 'pointer'
         }}
       >
         EN

@@ -259,7 +259,10 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                             fontWeight: language === 'ru' ? 'bold' : 'normal',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
-                            textAlign: 'center'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            lineHeight: 1
                         }}
                         title="Russian"
                     >
@@ -278,7 +281,10 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                             fontWeight: language === 'en' ? 'bold' : 'normal',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
-                            textAlign: 'center'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            lineHeight: 1
                         }}
                         title="English"
                     >
