@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gift, Tv, Send, MessageCircle } from 'lucide-react';
+import { Gift, Tv, Send, Gamepad2 } from 'lucide-react';
 import { translations } from '../translations';
 
 const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
@@ -56,7 +56,22 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                 } : { padding: '8px' }}>
                     <Gift size={24} style={iconStyle(activeTab === 'bonuses')} />
                 </div>
-                <span>{t.bonusesShort}</span>
+                <span>{language === 'ru' ? 'Бонусы' : 'Bonuses'}</span>
+            </button>
+
+            {/* Slots Tab */}
+            <button
+                onClick={() => setActiveTab('slots')}
+                style={navItemStyle('slots')}
+            >
+                <div style={activeTab === 'slots' ? {
+                    background: 'rgba(39, 245, 107, 0.1)',
+                    borderRadius: '12px',
+                    padding: '8px'
+                } : { padding: '8px' }}>
+                    <Gamepad2 size={24} style={iconStyle(activeTab === 'slots')} />
+                </div>
+                <span>{language === 'ru' ? 'Слоты' : 'Slots'}</span>
             </button>
 
             {/* Stream Tab */}
@@ -85,7 +100,7 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                         }} />
                     )}
                 </div>
-                <span>{t.liveStream}</span>
+                <span>{language === 'ru' ? 'Эфир' : 'Live'}</span>
             </button>
 
             {/* Telegram Channel Link */}
@@ -98,20 +113,7 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                 <div style={{ padding: '8px' }}>
                     <Send size={24} style={iconStyle(false)} />
                 </div>
-                <span>{t.channel}</span>
-            </a>
-
-            {/* Telegram Chat Link */}
-            <a
-                href="https://t.me/+LvSLwlOnmLdmN2Ni"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ ...navItemStyle('chat'), textDecoration: 'none' }}
-            >
-                <div style={{ padding: '8px' }}>
-                    <MessageCircle size={24} style={iconStyle(false)} />
-                </div>
-                <span>{t.chat}</span>
+                <span>{language === 'ru' ? 'Канал' : 'Channel'}</span>
             </a>
 
         </div>

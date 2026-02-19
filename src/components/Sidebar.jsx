@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Tv, Send, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2 } from 'lucide-react';
 import { translations } from '../translations';
 
 const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
@@ -123,8 +123,18 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                     className="sidebar-btn"
                     title={isCollapsed ? t.bestCasinos : ''}
                 >
-                    <Home size={20} />
+                    <Gift size={20} />
                     {!isCollapsed && t.bestCasinos}
+                </button>
+
+                <button
+                    onClick={() => setActiveTab('slots')}
+                    style={buttonStyle('slots')}
+                    className="sidebar-btn"
+                    title={isCollapsed ? t.bestSlots : ''}
+                >
+                    <Gamepad2 size={20} />
+                    {!isCollapsed && t.bestSlots}
                 </button>
 
                 <button

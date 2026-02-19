@@ -4,6 +4,7 @@ export const translations = {
         logo: 'DED KOLYAN',
         menu: 'Menu',
         bestCasinos: 'Best casinos',
+        bestSlots: 'Best slots',
         liveStream: 'Live stream',
         socials: 'Socials',
         chatRules: 'Chat rules',
@@ -15,6 +16,7 @@ export const translations = {
         // Bonuses
         bonusesTitle: '🔥 Best casino bonuses',
         claimBonus: 'Claim bonus',
+        play: 'Play',
         exclusiveOffer: 'Exclusive offer',
         hoverText: 'Hover for details',
         instantPayouts: 'Instant Payouts',
@@ -74,6 +76,7 @@ export const translations = {
         logo: 'DED KOLYAN',
         menu: 'Меню',
         bestCasinos: 'Лучшие казино',
+        bestSlots: 'Лучшие слоты',
         liveStream: 'Прямой эфир',
         socials: 'Соцсети',
         chatRules: 'Правила чата',
@@ -85,6 +88,7 @@ export const translations = {
         // Bonuses
         bonusesTitle: '🔥 Лучшие бонусы',
         claimBonus: 'Получить бонус',
+        play: 'Играть',
         exclusiveOffer: 'Эксклюзивное предложение',
         hoverText: 'Нажми для деталей',
         instantPayouts: 'Быстрые выплаты',

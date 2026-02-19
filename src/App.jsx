@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import BonusCard from './components/BonusCard';
 import StreamInfo from './components/StreamInfo';
 import MobileMenu from './components/MobileMenu'; // Import MobileMenu
+import SlotCard from './components/SlotCard'; // Import SlotCard
 import { translations } from './translations';
 
 function App() {
@@ -117,6 +118,17 @@ function App() {
     }
   ];
 
+  // Slots data
+  const slots = [
+    {
+      id: 1,
+      name: 'Wild Bounty Showdown',
+      image: 'https://i.ibb.co/4nBDdn4k/image.png',
+      hasDemo: false,
+      link: '#'
+    }
+  ];
+
   const LanguageSwitcher = () => (
     <div style={{
       background: 'rgba(255,255,255,0.05)',
@@ -192,7 +204,9 @@ function App() {
           borderBottom: '1px solid rgba(255,255,255,0.05)'
         }}>
           <h2 className="page-title">
-            {activeTab === 'bonuses' ? t.bonusesTitle : t.streamTitle}
+            {activeTab === 'bonuses' && t.bonusesTitle}
+            {activeTab === 'streams' && t.streamTitle}
+            {activeTab === 'slots' && `🎰 ${t.bestSlots}`}
           </h2>
 
           {/* Language Switcher - Mobile Only */}
@@ -220,6 +234,28 @@ function App() {
                   language={language} // Pass language to card
                   image={bonus.image} // Pass image prop
                   disableHover={bonus.disableHover}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'slots' && (
+          <div className="animate-fade-in">
+            {/* Slots Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '20px'
+            }}>
+              {slots.map(slot => (
+                <SlotCard
+                  key={slot.id}
+                  name={slot.name}
+                  image={slot.image}
+                  hasDemo={slot.hasDemo}
+                  link={slot.link}
+                  language={language}
                 />
               ))}
             </div>
