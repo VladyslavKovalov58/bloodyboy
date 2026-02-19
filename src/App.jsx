@@ -202,6 +202,16 @@ const AppContent = () => {
       link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs15zeushadseq&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
       rtp: '96.56%'
+    },
+    {
+      id: 13,
+      name: 'Le Rapper',
+      image: 'https://i.ibb.co/nqXPJWkX/image-5.jpg',
+      hasDemo: true,
+      link: 'https://static-live.hacksawgaming.com/2155/1.0.2/index.html?language=en&channel=desktop&gameid=2155&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
+      provider: 'Hacksaw',
+      rtp: '96.34%',
+      isComingSoon: true
     }
   ];
 
@@ -279,48 +289,33 @@ const AppContent = () => {
       {/* Main Content Area - Dynamic Margin */}
       <main style={{
         flex: 1,
-        marginLeft: isCollapsed ? '80px' : '260px',
+        marginLeft: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
         padding: '30px 40px',
         overflowY: 'auto',
-        transition: 'margin-left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
-      }}>
+        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
+      }} className="main-content">
 
         {/* Top Bar */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '30px',
-          paddingBottom: '20px',
-          borderBottom: '1px solid rgba(255,255,255,0.05)'
-        }}>
+        <div className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {currentTab === 'slots' ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div className="slots-switcher">
                 <h2
                   onClick={() => setSlotCategory('best')}
-                  className="page-title"
+                  className="slots-switcher-item"
                   style={{
-                    cursor: 'pointer',
-                    margin: 0,
                     opacity: slotCategory === 'best' ? 1 : 0.4,
-                    transition: 'all 0.3s',
-                    fontSize: '1.5rem',
                     color: slotCategory === 'best' ? '#fff' : 'var(--text-dim)'
                   }}
                 >
                   🎰 {t.bestSlots}
                 </h2>
-                <span style={{ fontSize: '1.5rem', opacity: 0.2, color: '#fff' }}>/</span>
+                <span className="slots-switcher-divider">/</span>
                 <h2
                   onClick={() => setSlotCategory('soon')}
-                  className="page-title"
+                  className="slots-switcher-item"
                   style={{
-                    cursor: 'pointer',
-                    margin: 0,
                     opacity: slotCategory === 'soon' ? 1 : 0.4,
-                    transition: 'all 0.3s',
-                    fontSize: '1.5rem',
                     color: slotCategory === 'soon' ? '#fff' : 'var(--text-dim)'
                   }}
                 >
