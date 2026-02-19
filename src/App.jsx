@@ -113,21 +113,30 @@ const AppContent = () => {
     },
     {
       id: 3,
-      name: 'Big Bass Splash 1000',
-      image: 'https://i.ibb.co/ccpX8Hh/image.png',
+      name: 'The Dog House',
+      image: 'https://i.ibb.co/Ngx6qDC6/image-2.jpg',
       hasDemo: true,
-      link: '#',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The%20Dog%20House&jurisdictionID=99&mgckey=stylename@generic~SESSION@812fcb38-2156-4ab2-865f-80cef74f4e49',
       provider: 'Pragmatic Play',
-      rtp: '99.9%'
+      rtp: '96.08%'
     },
     {
       id: 4,
-      name: 'Fortune of Olympus',
-      image: 'https://i.ibb.co/F83mS00/image.png',
+      name: 'Gates of Olympus 1000',
+      image: 'https://i.ibb.co/Z18Xgvwn/image.png',
       hasDemo: true,
-      link: '#',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20olympx&gname=Gates%20of%20Olympus%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@ff43ee9d-b7c2-4606-bea5-9816368db3ae',
       provider: 'Pragmatic Play',
-      rtp: '99.9%'
+      rtp: '96.50%'
+    },
+    {
+      id: 5,
+      name: 'Starlight Princess 1000',
+      image: 'https://i.ibb.co/BShbZJ1/image.png',
+      hasDemo: true,
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20starlightx&gname=Starlight%20Princess%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@b4844332-f438-4550-81f7-fb506ef44282',
+      provider: 'Pragmatic Play',
+      rtp: '96.50%'
     }
   ];
 
