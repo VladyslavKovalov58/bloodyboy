@@ -21,6 +21,8 @@ export const translations = {
         support247: '24/7 Support',
         verifiedSafe: 'Verified Safe',
         bonusesShort: 'Bonuses',
+        channel: 'Channel',
+        chat: 'Chat',
 
         // Casino Specifics
         mad: {
@@ -78,6 +80,8 @@ export const translations = {
         support247: 'Поддержка 24/7',
         verifiedSafe: 'Лицензионный софт',
         bonusesShort: 'Бонусы',
+        channel: 'Канал',
+        chat: 'Чат',
 
         // Casino Specifics
         mad: {

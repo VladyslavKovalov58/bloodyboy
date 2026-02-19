@@ -84,7 +84,7 @@ const MobileMenu = ({ activeTab, setActiveTab, language }) => {
                 <div style={{ padding: '8px' }}>
                     <Send size={24} style={iconStyle(false)} />
                 </div>
-                <span>Channel</span>
+                <span>{t.channel}</span>
             </a>
 
             {/* Telegram Chat Link */}
@@ -97,7 +97,7 @@ const MobileMenu = ({ activeTab, setActiveTab, language }) => {
                 <div style={{ padding: '8px' }}>
                     <MessageCircle size={24} style={iconStyle(false)} />
                 </div>
-                <span>Chat</span>
+                <span>{t.chat}</span>
             </a>
 
         </div>
