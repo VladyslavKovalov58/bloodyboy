@@ -116,7 +116,7 @@ const AppContent = () => {
       name: 'The Dog House',
       image: 'https://i.ibb.co/Ngx6qDC6/image-2.jpg',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The%20Dog%20House&jurisdictionID=UK&mgckey=stylename@generic~SESSION@7b45bc12-5630-4abb-9108-bb2cce9a413e',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20doghouse&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
       rtp: '96.08%'
     },
@@ -125,7 +125,7 @@ const AppContent = () => {
       name: 'Gates of Olympus 1000',
       image: 'https://i.ibb.co/Z18Xgvwn/image.png',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/hub-demo/html5Game.do?extGame=1&symbol=vs20olympgold&gname=Gates%20of%20Olympus%20Super%20Scatter&jurisdictionID=99&lobbyUrl=https%3A%2F%2Fclienthub.pragmaticplay.com%2Fslots%2Fgame-library%2F&mgckey=stylename@generic~SESSION@c555e684-5745-46ad-a25e-daa6c866a1a7',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympx&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
       rtp: '96.50%'
     },
@@ -134,7 +134,7 @@ const AppContent = () => {
       name: 'Starlight Princess 1000',
       image: 'https://i.ibb.co/BShbZJ1/image.png',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20starlightx&gname=Starlight%20Princess%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@11a88e4c-c8fe-4816-bfc4-129d9f91e125',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20starlightx&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
       rtp: '96.50%'
     },
@@ -143,7 +143,7 @@ const AppContent = () => {
       name: 'Sugar Rush',
       image: 'https://i.ibb.co/x9rJJBN/image.png',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/hub-demo/html5Game.do?extGame=1&symbol=vs20sugarrush&gname=Sugar%20Rush&jurisdictionID=99&lobbyUrl=https%3A%2F%2Fclienthub.pragmaticplay.com%2Fslots%2Fgame-library%2F&mgckey=stylename@generic~SESSION@62e1621c-adcc-4ca1-919d-f81d25ca4062',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugarrush&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
       rtp: '96.50%'
     },
