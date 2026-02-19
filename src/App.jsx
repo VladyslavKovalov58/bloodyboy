@@ -164,6 +164,42 @@ const AppContent = () => {
       link: 'https://3oaks.com/api/v1/games/lucky_penny_2/play?lang=en',
       provider: '3Oaks',
       rtp: '96.45%'
+    },
+    {
+      id: 9,
+      name: 'Wild Bandito',
+      image: 'https://i.ibb.co/1tJXtDsP/image-3.jpg',
+      hasDemo: true,
+      link: 'https://m.eajzzxhro.com/104/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&ao=06gvo%3Doimdff3kr%3Dius&or=19lmtmbv%3Dxtcssqakh%3Dvhf&__hv=2fMEUCIQDPTuHaeIhp%2BPPYu0pYjv1XRGDd2sfi7BUF4wEtlhPemAIgEJ%2BI5%2BfuP8tTXqhceqcJETEimZ6GtC%2FL97ihSN3JgPE%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg',
+      provider: 'PG Soft',
+      rtp: '96.73%'
+    },
+    {
+      id: 10,
+      name: 'SixSixSix',
+      image: 'https://i.ibb.co/Mx7G2ZdM/image-3.png',
+      hasDemo: true,
+      link: 'https://static-live.hacksawgaming.com/1534/1.37.1/index.html?language=en&channel=desktop&gameid=1534&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
+      provider: 'Hacksaw',
+      rtp: '96.15%'
+    },
+    {
+      id: 11,
+      name: 'RIP City',
+      image: 'https://i.ibb.co/ymZjnnMw/image-4.png',
+      hasDemo: true,
+      link: 'https://static-live.hacksawgaming.com/1233/1.33.2/index.html?language=en&channel=desktop&gameid=1233&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
+      provider: 'Hacksaw',
+      rtp: '96.22%'
+    },
+    {
+      id: 12,
+      name: 'Zeus vs Hades Gods of War 250',
+      image: 'https://i.ibb.co/SXw9kShM/image-4.jpg',
+      hasDemo: true,
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs15zeushadseq&lang=ru&cur=USD&playMode=demo',
+      provider: 'Pragmatic Play',
+      rtp: '96.56%'
     }
   ];
 
