@@ -116,7 +116,7 @@ const AppContent = () => {
       name: 'The Dog House',
       image: 'https://i.ibb.co/Ngx6qDC6/image-2.jpg',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The%20Dog%20House&jurisdictionID=99&mgckey=stylename@generic~SESSION@812fcb38-2156-4ab2-865f-80cef74f4e49',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20doghouse&gname=The%20Dog%20House&jurisdictionID=UK&mgckey=stylename@generic~SESSION@7b45bc12-5630-4abb-9108-bb2cce9a413e',
       provider: 'Pragmatic Play',
       rtp: '96.08%'
     },
@@ -125,7 +125,7 @@ const AppContent = () => {
       name: 'Gates of Olympus 1000',
       image: 'https://i.ibb.co/Z18Xgvwn/image.png',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20olympx&gname=Gates%20of%20Olympus%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@ff43ee9d-b7c2-4606-bea5-9816368db3ae',
+      link: 'https://demogamesfree.pragmaticplay.net/hub-demo/html5Game.do?extGame=1&symbol=vs20olympgold&gname=Gates%20of%20Olympus%20Super%20Scatter&jurisdictionID=99&lobbyUrl=https%3A%2F%2Fclienthub.pragmaticplay.com%2Fslots%2Fgame-library%2F&mgckey=stylename@generic~SESSION@c555e684-5745-46ad-a25e-daa6c866a1a7',
       provider: 'Pragmatic Play',
       rtp: '96.50%'
     },
@@ -134,9 +134,36 @@ const AppContent = () => {
       name: 'Starlight Princess 1000',
       image: 'https://i.ibb.co/BShbZJ1/image.png',
       hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20starlightx&gname=Starlight%20Princess%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@b4844332-f438-4550-81f7-fb506ef44282',
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/html5Game.do?extGame=1&symbol=vs20starlightx&gname=Starlight%20Princess%201000&jurisdictionID=99&mgckey=stylename@generic~SESSION@11a88e4c-c8fe-4816-bfc4-129d9f91e125',
       provider: 'Pragmatic Play',
       rtp: '96.50%'
+    },
+    {
+      id: 6,
+      name: 'Sugar Rush',
+      image: 'https://i.ibb.co/x9rJJBN/image.png',
+      hasDemo: true,
+      link: 'https://demogamesfree.pragmaticplay.net/hub-demo/html5Game.do?extGame=1&symbol=vs20sugarrush&gname=Sugar%20Rush&jurisdictionID=99&lobbyUrl=https%3A%2F%2Fclienthub.pragmaticplay.com%2Fslots%2Fgame-library%2F&mgckey=stylename@generic~SESSION@62e1621c-adcc-4ca1-919d-f81d25ca4062',
+      provider: 'Pragmatic Play',
+      rtp: '96.50%'
+    },
+    {
+      id: 7,
+      name: 'Le Fisherman',
+      image: 'https://i.ibb.co/sdkhpkr2/image-1.png',
+      hasDemo: true,
+      link: 'https://static-live.hacksawgaming.com/2057/1.19.1/index.html?language=en&channel=desktop&gameid=2057&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
+      provider: 'Hacksaw',
+      rtp: '96.33%'
+    },
+    {
+      id: 8,
+      name: 'Lucky Penny 2',
+      image: 'https://i.ibb.co/YFPX8TLM/image-2.png',
+      hasDemo: true,
+      link: 'https://3oaks.com/api/v1/games/lucky_penny_2/play?lang=en',
+      provider: '3Oaks',
+      rtp: '96.45%'
     }
   ];
 
