@@ -36,35 +36,40 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                background: 'rgba(15, 23, 42, 0.85)', // Darker, cleaner backdrop
-                backdropFilter: 'blur(8px)',
+                background: 'rgba(0, 0, 0, 0.9)', // Stronger darkening
+                backdropFilter: 'blur(5px)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '30px 20px',
+                padding: '40px 20px',
                 textAlign: 'center',
                 opacity: 0,
                 transition: 'opacity 0.4s ease',
                 zIndex: 3
             }}>
                 {/* Top: Name and Provider */}
-                <div className="hover-top" style={{ transform: 'translateY(-10px)', transition: 'transform 0.4s ease' }}>
+                <div className="hover-top" style={{ transform: 'translateY(-15px)', transition: 'transform 0.4s ease' }}>
                     <h3 style={{
-                        margin: '0 0 4px 0',
+                        margin: '0 0 2px 0',
                         color: '#fff',
-                        fontSize: '1.4rem',
-                        fontWeight: '800',
-                        letterSpacing: '-0.5px'
+                        fontSize: '1.6rem',
+                        fontWeight: '900',
+                        textTransform: 'uppercase',
+                        lineHeight: 1,
+                        letterSpacing: '-1px',
+                        fontFamily: 'system-ui, -apple-system, sans-serif'
                     }}>
                         {name}
                     </h3>
                     {provider && (
                         <p style={{
                             margin: 0,
-                            color: 'rgba(255,255,255,0.4)',
-                            fontSize: '0.9rem',
-                            fontWeight: '500'
+                            color: 'rgba(255,255,255,0.5)',
+                            fontSize: '0.75rem', // Smaller provider
+                            fontWeight: '600',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
                         }}>
                             {provider}
                         </p>
@@ -80,8 +85,8 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                         className={`circular-play-btn ${!hasDemo ? 'disabled' : ''}`}
                         onClick={e => !hasDemo && e.preventDefault()}
                         style={{
-                            width: '80px',
-                            height: '80px',
+                            width: '85px',
+                            height: '85px',
                             borderRadius: '50%',
                             background: hasDemo
                                 ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)'
@@ -91,35 +96,26 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                             justifyContent: 'center',
                             textDecoration: 'none',
                             color: hasDemo ? '#fff' : 'rgba(255, 255, 255, 0.3)',
-                            boxShadow: hasDemo ? '0 0 30px rgba(37, 99, 235, 0.6)' : 'none',
+                            boxShadow: hasDemo ? '0 0 35px rgba(37, 99, 235, 0.7)' : 'none',
                             transition: 'all 0.3s ease',
                             cursor: hasDemo ? 'pointer' : 'not-allowed',
                             border: hasDemo ? 'none' : '1px solid rgba(255, 255, 255, 0.1)'
                         }}
                     >
-                        <Play size={32} fill={hasDemo ? "white" : "rgba(255, 255, 255, 0.3)"} style={{ marginLeft: hasDemo ? '4px' : '0' }} />
+                        <Play size={36} fill={hasDemo ? "white" : "rgba(255, 255, 255, 0.3)"} style={{ marginLeft: hasDemo ? '4px' : '0' }} />
                     </a>
                 </div>
 
                 {/* Bottom: RTP Badge */}
-                <div className="hover-bottom" style={{ transform: 'translateY(10px)', transition: 'transform 0.4s ease' }}>
-                    {rtp && (
-                        <div style={{
-                            color: 'rgba(255,255,255,0.7)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: '4px'
-                        }}>
-                            <div style={{ fontSize: '1.2rem' }}>💜</div>
-                            <span style={{ fontSize: '0.85rem', fontWeight: '800', letterSpacing: '0.5px' }}>{rtp} RTP</span>
-                        </div>
-                    )}
-                    {!rtp && (
-                        <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.3)' }}>
-                            {language === 'ru' ? 'Демо недоступно' : 'No demo'}
-                        </span>
-                    )}
+                <div className="hover-bottom" style={{ transform: 'translateY(15px)', transition: 'transform 0.4s ease' }}>
+                    <div style={{
+                        color: 'rgba(255,255,255,0.8)',
+                        fontSize: '0.85rem',
+                        fontWeight: '700',
+                        letterSpacing: '0.5px'
+                    }}>
+                        {rtp ? `RTP: ${rtp}` : (language === 'ru' ? 'Демо недоступно' : 'No demo')}
+                    </div>
                 </div>
             </div>
 

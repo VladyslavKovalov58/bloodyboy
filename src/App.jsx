@@ -127,7 +127,7 @@ function App() {
       hasDemo: false,
       link: '#',
       provider: 'PG SOFT',
-      rtp: '96.75%'
+      rtp: '96.65%'
     },
     {
       id: 2,
