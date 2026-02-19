@@ -1,8 +1,8 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { Gift, Tv, Send, Gamepad2 } from 'lucide-react';
 import { translations } from '../translations';
 
-const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
+const MobileMenu = ({ activeTab, language, isLive }) => {
     const t = translations[language];
 
     const navItemStyle = (tabName) => ({
@@ -19,7 +19,8 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
         gap: '4px',
         cursor: 'pointer',
         transition: 'all 0.2s',
-        position: 'relative'
+        position: 'relative',
+        textDecoration: 'none'
     });
 
     const iconStyle = (isActive) => ({
@@ -45,8 +46,8 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
         }}>
 
             {/* Bonuses Tab */}
-            <button
-                onClick={() => setActiveTab('bonuses')}
+            <Link
+                to="/bonuses"
                 style={navItemStyle('bonuses')}
             >
                 <div style={activeTab === 'bonuses' ? {
@@ -57,11 +58,11 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                     <Gift size={24} style={iconStyle(activeTab === 'bonuses')} />
                 </div>
                 <span>{language === 'ru' ? 'Бонусы' : 'Bonuses'}</span>
-            </button>
+            </Link>
 
             {/* Slots Tab */}
-            <button
-                onClick={() => setActiveTab('slots')}
+            <Link
+                to="/slots"
                 style={navItemStyle('slots')}
             >
                 <div style={activeTab === 'slots' ? {
@@ -72,11 +73,11 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                     <Gamepad2 size={24} style={iconStyle(activeTab === 'slots')} />
                 </div>
                 <span>{language === 'ru' ? 'Слоты' : 'Slots'}</span>
-            </button>
+            </Link>
 
             {/* Stream Tab */}
-            <button
-                onClick={() => setActiveTab('streams')}
+            <Link
+                to="/streams"
                 style={navItemStyle('streams')}
             >
                 <div style={activeTab === 'streams' ? {
@@ -101,7 +102,7 @@ const MobileMenu = ({ activeTab, setActiveTab, language, isLive }) => {
                     )}
                 </div>
                 <span>{language === 'ru' ? 'Эфир' : 'Live'}</span>
-            </button>
+            </Link>
 
             {/* Telegram Channel Link */}
             <a

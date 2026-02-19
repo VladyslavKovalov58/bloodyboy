@@ -1,11 +1,11 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2 } from 'lucide-react';
 import { translations } from '../translations';
 
-const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
+const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
     const t = translations[language];
 
-    const buttonStyle = (tabName) => ({
+    const linkStyle = (tabName) => ({
         background: activeTab === tabName ? 'var(--neon-purple)' : 'transparent',
         color: activeTab === tabName ? '#fff' : 'var(--text-dim)',
         width: '100%',
@@ -22,7 +22,8 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
         fontWeight: activeTab === tabName ? '600' : '400',
         border: '1px solid transparent',
         cursor: 'pointer',
-        position: 'relative' // For tooltip if needed later
+        textDecoration: 'none',
+        boxSizing: 'border-box'
     });
 
     return (
@@ -117,29 +118,29 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                     </p>
                 )}
 
-                <button
-                    onClick={() => setActiveTab('bonuses')}
-                    style={buttonStyle('bonuses')}
+                <Link
+                    to="/bonuses"
+                    style={linkStyle('bonuses')}
                     className="sidebar-btn"
                     title={isCollapsed ? t.bestCasinos : ''}
                 >
                     <Gift size={20} />
                     {!isCollapsed && t.bestCasinos}
-                </button>
+                </Link>
 
-                <button
-                    onClick={() => setActiveTab('slots')}
-                    style={buttonStyle('slots')}
+                <Link
+                    to="/slots"
+                    style={linkStyle('slots')}
                     className="sidebar-btn"
                     title={isCollapsed ? t.bestSlots : ''}
                 >
                     <Gamepad2 size={20} />
                     {!isCollapsed && t.bestSlots}
-                </button>
+                </Link>
 
-                <button
-                    onClick={() => setActiveTab('streams')}
-                    style={buttonStyle('streams')}
+                <Link
+                    to="/streams"
+                    style={linkStyle('streams')}
                     className="sidebar-btn"
                     title={isCollapsed ? t.liveStream : ''}
                 >
@@ -174,7 +175,7 @@ const Sidebar = ({ activeTab, setActiveTab, language, setLanguage, isCollapsed, 
                             )}
                         </div>
                     )}
-                </button>
+                </Link>
             </nav>
 
             {/* Socials - At Bottom, above Lang Switcher */}
