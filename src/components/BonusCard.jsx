@@ -117,14 +117,15 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
                         {promo && (
                             <div style={{
                                 display: 'inline-block',
-                                background: 'rgba(255, 255, 255, 0.1)',
+                                background: color.includes('gradient') ? color : 'rgba(255, 255, 255, 0.1)',
                                 padding: '6px 12px',
                                 borderRadius: '8px',
                                 fontSize: '0.9rem',
-                                color: color, // Mix brand color into text
-                                fontWeight: '600',
+                                color: color.includes('gradient') ? '#000' : color, // Black text for gradient, otherwise colored
+                                fontWeight: '700',
                                 letterSpacing: '0.5px',
-                                border: `1px solid ${color}40`
+                                border: color.includes('gradient') ? 'none' : `1px solid ${color}40`,
+                                boxShadow: color.includes('gradient') ? `0 4px 10px ${color.split(',')[1].trim().split(' ')[0]}40` : 'none'
                             }}>
                                 {promo}
                             </div>
