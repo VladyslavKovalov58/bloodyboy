@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { translations } from '../translations';
 import { ArrowRight, Info } from 'lucide-react';
 
-const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)', language = 'en', image }) => {
+const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)', language = 'en', image, disableHover = false }) => {
     const [isHovered, setIsHovered] = useState(false);
     const t = translations[language];
 
@@ -17,9 +17,9 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
         flexDirection: 'column',
         height: '240px', // Slightly taller to accommodate 3 lines comfortably
         transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
-        transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
-        boxShadow: isHovered ? `0 15px 30px -10px ${color}30` : 'none',
-        cursor: 'pointer'
+        transform: isHovered && !disableHover ? 'translateY(-6px)' : 'translateY(0)',
+        boxShadow: isHovered && !disableHover ? `0 15px 30px -10px ${color}30` : 'none',
+        cursor: disableHover ? 'default' : 'pointer'
     };
 
     // Background gradient/image 
@@ -51,10 +51,11 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
         alignItems: 'center',
         justifyContent: 'center',
         padding: '20px',
-        opacity: isHovered ? 1 : 0,
+        opacity: isHovered && !disableHover ? 1 : 0,
         transition: 'opacity 0.2s ease',
         zIndex: 2,
-        backdropFilter: 'blur(4px)'
+        backdropFilter: 'blur(4px)',
+        pointerEvents: isHovered && !disableHover ? 'auto' : 'none'
     };
 
     const buttonStyle = {
@@ -79,7 +80,7 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
         <div
             className="bonus-card"
             style={cardStyle}
-            onMouseEnter={() => setIsHovered(true)}
+            onMouseEnter={() => !disableHover && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
             {/* Main Content */}

@@ -49,7 +49,8 @@ function App() {
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333' // Neutral/Dark
+      color: '#333333', // Neutral/Dark
+      disableHover: true
     },
     {
       id: 5,
@@ -57,7 +58,8 @@ function App() {
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333'
+      color: '#333333',
+      disableHover: true
     },
     {
       id: 6,
@@ -65,7 +67,8 @@ function App() {
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333'
+      color: '#333333',
+      disableHover: true
     },
     {
       id: 7,
@@ -73,7 +76,8 @@ function App() {
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333'
+      color: '#333333',
+      disableHover: true
     },
     {
       id: 8,
@@ -81,7 +85,8 @@ function App() {
       offer: t.soon.offer,
       promo: t.soon.promo,
       link: '#',
-      color: '#333333'
+      color: '#333333',
+      disableHover: true
     }
   ];
 
@@ -158,7 +163,7 @@ function App() {
           paddingBottom: '20px',
           borderBottom: '1px solid rgba(255,255,255,0.05)'
         }}>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: '700' }}>
+          <h2 className="page-title">
             {activeTab === 'bonuses' ? t.bonusesTitle : t.streamTitle}
           </h2>
 
@@ -186,6 +191,7 @@ function App() {
                   color={bonus.color}
                   language={language} // Pass language to card
                   image={bonus.image} // Pass image prop
+                  disableHover={bonus.disableHover}
                 />
               ))}
             </div>

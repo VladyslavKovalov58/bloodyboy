@@ -75,6 +75,12 @@ button {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* Page Title Styling */
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
 /* Responsive Utilities */
 .mobile-only {
   display: none !important;
@@ -92,10 +98,16 @@ button {
   .desktop-only {
     display: none !important;
   }
-  
+
   /* Adjust main container margin on mobile */
   main {
     margin-left: 0 !important;
-    padding-bottom: 80px !important; /* Space for bottom menu */
+    padding-bottom: 80px !important;
+    /* Space for bottom menu */
+  }
+
+  /* Reduce title size on mobile */
+  .page-title {
+    font-size: 1.2rem;
   }
 }
