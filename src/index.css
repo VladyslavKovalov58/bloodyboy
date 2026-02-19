@@ -1,0 +1,76 @@
+:root {
+  --primary-gold: #FFD700;
+  --secondary-gold: #B8860B;
+  --bg-dark: #0f0b1a;
+  /* Deep violet black */
+  --bg-sidebar: #1a122e;
+  /* Slightly lighter violet */
+  --bg-card: #251b3f;
+  /* Card violet */
+  --text-light: #ffffff;
+  --text-dim: #a8a0c0;
+  --neon-purple: #bc13fe;
+  --neon-green: #00ff41;
+  --accent-purple: #6a0dad;
+  --font-main: 'Rubik', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-gold);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-gold);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
