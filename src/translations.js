@@ -38,7 +38,7 @@ export const translations = {
             promo: 'Promo code: ALISA'
         },
         spark: {
-            offer: 'Up to 360 FS',
+            offer: 'Up to 360 FS to deposit',
             promo: 'Every week'
         },
         soon: {
@@ -104,7 +104,7 @@ export const translations = {
             promo: 'Промокод: ALISA'
         },
         spark: {
-            offer: 'До 360 FS',
+            offer: 'До 360 FS к депозиту',
             promo: 'Каждую неделю'
         },
         soon: {
