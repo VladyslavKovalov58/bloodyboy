@@ -82,6 +82,7 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
             style={cardStyle}
             onMouseEnter={() => !disableHover && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            onClick={() => !disableHover && window.open(link, '_blank')}
         >
             {/* Main Content */}
             <div style={headerStyle}>

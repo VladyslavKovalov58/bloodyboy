@@ -27,19 +27,23 @@ export const translations = {
         // Casino Specifics
         mad: {
             offer: '100% + 70 FS',
-            promo: 'First Deposit Bonus'
+            promo: 'First Deposit Bonus',
+            link: 'https://send.me2mad.com/affiliate/m_ps5to0n3?path=%2Fregistration'
         },
         cactus: {
             offer: '175% + 125 FS',
-            promo: 'Promo code: KOLYAN'
+            promo: 'Promo code: KOLYAN',
+            link: 'https://elcongresoelias.xyz/affiliate/c_49k6bonh'
         },
         vodka: {
             offer: '125% to deposit',
-            promo: 'Promo code: ALISA'
+            promo: 'Promo code: ALISA',
+            link: 'https://vesemir.vodka/?id=16106'
         },
         spark: {
             offer: 'Up to 360 FS to deposit',
-            promo: 'Every week'
+            promo: 'Every week',
+            link: 'https://sparkru.one/invite/kolyan'
         },
         soon: {
             name: 'Coming Soon...',
@@ -93,19 +97,23 @@ export const translations = {
         // Casino Specifics
         mad: {
             offer: '100% + 70 FS',
-            promo: 'Бонус на первый депозит'
+            promo: 'Бонус на первый депозит',
+            link: 'https://send.me2mad.com/affiliate/m_ps5to0n3?path=%2Fregistration'
         },
         cactus: {
             offer: '175% + 125 FS',
-            promo: 'Промокод: KOLYAN'
+            promo: 'Промокод: KOLYAN',
+            link: 'https://elcongresoelias.xyz/affiliate/c_49k6bonh'
         },
         vodka: {
             offer: '125% к депозиту',
-            promo: 'Промокод: ALISA'
+            promo: 'Промокод: ALISA',
+            link: 'https://vesemir.vodka/?id=16106'
         },
         spark: {
             offer: 'До 360 FS к депозиту',
-            promo: 'Каждую неделю'
+            promo: 'Каждую неделю',
+            link: 'https://sparkru.one/invite/kolyan'
         },
         soon: {
             name: 'Скоро...',

@@ -51,7 +51,7 @@ function App() {
       siteName: 'MAD',
       offer: t.mad.offer,
       promo: t.mad.promo,
-      link: 'https://send.me2mad.com/affiliate/m_ps5to0n3?path=%2Fregistration',
+      link: t.mad.link,
       color: '#E30052' // Pink-Red
     },
     {
@@ -59,7 +59,7 @@ function App() {
       siteName: 'CACTUS',
       offer: t.cactus.offer,
       promo: t.cactus.promo,
-      link: 'https://elcongresoelias.xyz/affiliate/c_49k6bonh',
+      link: t.cactus.link,
       color: '#00D100' // Green
     },
     {
@@ -67,7 +67,7 @@ function App() {
       siteName: 'VODKA',
       offer: t.vodka.offer,
       promo: t.vodka.promo,
-      link: 'https://vesemir.vodka/?id=16106',
+      link: t.vodka.link,
       color: '#00ccff' // Blue
     },
     {
@@ -75,7 +75,7 @@ function App() {
       siteName: 'Spark',
       offer: t.spark.offer,
       promo: t.spark.promo,
-      link: 'https://sparkru.one/invite/kolyan',
+      link: t.spark.link,
       color: 'linear-gradient(135deg, #FF007F 0%, #00BFFF 100%)' // Rose-Blue gradient
     },
     // Placeholders for "Soon"
