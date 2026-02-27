@@ -24,7 +24,7 @@ const TournamentDetail = ({ tournaments, language }) => {
         <div className="tournament-detail-container" style={{
             maxWidth: '1200px',
             margin: '0 auto',
-            padding: '20px',
+            padding: window.innerWidth < 768 ? '15px' : '20px',
             color: '#fff'
         }}>
             {/* Styles for animation */}
@@ -98,10 +98,10 @@ const TournamentDetail = ({ tournaments, language }) => {
                 </div>
 
                 <h1 style={{
-                    fontSize: '3.5rem',
+                    fontSize: window.innerWidth < 768 ? '2.2rem' : '3.5rem',
                     fontWeight: '900',
                     margin: '0',
-                    letterSpacing: '-2px',
+                    letterSpacing: '-1.5px',
                     lineHeight: '1.1',
                     color: '#fff'
                 }}>
@@ -112,8 +112,8 @@ const TournamentDetail = ({ tournaments, language }) => {
             {/* Content Grid */}
             <div className="detail-content-grid" style={{
                 display: 'grid',
-                gridTemplateColumns: '1.8fr 1fr',
-                gap: '40px'
+                gridTemplateColumns: window.innerWidth < 1024 ? '1fr' : '1.8fr 1fr',
+                gap: window.innerWidth < 768 ? '30px' : '40px'
             }}>
                 {/* Left Column: Info */}
                 <div>
@@ -132,7 +132,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             </h2>
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
+                                gridTemplateColumns: window.innerWidth < 640 ? '1fr' : 'repeat(3, 1fr)',
                                 gap: '20px'
                             }}>
                                 {tournament.results.map((res, i) => (
@@ -231,11 +231,12 @@ const TournamentDetail = ({ tournaments, language }) => {
                 <div style={{
                     background: 'rgba(255, 255, 255, 0.03)',
                     borderRadius: '30px',
-                    padding: '40px',
+                    padding: window.innerWidth < 768 ? '25px' : '40px',
                     border: '1px solid rgba(255, 255, 255, 0.05)',
                     height: 'fit-content',
-                    position: 'sticky',
-                    top: '100px'
+                    position: window.innerWidth < 1024 ? 'static' : 'sticky',
+                    top: '100px',
+                    order: window.innerWidth < 1024 ? -1 : 1
                 }}>
                     <div style={{ marginBottom: '35px' }}>
                         <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', textTransform: 'uppercase', fontWeight: '800', marginBottom: '8px', letterSpacing: '1px' }}>{t.prizePool}</div>

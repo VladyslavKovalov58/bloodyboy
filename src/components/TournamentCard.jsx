@@ -125,6 +125,7 @@ const TournamentCard = ({ tournament, language }) => {
                 {/* Buttons (Tesla Style Bottom-Left) */}
                 <div style={{
                     display: 'flex',
+                    flexDirection: window.innerWidth < 480 ? 'column' : 'row',
                     gap: '15px'
                 }}>
                     {tournament.isActive ? (
@@ -133,15 +134,17 @@ const TournamentCard = ({ tournament, language }) => {
                             color: '#fff',
                             border: 'none',
                             borderRadius: '16px',
-                            padding: '16px 40px',
-                            fontSize: '1.1rem',
+                            padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
+                            fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
                             fontWeight: '900',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'center',
                             gap: '12px',
                             transition: 'all 0.3s',
-                            boxShadow: '0 8px 30px rgba(255, 107, 0, 0.3)'
+                            boxShadow: '0 8px 30px rgba(255, 107, 0, 0.3)',
+                            width: window.innerWidth < 480 ? '100%' : 'auto'
                         }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-3px)';
@@ -158,13 +161,15 @@ const TournamentCard = ({ tournament, language }) => {
                             background: 'rgba(255, 255, 255, 0.05)',
                             color: 'rgba(255, 255, 255, 0.4)',
                             borderRadius: '16px',
-                            padding: '16px 40px',
-                            fontSize: '1.1rem',
+                            padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
+                            fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
                             fontWeight: '800',
                             display: 'flex',
                             alignItems: 'center',
+                            justifyContent: 'center',
                             gap: '12px',
-                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            width: window.innerWidth < 480 ? '100%' : 'auto'
                         }}>
                             {t.finishedTournaments} <Trophy size={20} />
                         </div>
@@ -175,15 +180,17 @@ const TournamentCard = ({ tournament, language }) => {
                         color: '#fff',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
                         borderRadius: '16px',
-                        padding: '16px 40px',
-                        fontSize: '1.1rem',
+                        padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
+                        fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
                         fontWeight: '700',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
+                        justifyContent: 'center',
                         gap: '12px',
                         transition: 'all 0.3s',
-                        textDecoration: 'none'
+                        textDecoration: 'none',
+                        width: window.innerWidth < 480 ? '100%' : 'auto'
                     }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
