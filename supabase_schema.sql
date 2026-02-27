@@ -71,6 +71,12 @@ CREATE TABLE IF NOT EXISTS tournaments (
     sponsor_name TEXT,
     sponsor_icon TEXT,
     sponsor_link TEXT,
+    winner_1 TEXT,
+    winner_1_prize TEXT,
+    winner_2 TEXT,
+    winner_2_prize TEXT,
+    winner_3 TEXT,
+    winner_3_prize TEXT,
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

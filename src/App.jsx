@@ -82,7 +82,13 @@ const AppContent = () => {
           rules: dbT.rules,
           sponsorName: dbT.sponsor_name,
           sponsorIcon: dbT.sponsor_icon,
-          sponsorLink: dbT.sponsor_link
+          sponsorLink: dbT.sponsor_link,
+          winner1: dbT.winner_1,
+          winner1Prize: dbT.winner_1_prize,
+          winner2: dbT.winner_2,
+          winner2Prize: dbT.winner_2_prize,
+          winner3: dbT.winner_3,
+          winner3Prize: dbT.winner_3_prize
         }));
         setTournaments(mappedTournaments);
       }
@@ -347,7 +353,7 @@ const AppContent = () => {
     return (
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/admin" /> : <LoginPage onLogin={setUser} />} />
-        <Route path="/admin" element={user ? <AdminDashboard onLogout={() => setUser(null)} /> : <Navigate to="/login" />} />
+        <Route path="/admin" element={user ? <AdminDashboard onLogout={() => setUser(null)} language={language} /> : <Navigate to="/login" />} />
       </Routes>
     );
   }
@@ -529,10 +535,14 @@ const AppContent = () => {
                   }} className="animate-fade-in">
                     <Trophy size={48} style={{ marginBottom: '20px', opacity: 0.2, color: 'var(--primary-orange)' }} />
                     <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>
-                      {language === 'ru' ? 'Результаты скоро появятся' : 'Results coming soon'}
+                      {tournamentCategory === 'active'
+                        ? (language === 'ru' ? 'Активных турниров пока нет' : 'No active tournaments yet')
+                        : (language === 'ru' ? 'Результаты скоро появятся' : 'Results coming soon')}
                     </div>
-                    <div style={{ fontSize: '0.9rem' }}>
-                      {language === 'ru' ? 'Здесь будут отображаться итоги завершенных турниров' : 'The results of completed tournaments will be displayed here'}
+                    <div style={{ fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto' }}>
+                      {tournamentCategory === 'active'
+                        ? (language === 'ru' ? 'Следи за анонсами новых турниров в наших социальных сетях!' : 'Follow our social media to stay updated on new tournament announcements!')
+                        : (language === 'ru' ? 'Здесь будут отображаться итоги завершенных турниров' : 'The results of completed tournaments will be displayed here')}
                     </div>
                   </div>
                 )}

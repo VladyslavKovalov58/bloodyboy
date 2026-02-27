@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle } from 'lucide-react';
+import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy } from 'lucide-react';
 
-const AdminDashboard = ({ onLogout }) => {
+const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [activeTab, setActiveTab] = useState('general');
     const [config, setConfig] = useState({});
     const [tournaments, setTournaments] = useState([]);
@@ -123,6 +123,12 @@ const AdminDashboard = ({ onLogout }) => {
         sponsor_name: '',
         sponsor_icon: '',
         sponsor_link: '',
+        winner_1: '',
+        winner_1_prize: '',
+        winner_2: '',
+        winner_2_prize: '',
+        winner_3: '',
+        winner_3_prize: '',
         is_active: true
     };
 
@@ -432,19 +438,132 @@ const AdminDashboard = ({ onLogout }) => {
                                             <input type="text" value={editingTournament?.sponsor_link || ''} onChange={(e) => setEditingTournament({ ...editingTournament, sponsor_link: e.target.value })} style={inputStyle} />
                                         </div>
                                         <div style={{ gridColumn: '1 / -1' }}>
+                                            <h3 style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', marginTop: '10px', color: 'var(--primary-orange)', fontSize: '1rem', marginBottom: '15px' }}>Tournament Winners (Top 3)</h3>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    <div>
+                                                        <label style={labelStyle}>🥇 1st Place (Winner)</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Player or Team name"
+                                                            value={editingTournament?.winner_1 || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_1: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={labelStyle}>💰 1st Place Prize</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="$500 / 1000 FS / etc."
+                                                            value={editingTournament?.winner_1_prize || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_1_prize: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    <div>
+                                                        <label style={labelStyle}>🥈 2nd Place</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Player or Team name"
+                                                            value={editingTournament?.winner_2 || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_2: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={labelStyle}>💰 2nd Place Prize</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="$300 / 500 FS / etc."
+                                                            value={editingTournament?.winner_2_prize || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_2_prize: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                                    <div>
+                                                        <label style={labelStyle}>🥉 3rd Place</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Player or Team name"
+                                                            value={editingTournament?.winner_3 || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_3: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label style={labelStyle}>💰 3rd Place Prize</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="$100 / 200 FS / etc."
+                                                            value={editingTournament?.winner_3_prize || ''}
+                                                            onChange={(e) => setEditingTournament({ ...editingTournament, winner_3_prize: e.target.value })}
+                                                            style={inputStyle}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ gridColumn: '1 / -1' }}>
                                             <label style={labelStyle}>Sponsor Icon URL</label>
                                             <input type="text" value={editingTournament?.sponsor_icon || ''} onChange={(e) => setEditingTournament({ ...editingTournament, sponsor_icon: e.target.value })} style={inputStyle} />
                                         </div>
 
-                                        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '15px', background: 'rgba(255,255,255,0.02)', padding: '15px', borderRadius: '12px' }}>
-                                            <input
-                                                type="checkbox"
-                                                id="tournament-active"
-                                                checked={editingTournament?.is_active ?? true}
-                                                onChange={(e) => setEditingTournament({ ...editingTournament, is_active: e.target.checked })}
-                                                style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                                            />
-                                            <label htmlFor="tournament-active" style={{ cursor: 'pointer', fontWeight: '700', fontSize: '1rem' }}>Active Tournament (If unchecked, moves to "Finished" section)</label>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label style={labelStyle}>Tournament Status</label>
+                                            <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditingTournament({ ...editingTournament, is_active: true })}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '15px',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid',
+                                                        borderColor: editingTournament?.is_active ? 'var(--primary-orange)' : 'rgba(255,255,255,0.1)',
+                                                        background: editingTournament?.is_active ? 'rgba(255,107,0,0.1)' : 'rgba(255,255,255,0.02)',
+                                                        color: editingTournament?.is_active ? 'var(--primary-orange)' : 'rgba(255,255,255,0.4)',
+                                                        fontWeight: '800',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                >
+                                                    <Flame size={18} />
+                                                    {language === 'ru' ? 'Активный' : 'Active'}
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setEditingTournament({ ...editingTournament, is_active: false })}
+                                                    style={{
+                                                        flex: 1,
+                                                        padding: '15px',
+                                                        borderRadius: '12px',
+                                                        border: '1px solid',
+                                                        borderColor: !editingTournament?.is_active ? '#4ade80' : 'rgba(255,255,255,0.1)',
+                                                        background: !editingTournament?.is_active ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.02)',
+                                                        color: !editingTournament?.is_active ? '#4ade80' : 'rgba(255,255,255,0.4)',
+                                                        fontWeight: '800',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                >
+                                                    <Trophy size={18} />
+                                                    {language === 'ru' ? 'Завершенный' : 'Finished'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
@@ -483,7 +602,21 @@ const AdminDashboard = ({ onLogout }) => {
                                                         {t.image_url && <img src={t.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: '800', fontSize: '1.2rem', marginBottom: '5px' }}>{t.title}</div>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
+                                                            <div style={{ fontWeight: '800', fontSize: '1.2rem' }}>{t.title}</div>
+                                                            <div style={{
+                                                                padding: '4px 10px',
+                                                                borderRadius: '6px',
+                                                                fontSize: '0.7rem',
+                                                                fontWeight: '800',
+                                                                textTransform: 'uppercase',
+                                                                background: t.is_active ? 'rgba(255,107,0,0.1)' : 'rgba(74,222,128,0.1)',
+                                                                color: t.is_active ? 'var(--primary-orange)' : '#4ade80',
+                                                                border: `1px solid ${t.is_active ? 'rgba(255,107,0,0.2)' : 'rgba(74,222,128,0.2)'}`
+                                                            }}>
+                                                                {t.is_active ? (language === 'ru' ? 'Активный' : 'Active') : (language === 'ru' ? 'Завершен' : 'Finished')}
+                                                            </div>
+                                                        </div>
                                                         <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem', display: 'flex', gap: '15px' }}>
                                                             <span>📅 {t.date}</span>
                                                             <span>💰 {t.prize_pool}</span>
@@ -491,7 +624,18 @@ const AdminDashboard = ({ onLogout }) => {
                                                     </div>
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '10px' }}>
-                                                    <button onClick={() => setEditingTournament(t)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
+                                                    <button
+                                                        onClick={() => {
+                                                            const { id, created_at, ...copyData } = t;
+                                                            setEditingTournament({ ...copyData, title: `${t.title} (Copy)` });
+                                                            setIsAdding(true);
+                                                        }}
+                                                        title="Copy Tournament"
+                                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    >
+                                                        <Copy size={18} />
+                                                    </button>
+                                                    <button onClick={() => { setEditingTournament(t); setIsAdding(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
                                                     <button onClick={() => handleDeleteTournament(t.id)} style={{ background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Delete</button>
                                                 </div>
                                             </div>

@@ -81,6 +81,7 @@ export const translations = {
         description: 'Description',
         rules: 'Tournament Rules',
         results: 'Tournament Results',
+        viewResults: 'View Results',
         winners: 'Winners',
         sponsor: 'Sponsor',
 
@@ -207,6 +208,7 @@ export const translations = {
         description: 'Описание',
         rules: 'Правила турнира',
         results: 'Результаты турнира',
+        viewResults: 'Посмотреть результаты',
         winners: 'Победители',
         sponsor: 'Спонсор',
 
