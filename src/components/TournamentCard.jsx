@@ -1,6 +1,7 @@
 import { Users, Calendar, Info, Rocket, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { translations } from '../translations';
+import CountdownTimer from './CountdownTimer';
 
 const TournamentCard = ({ tournament, language }) => {
     const t = translations[language];
@@ -116,9 +117,14 @@ const TournamentCard = ({ tournament, language }) => {
                         <Users size={20} color="var(--primary-orange)" />
                         <span style={{ fontWeight: '800' }}>{tournament.format}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <Calendar size={20} color="var(--primary-orange)" />
-                        <span style={{ fontWeight: '800' }}>{tournament.date}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Calendar size={20} color="var(--primary-orange)" />
+                            <span style={{ fontWeight: '800' }}>{tournament.date}</span>
+                        </div>
+                        {tournament.targetDate && tournament.isActive && (
+                            <CountdownTimer targetDate={tournament.targetDate} language={language} />
+                        )}
                     </div>
                 </div>
 
@@ -129,23 +135,25 @@ const TournamentCard = ({ tournament, language }) => {
                     gap: '15px'
                 }}>
                     {tournament.isActive ? (
-                        <button style={{
-                            background: 'linear-gradient(135deg, #FFB400 0%, #FF6B00 100%)',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '16px',
-                            padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
-                            fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
-                            fontWeight: '900',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '12px',
-                            transition: 'all 0.3s',
-                            boxShadow: '0 8px 30px rgba(255, 107, 0, 0.3)',
-                            width: window.innerWidth < 480 ? '100%' : 'auto'
-                        }}
+                        <button
+                            onClick={() => tournament.link && window.open(tournament.link, '_blank')}
+                            style={{
+                                background: 'linear-gradient(135deg, #FFB400 0%, #FF6B00 100%)',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '16px',
+                                padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
+                                fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
+                                fontWeight: '900',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '12px',
+                                transition: 'all 0.3s',
+                                boxShadow: '0 8px 30px rgba(255, 107, 0, 0.3)',
+                                width: window.innerWidth < 480 ? '100%' : 'auto'
+                            }}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.transform = 'translateY(-3px)';
                                 e.currentTarget.style.boxShadow = '0 12px 40px rgba(255, 107, 0, 0.5)';

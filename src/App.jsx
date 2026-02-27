@@ -225,48 +225,19 @@ const AppContent = () => {
   const tournaments = [
     {
       id: 1,
-      name: 'Tiger Duo Cup',
+      name: 'TIGER Wingmans Tournament',
       image: 'https://i.ibb.co/LzNfS6Pq/image.png', // Temporary, will be replaced by character in detail
       prize: '$1,500',
       format: 'Duo (32 Teams)',
-      date: '01.03 - 15.03',
+      link: 'https://www.faceit.com/ru/championship/70adb9b2-018d-428b-be81-104d48b898ba/Tiger%2520Wingmans%2520Cup',
+      date: '27.03.2026',
+      targetDate: '2026-03-27T18:00:00',
       isActive: true,
       type: 'FUN CUP',
       joinedCount: '12/32',
       briefDescription: t.tigerCup.brief,
       fullDescription: t.tigerCup.full,
       rules: t.tigerCup.rules
-    },
-    {
-      id: 2,
-      name: 'IEM Katowice 2024',
-      image: 'https://i.ibb.co/hR4yYmB7/image.png',
-      prize: '$1,000,000',
-      format: 'LAN',
-      date: '31.01 - 11.02',
-      isActive: false,
-      type: 'MASTER',
-      joinedCount: '12,100',
-      results: [
-        { rank: 1, team: 'Team Spirit', prize: '$500,000' },
-        { rank: 2, team: 'FaZe Clan', prize: '$200,000' },
-        { rank: 3, team: 'Vitality', prize: '$100,000' }
-      ],
-      briefDescription: t.katowice.brief,
-      fullDescription: t.katowice.full
-    },
-    {
-      id: 3,
-      name: 'ESL Pro League Season 19',
-      image: 'https://i.ibb.co/r26R7GqD/image.png',
-      prize: '$750,000',
-      format: 'Offline',
-      date: '23.04 - 12.05',
-      isActive: false, // Set to false to leave only 1 active
-      type: 'PRO LEAGUE',
-      joinedCount: '8,450',
-      briefDescription: t.proLeague.brief,
-      fullDescription: t.proLeague.full
     }
   ];
 
@@ -534,13 +505,34 @@ const AppContent = () => {
                 flexDirection: 'column',
                 gap: '20px'
               }}>
-                {categoryTournaments.map(tournament => (
-                  <TournamentCard
-                    key={tournament.id}
-                    tournament={tournament}
-                    language={language}
-                  />
-                ))}
+                {categoryTournaments.length > 0 ? (
+                  categoryTournaments.map(tournament => (
+                    <TournamentCard
+                      key={tournament.id}
+                      tournament={tournament}
+                      language={language}
+                    />
+                  ))
+                ) : (
+                  <div style={{
+                    padding: '60px',
+                    textAlign: 'center',
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    borderRadius: '24px',
+                    border: '1px dashed rgba(255, 255, 255, 0.1)',
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    width: '100%',
+                    backdropFilter: 'blur(10px)'
+                  }} className="animate-fade-in">
+                    <Trophy size={48} style={{ marginBottom: '20px', opacity: 0.2, color: 'var(--primary-orange)' }} />
+                    <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>
+                      {language === 'ru' ? 'Результаты скоро появятся' : 'Results coming soon'}
+                    </div>
+                    <div style={{ fontSize: '0.9rem' }}>
+                      {language === 'ru' ? 'Здесь будут отображаться итоги завершенных турниров' : 'The results of completed tournaments will be displayed here'}
+                    </div>
+                  </div>
+                )}
               </div>
               <CommunityBanner language={language} />
             </div>

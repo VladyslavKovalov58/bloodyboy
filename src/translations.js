@@ -85,8 +85,8 @@ export const translations = {
 
         // Tiger Cup
         tigerCup: {
-            brief: 'Two heads are better than one. Roar your way to victory!',
-            full: "Only for the bravest tigers. Two heads are better than one, especially when they both aim for the head. This tournament is designed for duos who want to prove their dominance and earn some serious stripes.\n\nWhether you are a seasoned predator or a hungry cub, the Tiger Duo Cup is where you belong. Grab your partner, sharpen your claws, and get ready for the most intense 2v2 action in the savanna.",
+            brief: 'Two heads are better than one. Show your skill in the Wingman tournament!',
+            full: "Only for the bravest tigers. This Wingman tournament is designed for duos who want to prove their dominance and earn some serious stripes.\n\nWhether you are a seasoned predator or a hungry cub, the TIGER Wingmans Tournament is where you belong. Grab your partner, sharpen your claws, and get ready for the most intense 2v2 action in the savanna.",
             rules: [
                 '1. No meowing. Only roaring.',
                 '2. Two heads are better than one (literally, bring a partner).',
@@ -101,6 +101,16 @@ export const translations = {
         proLeague: {
             brief: 'Regular season drama at its finest. The longest running professional league continues with Season 19.',
             full: "The ESL Pro League Season 19 continues the tradition of elite-level Counter-Strike. Featuring a unique group stage format that gives teams multiple chances to prove their worth, the Pro League is a marathon, not a sprint.\n\nTeams from around the globe converge to test their consistency and tactical depth over several weeks of intense competition, all leading to a playoff that crowns the best of the best in the professional scene."
+        },
+        springCup: {
+            brief: 'Spring is in the air, and so is the smell of gunpowder. Compete in the season opener!',
+            full: "The Spring Cup 2026 marks the beginning of the competitive season. As the snow melts, the intensity on the battlefield rises. This tournament is open to all teams looking to make a name for themselves in the new year.\n\nJoin us for a weekend of high-stakes Counter-Strike action, featuring some of the most promising up-and-coming talent in the scene. Don't miss your chance to be part of the first major event of the spring.",
+            rules: [
+                '1. Standard competitive rules apply.',
+                '2. All matches are Best of 3.',
+                '3. Check-in starts 1 hour before the first match.',
+                '4. Respect all players and officials.'
+            ]
         },
 
         // Community Banner
@@ -199,8 +209,8 @@ export const translations = {
 
         // Tiger Cup
         tigerCup: {
-            brief: 'Одна голова хорошо, а две — с диглом. Прорычи свой путь к победе!',
-            full: "Только для самых смелых тигров. Одна голова — хорошо, а две — лучше, особенно когда обе целятся в голову. Этот турнир создан для дуэтов, которые хотят доказать свое превосходство и заработать реальные полоски.\n\nБудь вы опытным хищником или голодным котенком, Tiger Duo Cup — это то место, где вам рады. Хватайте напарника, точите когти и готовьтесь к самому интенсивному 2 на 2 экшену в саванне.",
+            brief: 'Одна голова хорошо, а две — с диглом. Покажи свой скилл в Wingman турнире!',
+            full: "Только для самых смелых тигров. Этот Wingman турнир создан для дуэтов, которые хотят доказать свое превосходство и заработать реальные полоски.\n\nБудь вы опытным хищником или голодным котенком, TIGER Wingmans Tournament — это то место, где вам рады. Хватайте напарника, точите когти и готовьтесь к самому интенсивному 2 на 2 экшену в саванне.",
             rules: [
                 '1. Никакого мяуканья. Только рычание.',
                 '2. Одна голова — хорошо, а две — еще лучше (приводи напарника).',
@@ -215,6 +225,16 @@ export const translations = {
         proLeague: {
             brief: 'Драма регулярного сезона во всей красе. Продолжение старейшей профессиональной лиги.',
             full: "ESL Pro League Season 19 продолжает традиции элитного Counter-Strike. Групповой этап дает командам несколько шансов доказать свою состоятельность. Pro League — это марафон, а не спринт.\n\nКоманды со всего мира съезжаются, чтобы проверить свою стабильность и тактическую глубину в течение нескольких недель напряженных соревнований, ведущих к финалу, который определит лучших из лучших."
+        },
+        springCup: {
+            brief: 'Весна в воздухе, а в Discord — запах пороха. Участвуй в открытии сезона!',
+            full: "Spring Cup 2026 знаменует начало соревновательного сезона. Пока тает снег, накал страстей на поле боя только растет. Этот турнир открыт для всех команд, желающих заявить о себе в новом году.\n\nПрисоединяйтесь к нам в выходные, полные высококлассного Counter-Strike, с участием самых перспективных талантов сцены. Не упустите свой шанс стать частью первого крупного события этой весны.",
+            rules: [
+                '1. Применяются стандартные соревновательные правила.',
+                '2. Все матчи проходят в формате Best of 3.',
+                '3. Регистрация начинается за 1 час до первого матча.',
+                '4. Уважайте всех игроков и официальных лиц.'
+            ]
         },
 
         // Community Banner

@@ -11,7 +11,7 @@ const CommunityBanner = ({ language }) => {
             label: t.joinFaceit,
             icon: <Gamepad2 size={22} />,
             color: '#ff5500',
-            link: 'https://faceit.com',
+            link: 'https://www.faceit.com/ru/club/44e432a6-3d12-49b8-b591-8b4f820e5d9e/parties',
             shortDesc: language === 'ru' ? 'Хабы и лиги' : 'Hubs & Leagues'
         },
         {
@@ -23,7 +23,7 @@ const CommunityBanner = ({ language }) => {
                 </svg>
             ),
             color: '#5865F2',
-            link: 'https://discord.com',
+            link: 'https://discord.gg/gTkYrBDf',
             shortDesc: language === 'ru' ? 'Общение и тусовка' : 'Chat & Hangout'
         },
         {
@@ -31,7 +31,7 @@ const CommunityBanner = ({ language }) => {
             label: 'Telegram',
             icon: <Send size={22} />,
             color: '#0088cc',
-            link: 'https://t.me',
+            link: 'https://t.me/tigercasinoofficial',
             shortDesc: language === 'ru' ? 'Группа и новости' : 'Group & News'
         }
     ];

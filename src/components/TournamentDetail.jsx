@@ -1,6 +1,7 @@
 import { ArrowLeft, Users, Calendar, Rocket, ShieldCheck, Trophy, Info } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { translations } from '../translations';
+import CountdownTimer from './CountdownTimer';
 
 const TournamentDetail = ({ tournaments, language }) => {
     const { id } = useParams();
@@ -18,7 +19,7 @@ const TournamentDetail = ({ tournaments, language }) => {
         );
     }
 
-    const currentTigerCup = tournament.name === 'Tiger Duo Cup';
+    const isTigerTournament = tournament.name === 'TIGER Wingmans Tournament' || tournament.name === 'Tiger Duo Cup';
 
     return (
         <div className="tournament-detail-container" style={{
@@ -253,34 +254,43 @@ const TournamentDetail = ({ tournaments, language }) => {
                                 <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>{tournament.format}</div>
                             </div>
                         </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '15px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px' }}>
-                            <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)' }}>
-                                <Calendar size={24} />
+                        <div style={{ padding: '15px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)' }}>
+                                    <Calendar size={24} />
+                                </div>
+                                <div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: '700' }}>{t.date}</div>
+                                    <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>{tournament.date}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: '700' }}>{t.date}</div>
-                                <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>{tournament.date}</div>
-                            </div>
+                            {tournament.targetDate && tournament.isActive && (
+                                <div style={{ marginTop: '10px', marginLeft: '70px' }}>
+                                    <CountdownTimer targetDate={tournament.targetDate} language={language} />
+                                </div>
+                            )}
                         </div>
                     </div>
 
-                    <button style={{
-                        width: '100%',
-                        background: tournament.isActive ? 'linear-gradient(135deg, #FFB400 0%, #FF6B00 100%)' : 'rgba(255, 255, 255, 0.05)',
-                        color: tournament.isActive ? '#fff' : 'rgba(255, 255, 255, 0.4)',
-                        border: tournament.isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '20px',
-                        padding: '20px',
-                        fontSize: '1.25rem',
-                        fontWeight: '900',
-                        cursor: tournament.isActive ? 'pointer' : 'default',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '15px',
-                        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                        boxShadow: tournament.isActive ? '0 10px 40px rgba(255, 107, 0, 0.4)' : 'none'
-                    }}
+                    <button
+                        onClick={() => tournament.isActive && tournament.link && window.open(tournament.link, '_blank')}
+                        style={{
+                            width: '100%',
+                            background: tournament.isActive ? 'linear-gradient(135deg, #FFB400 0%, #FF6B00 100%)' : 'rgba(255, 255, 255, 0.05)',
+                            color: tournament.isActive ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+                            border: tournament.isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '20px',
+                            padding: '20px',
+                            fontSize: '1.25rem',
+                            fontWeight: '900',
+                            cursor: tournament.isActive ? 'pointer' : 'default',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '15px',
+                            transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                            boxShadow: tournament.isActive ? '0 10px 40px rgba(255, 107, 0, 0.4)' : 'none'
+                        }}
                         onMouseEnter={(e) => {
                             if (tournament.isActive) {
                                 e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
