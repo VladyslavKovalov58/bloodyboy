@@ -64,7 +64,7 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
             </p>
 
             <a
-                href="https://kick.com/ded-kolyan"
+                href="https://kick.com/bloodyboy58"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

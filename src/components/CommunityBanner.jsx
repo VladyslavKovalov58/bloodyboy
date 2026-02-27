@@ -31,7 +31,7 @@ const CommunityBanner = ({ language }) => {
             label: 'Telegram',
             icon: <Send size={22} />,
             color: '#0088cc',
-            link: 'https://t.me/tigercasinoofficial',
+            link: 'https://t.me/bloodyboy58',
             shortDesc: language === 'ru' ? 'Группа и новости' : 'Group & News'
         }
     ];

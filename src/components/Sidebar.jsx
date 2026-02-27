@@ -215,7 +215,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                     gap: '8px',
                     padding: '0 5px'
                 }}>
-                    <a href="https://t.me/KolyanDed" target="_blank" rel="noopener noreferrer" style={{
+                    <a href="https://t.me/bloodyboy58" target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
                         background: 'rgba(255, 255, 255, 0.03)',
                         color: 'var(--primary-orange)',
@@ -240,7 +240,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                         title="Telegram Channel">
                         <Send size={20} />
                     </a>
-                    <a href="https://t.me/+LvSLwlOnmLdmN2Ni" target="_blank" rel="noopener noreferrer" style={{
+                    <a href="https://t.me/+7b4HEtKQoqBkMzgy" target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
                         background: 'rgba(255, 255, 255, 0.03)',
                         color: 'var(--primary-orange)',

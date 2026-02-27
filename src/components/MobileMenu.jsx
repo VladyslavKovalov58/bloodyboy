@@ -123,7 +123,7 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
 
             {/* Telegram Channel Link */}
             <a
-                href="https://t.me/KolyanDed"
+                href="https://t.me/bloodyboy58"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={navItemStyle('channel')}
