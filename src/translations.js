@@ -82,6 +82,7 @@ export const translations = {
         rules: 'Tournament Rules',
         results: 'Tournament Results',
         winners: 'Winners',
+        sponsor: 'Sponsor',
 
         // Tiger Cup
         tigerCup: {
@@ -207,6 +208,7 @@ export const translations = {
         rules: 'Правила турнира',
         results: 'Результаты турнира',
         winners: 'Победители',
+        sponsor: 'Спонсор',
 
         // Tiger Cup
         tigerCup: {

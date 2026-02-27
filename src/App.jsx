@@ -239,7 +239,10 @@ const AppContent = () => {
       joinedCount: '12/32',
       briefDescription: t.tigerCup.brief,
       fullDescription: t.tigerCup.full,
-      rules: t.tigerCup.rules
+      rules: t.tigerCup.rules,
+      sponsorName: 'Tiger Casino',
+      sponsorIcon: 'https://tgrcas.org/icon%20copy%20copy.svg',
+      sponsorLink: 'https://tgr.casino/'
     }
   ];
 

@@ -284,6 +284,48 @@ const TournamentDetail = ({ tournaments, language }) => {
                                 </div>
                             )}
                         </div>
+
+                        {tournament.sponsorName && (
+                            <div
+                                onClick={() => window.open(tournament.sponsorLink, '_blank')}
+                                style={{
+                                    padding: '15px',
+                                    background: 'rgba(255,255,255,0.02)',
+                                    borderRadius: '20px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                    border: '1px solid rgba(255, 255, 255, 0.05)'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-3px)';
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                                    e.currentTarget.style.borderColor = 'rgba(255, 107, 0, 0.2)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                                }}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                    <div style={{
+                                        width: '50px',
+                                        height: '50px',
+                                        borderRadius: '15px',
+                                        background: 'rgba(255, 107, 0, 0.1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <img src={tournament.sponsorIcon} alt="Sponsor" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
+                                    </div>
+                                    <div>
+                                        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: '700' }}>{t.sponsor}</div>
+                                        <div style={{ fontWeight: '900', fontSize: '1.2rem', color: '#fff' }}>{tournament.sponsorName}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <button
