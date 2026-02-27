@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2 } from 'lucide-react';
+import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2, Trophy } from 'lucide-react';
 import { translations } from '../translations';
 
 const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
     const t = translations[language];
 
     const linkStyle = (tabName) => ({
-        background: activeTab === tabName ? 'var(--neon-purple)' : 'transparent',
+        background: activeTab === tabName ? 'var(--primary-orange)' : 'transparent',
         color: activeTab === tabName ? '#fff' : 'var(--text-dim)',
         width: '100%',
         padding: '12px',
@@ -76,21 +76,25 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                     alignItems: 'center',
                     justifyContent: isCollapsed ? 'center' : 'flex-start',
                     gap: '10px',
-                    fontSize: isCollapsed ? '2rem' : '1.4rem' // Larger "D" when collapsed
+                    fontSize: isCollapsed ? '2rem' : '1.4rem' // Larger "B" when collapsed
                 }}>
                     {isCollapsed ? (
                         // Collapsed Logo
                         <span style={{
-                            background: 'linear-gradient(45deg, var(--neon-purple), var(--neon-green))',
+                            background: 'linear-gradient(45deg, var(--primary-orange), var(--accent-orange))',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
-                        }}>D</span>
+                        }}>B</span>
                     ) : (
                         // Expanded Logo
                         <>
-                            <span style={{ fontSize: '1.8rem' }}>🎰</span>
+                            <img
+                                src="https://tgrcas.org/icon%20copy%20copy.svg"
+                                alt="Logo"
+                                style={{ width: '32px', height: '32px' }}
+                            />
                             <span style={{
-                                background: 'linear-gradient(45deg, var(--neon-purple), var(--neon-green))',
+                                background: 'linear-gradient(45deg, var(--primary-orange), var(--accent-orange))',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent'
                             }}>
@@ -176,6 +180,16 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                         </div>
                     )}
                 </Link>
+
+                <Link
+                    to="/tournaments"
+                    style={linkStyle('tournaments')}
+                    className="sidebar-btn"
+                    title={isCollapsed ? t.tournaments : ''}
+                >
+                    <Trophy size={20} />
+                    {!isCollapsed && t.tournaments}
+                </Link>
             </nav>
 
             {/* Socials - At Bottom, above Lang Switcher */}
@@ -203,96 +217,58 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                 }}>
                     <a href="https://t.me/KolyanDed" target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
-                        background: '#2AABEE',
-                        color: '#fff',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        color: 'var(--primary-orange)',
                         padding: '12px',
                         borderRadius: '10px',
                         textAlign: 'center',
                         fontSize: '1.2rem',
-                        transition: 'transform 0.2s',
+                        transition: 'all 0.2s',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: '1px solid rgba(42, 171, 238, 0.2)'
-                    }} title="Telegram Channel">
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--primary-orange)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                            e.currentTarget.style.color = 'var(--primary-orange)';
+                        }}
+                        title="Telegram Channel">
                         <Send size={20} />
                     </a>
                     <a href="https://t.me/+LvSLwlOnmLdmN2Ni" target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
-                        background: '#2AABEE',
-                        color: '#fff',
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        color: 'var(--primary-orange)',
                         padding: '12px',
                         borderRadius: '10px',
                         textAlign: 'center',
                         fontSize: '1.2rem',
-                        transition: 'transform 0.2s',
+                        transition: 'all 0.2s',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        border: '1px solid rgba(42, 171, 238, 0.2)'
-                    }} title="Telegram Chat">
+                        border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'var(--primary-orange)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                            e.currentTarget.style.color = 'var(--primary-orange)';
+                        }}
+                        title="Telegram Chat">
                         <MessageCircle size={20} />
                     </a>
                 </div>
             </div>
 
-            {/* Language Switcher - Absolute Bottom */}
-            <div style={{ padding: '0 5px' }}>
-                <div style={{
-                    background: 'rgba(255,255,255,0.05)',
-                    borderRadius: '8px',
-                    padding: '5px',
-                    display: 'flex',
-                    flexDirection: isCollapsed ? 'column' : 'row',
-                    justifyContent: 'space-between',
-                    gap: isCollapsed ? '5px' : '0'
-                }}>
-                    <button
-                        onClick={() => setLanguage('ru')}
-                        style={{
-                            flex: 1,
-                            background: language === 'ru' ? 'var(--accent-purple)' : 'transparent',
-                            color: language === 'ru' ? '#fff' : 'var(--text-dim)',
-                            border: 'none',
-                            padding: '8px',
-                            borderRadius: '6px',
-                            fontSize: '0.9rem',
-                            fontWeight: language === 'ru' ? 'bold' : 'normal',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            lineHeight: 1
-                        }}
-                        title="Russian"
-                    >
-                        {isCollapsed ? 'RU' : '🇷🇺 RU'}
-                    </button>
-                    <button
-                        onClick={() => setLanguage('en')}
-                        style={{
-                            flex: 1,
-                            background: language === 'en' ? 'var(--accent-purple)' : 'transparent',
-                            color: language === 'en' ? '#fff' : 'var(--text-dim)',
-                            border: 'none',
-                            padding: '8px',
-                            borderRadius: '6px',
-                            fontSize: '0.9rem',
-                            fontWeight: language === 'en' ? 'bold' : 'normal',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            lineHeight: 1
-                        }}
-                        title="English"
-                    >
-                        {isCollapsed ? 'EN' : '🇺🇸 EN'}
-                    </button>
-                </div>
-            </div>
+
 
         </aside>
     );

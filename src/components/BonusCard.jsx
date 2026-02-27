@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { translations } from '../translations';
 import { ArrowRight, Info } from 'lucide-react';
 
-const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)', language = 'en', image, disableHover = false }) => {
+const BonusCard = ({ siteName, offer, promo, link, color = 'var(--primary-orange)', language = 'en', image, disableHover = false }) => {
     const [isHovered, setIsHovered] = useState(false);
     const t = translations[language];
 
@@ -60,7 +60,7 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
 
     const buttonStyle = {
         background: color,
-        color: '#000',
+        color: '#fff',
         padding: '12px 24px',
         borderRadius: '8px',
         fontWeight: '700',
@@ -167,13 +167,13 @@ const BonusCard = ({ siteName, offer, promo, link, color = 'var(--neon-purple)',
                     lineHeight: '1.8'
                 }}>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--neon-green)' }}>✓</span> {t.instantPayouts}
+                        <span style={{ color: 'var(--primary-orange)' }}>✓</span> {t.instantPayouts}
                     </li>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--neon-green)' }}>✓</span> {t.support247}
+                        <span style={{ color: 'var(--primary-orange)' }}>✓</span> {t.support247}
                     </li>
                     <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--neon-green)' }}>✓</span> {t.verifiedSafe}
+                        <span style={{ color: 'var(--primary-orange)' }}>✓</span> {t.verifiedSafe}
                     </li>
                 </ul>
                 <a href={link} target="_blank" rel="noopener noreferrer" style={buttonStyle}>

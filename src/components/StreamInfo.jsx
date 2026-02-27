@@ -5,8 +5,8 @@ import { Play } from 'lucide-react';
 const StreamInfo = ({ language = 'en', isLive = false }) => {
     const t = translations[language];
 
-    const statusColor = isLive ? 'var(--neon-green)' : '#ff4444'; // Green or Red
-    const statusShadow = isLive ? 'var(--neon-green)' : '#ff4444';
+    const statusColor = isLive ? 'var(--primary-orange)' : '#ff4444'; // Orange or Red
+    const statusShadow = isLive ? 'var(--primary-orange)' : '#ff4444';
 
     return (
         <div style={{
@@ -14,7 +14,7 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
             borderRadius: '24px',
             padding: '50px',
             textAlign: 'center',
-            border: `1px solid ${statusColor}`,
+            border: `1px solid ${statusColor}40`,
             boxShadow: `0 0 40px ${statusShadow}10`,
             position: 'relative',
             overflow: 'hidden',
@@ -36,7 +36,7 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
             <div style={{
                 width: '80px',
                 height: '80px',
-                background: isLive ? 'rgba(0, 255, 65, 0.1)' : 'rgba(255, 68, 68, 0.1)',
+                background: isLive ? 'rgba(255, 107, 0, 0.1)' : 'rgba(255, 68, 68, 0.1)',
                 borderRadius: '50%',
                 margin: '0 auto 25px',
                 display: 'flex',
@@ -69,7 +69,7 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
                 rel="noopener noreferrer"
                 style={{
                     background: statusColor,
-                    color: '#000', // Better contrast on both green and red
+                    color: '#fff',
                     padding: '16px 40px',
                     borderRadius: '12px',
                     fontWeight: '800',
@@ -90,9 +90,9 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
 
             <style>{`
         @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
-          70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); }
+          0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
+          70% { box-shadow: 0 0 0 10px rgba(255, 107, 0, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
         }
       `}</style>
         </div>

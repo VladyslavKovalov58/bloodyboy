@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import BonusCard from './components/BonusCard';
 import StreamInfo from './components/StreamInfo';
 import MobileMenu from './components/MobileMenu';
 import SlotCard from './components/SlotCard';
+import TournamentCard from './components/TournamentCard';
+import TournamentDetail from './components/TournamentDetail';
+import CommunityBanner from './components/CommunityBanner';
+import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare } from 'lucide-react';
 import { translations } from './translations';
 
 // Navigation Logic Wrapper
@@ -13,15 +17,18 @@ const AppContent = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLive, setIsLive] = useState(true);
 
-  const [slotCategory, setSlotCategory] = useState('best');
+  const [slotCategory, setSlotCategory] = useState('popular');
+  const [tournamentCategory, setTournamentCategory] = useState('active');
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const currentTab = location.pathname.split('/')[1] || 'bonuses';
   const t = translations[language];
 
   useEffect(() => {
-    document.title = translations[language].logo;
-  }, [language]);
+    document.title = t.logo;
+  }, [t.logo]);
 
   const bonuses = [
     {
@@ -215,60 +222,158 @@ const AppContent = () => {
     }
   ];
 
+  const tournaments = [
+    {
+      id: 1,
+      name: 'Tiger Duo Cup',
+      image: 'https://i.ibb.co/LzNfS6Pq/image.png', // Temporary, will be replaced by character in detail
+      prize: '$1,500',
+      format: 'Duo (32 Teams)',
+      date: '01.03 - 15.03',
+      isActive: true,
+      type: 'FUN CUP',
+      joinedCount: '12/32',
+      briefDescription: t.tigerCup.brief,
+      fullDescription: t.tigerCup.full,
+      rules: t.tigerCup.rules
+    },
+    {
+      id: 2,
+      name: 'IEM Katowice 2024',
+      image: 'https://i.ibb.co/hR4yYmB7/image.png',
+      prize: '$1,000,000',
+      format: 'LAN',
+      date: '31.01 - 11.02',
+      isActive: false,
+      type: 'MASTER',
+      joinedCount: '12,100',
+      results: [
+        { rank: 1, team: 'Team Spirit', prize: '$500,000' },
+        { rank: 2, team: 'FaZe Clan', prize: '$200,000' },
+        { rank: 3, team: 'Vitality', prize: '$100,000' }
+      ],
+      briefDescription: t.katowice.brief,
+      fullDescription: t.katowice.full
+    },
+    {
+      id: 3,
+      name: 'ESL Pro League Season 19',
+      image: 'https://i.ibb.co/r26R7GqD/image.png',
+      prize: '$750,000',
+      format: 'Offline',
+      date: '23.04 - 12.05',
+      isActive: false, // Set to false to leave only 1 active
+      type: 'PRO LEAGUE',
+      joinedCount: '8,450',
+      briefDescription: t.proLeague.brief,
+      fullDescription: t.proLeague.full
+    }
+  ];
+
   const categorySlots = slots.filter(s => {
-    if (slotCategory === 'best') return !s.isComingSoon;
+    if (slotCategory === 'popular') return !s.isComingSoon;
     if (slotCategory === 'soon') return s.isComingSoon;
     return true;
   });
 
+  const categoryTournaments = tournaments.filter(t => {
+    if (tournamentCategory === 'active') return t.isActive;
+    if (tournamentCategory === 'finished') return !t.isActive;
+    return true;
+  });
+
   const LanguageSwitcher = () => (
-    <div style={{
-      background: 'rgba(255,255,255,0.05)',
-      borderRadius: '8px',
-      padding: '4px',
-      display: 'flex',
-      gap: '5px'
-    }}>
+    <div style={{ position: 'relative', zIndex: 1000 }}>
       <button
-        onClick={() => setLanguage('ru')}
+        onClick={() => setLangDropdownOpen(!langDropdownOpen)}
         style={{
-          background: language === 'ru' ? 'var(--accent-purple)' : 'transparent',
-          color: language === 'ru' ? '#fff' : 'var(--text-dim)',
-          border: 'none',
-          padding: '6px 12px',
-          borderRadius: '6px',
-          fontSize: '0.8rem',
-          fontWeight: language === 'ru' ? 'bold' : 'normal',
-          transition: 'all 0.2s',
+          background: 'rgba(255,255,255,0.05)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '10px',
+          padding: '8px 12px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          lineHeight: 1,
-          cursor: 'pointer'
-        }}
-      >
-        RU
-      </button>
-      <button
-        onClick={() => setLanguage('en')}
-        style={{
-          background: language === 'en' ? 'var(--accent-purple)' : 'transparent',
-          color: language === 'en' ? '#fff' : 'var(--text-dim)',
-          border: 'none',
-          padding: '6px 12px',
-          borderRadius: '6px',
-          fontSize: '0.8rem',
-          fontWeight: language === 'en' ? 'bold' : 'normal',
+          gap: '8px',
+          color: '#fff',
+          cursor: 'pointer',
           transition: 'all 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          lineHeight: 1,
-          cursor: 'pointer'
+          fontSize: '0.9rem',
+          fontWeight: '600'
         }}
+        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
       >
-        EN
+        <span style={{ fontSize: '1.2rem' }}>{language === 'ru' ? '🇷🇺' : '🇺🇸'}</span>
+        <ChevronDown size={16} style={{
+          transform: langDropdownOpen ? 'rotate(180deg)' : 'none',
+          transition: 'transform 0.3s ease',
+          opacity: 0.7
+        }} />
       </button>
+
+      {langDropdownOpen && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 10px)',
+          right: 0,
+          background: '#1A1A1A',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: '12px',
+          padding: '8px',
+          minWidth: '150px',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px'
+        }}>
+          <div
+            onClick={() => { setLanguage('en'); setLangDropdownOpen(false); }}
+            style={{
+              padding: '10px 12px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              cursor: 'pointer',
+              background: language === 'en' ? 'rgba(255,107,0,0.1)' : 'transparent',
+              color: language === 'en' ? 'var(--primary-orange)' : '#ccc',
+              transition: 'all 0.2s',
+              fontWeight: language === 'en' ? '600' : '400'
+            }}
+            onMouseEnter={(e) => {
+              if (language !== 'en') e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+            }}
+            onMouseLeave={(e) => {
+              if (language !== 'en') e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🇺🇸</span> English
+          </div>
+          <div
+            onClick={() => { setLanguage('ru'); setLangDropdownOpen(false); }}
+            style={{
+              padding: '10px 12px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              cursor: 'pointer',
+              background: language === 'ru' ? 'rgba(255,107,0,0.1)' : 'transparent',
+              color: language === 'ru' ? 'var(--primary-orange)' : '#ccc',
+              transition: 'all 0.2s',
+              fontWeight: language === 'ru' ? '600' : '400'
+            }}
+            onMouseEnter={(e) => {
+              if (language !== 'ru') e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+            }}
+            onMouseLeave={(e) => {
+              if (language !== 'ru') e.currentTarget.style.background = 'transparent';
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🇷🇺</span> Русский
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -300,27 +405,45 @@ const AppContent = () => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {currentTab === 'slots' ? (
               <div className="slots-switcher">
-                <h2
-                  onClick={() => setSlotCategory('best')}
-                  className="slots-switcher-item"
-                  style={{
-                    opacity: slotCategory === 'best' ? 1 : 0.4,
-                    color: slotCategory === 'best' ? '#fff' : 'var(--text-dim)'
+                <div
+                  onClick={() => {
+                    setSlotCategory('popular');
+                    if (location.pathname !== '/slots') navigate('/slots');
                   }}
+                  className={`slots-switcher-item ${slotCategory === 'popular' ? 'active' : ''}`}
                 >
-                  🎰 {t.bestSlots}
-                </h2>
-                <span className="slots-switcher-divider">/</span>
-                <h2
-                  onClick={() => setSlotCategory('soon')}
-                  className="slots-switcher-item"
-                  style={{
-                    opacity: slotCategory === 'soon' ? 1 : 0.4,
-                    color: slotCategory === 'soon' ? '#fff' : 'var(--text-dim)'
+                  <Flame size={18} /> {language === 'ru' ? 'Популярные' : 'Popular'}
+                </div>
+                <div
+                  onClick={() => {
+                    setSlotCategory('soon');
+                    if (location.pathname !== '/slots') navigate('/slots');
                   }}
+                  className={`slots-switcher-item ${slotCategory === 'soon' ? 'active' : ''}`}
                 >
-                  🚀 {t.comingSoon}
-                </h2>
+                  <Sparkles size={18} /> {language === 'ru' ? 'Новые игры' : 'New Games'}
+                </div>
+              </div>
+            ) : currentTab === 'tournaments' ? (
+              <div className="slots-switcher">
+                <div
+                  onClick={() => {
+                    setTournamentCategory('active');
+                    if (location.pathname !== '/tournaments') navigate('/tournaments');
+                  }}
+                  className={`slots-switcher-item ${tournamentCategory === 'active' ? 'active' : ''}`}
+                >
+                  <Trophy size={18} /> {t.activeTournaments}
+                </div>
+                <div
+                  onClick={() => {
+                    setTournamentCategory('finished');
+                    if (location.pathname !== '/tournaments') navigate('/tournaments');
+                  }}
+                  className={`slots-switcher-item ${tournamentCategory === 'finished' ? 'active' : ''}`}
+                >
+                  <TrendingUp size={18} /> {t.finishedTournaments}
+                </div>
               </div>
             ) : (
               <h2 className="page-title">
@@ -330,7 +453,7 @@ const AppContent = () => {
             )}
           </div>
 
-          <div className="mobile-only">
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <LanguageSwitcher />
           </div>
         </div>
@@ -396,6 +519,35 @@ const AppContent = () => {
                 )}
               </div>
             </div>
+          } />
+
+          <Route path="/tournaments" element={
+            <div className="animate-fade-in" style={{
+              display: 'flex',
+              flexDirection: window.innerWidth < 1024 ? 'column' : 'row',
+              gap: '30px',
+              alignItems: 'flex-start'
+            }}>
+              <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}>
+                {categoryTournaments.map(tournament => (
+                  <TournamentCard
+                    key={tournament.id}
+                    tournament={tournament}
+                    language={language}
+                  />
+                ))}
+              </div>
+              <CommunityBanner language={language} />
+            </div>
+          } />
+
+          <Route path="/tournaments/:id" element={
+            <TournamentDetail tournaments={tournaments} language={language} />
           } />
 
           <Route path="/streams" element={

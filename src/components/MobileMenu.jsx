@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Gift, Tv, Send, Gamepad2 } from 'lucide-react';
+import { Gift, Tv, Send, Gamepad2, Trophy } from 'lucide-react';
 import { translations } from '../translations';
 
 const MobileMenu = ({ activeTab, language, isLive }) => {
@@ -10,39 +10,58 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        color: activeTab === tabName ? '#fff' : 'var(--text-dim)',
-        fontSize: '0.7rem',
+        color: activeTab === tabName ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+        fontSize: '0.65rem',
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
         background: 'none',
         border: 'none',
-        padding: '8px',
+        padding: '0',
         flex: 1,
-        gap: '4px',
+        gap: '6px',
         cursor: 'pointer',
-        transition: 'all 0.2s',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative',
         textDecoration: 'none'
     });
 
+    const iconContainerStyle = (isActive) => ({
+        background: isActive ? 'linear-gradient(135deg, rgba(255, 179, 0, 0.15) 0%, rgba(255, 107, 0, 0.15) 100%)' : 'transparent',
+        borderRadius: '14px',
+        padding: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        border: isActive ? '1px solid rgba(255, 107, 0, 0.2)' : '1px solid transparent',
+        boxShadow: isActive ? '0 4px 15px rgba(255, 107, 0, 0.1)' : 'none'
+    });
+
     const iconStyle = (isActive) => ({
-        color: isActive ? 'var(--neon-green)' : 'currentColor',
-        filter: isActive ? 'drop-shadow(0 0 5px var(--neon-green))' : 'none',
+        color: isActive ? 'var(--primary-orange)' : 'currentColor',
+        filter: isActive ? 'drop-shadow(0 0 8px rgba(255, 107, 0, 0.5))' : 'none',
         transition: 'all 0.3s'
     });
 
     return (
         <div className="mobile-menu" style={{
             position: 'fixed',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            background: 'var(--bg-card)', // Dark background
-            borderTop: '1px solid rgba(255,255,255,0.1)',
+            bottom: '15px',
+            left: '15px',
+            right: '15px',
+            background: 'rgba(20, 20, 20, 0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRadius: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
-            justifyContent: 'space-around', // Distribute evenly
+            justifyContent: 'space-around',
             alignItems: 'center',
-            padding: '10px 5px',
+            padding: '8px 5px',
             zIndex: 1000,
-            paddingBottom: 'max(10px, env(safe-area-inset-bottom))' // Handle safe area for iPhone X+
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+            marginBottom: 'env(safe-area-inset-bottom)'
         }}>
 
             {/* Bonuses Tab */}
@@ -50,12 +69,8 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
                 to="/bonuses"
                 style={navItemStyle('bonuses')}
             >
-                <div style={activeTab === 'bonuses' ? {
-                    background: 'rgba(39, 245, 107, 0.1)',
-                    borderRadius: '12px',
-                    padding: '8px'
-                } : { padding: '8px' }}>
-                    <Gift size={24} style={iconStyle(activeTab === 'bonuses')} />
+                <div style={iconContainerStyle(activeTab === 'bonuses')}>
+                    <Gift size={22} style={iconStyle(activeTab === 'bonuses')} />
                 </div>
                 <span>{language === 'ru' ? 'Бонусы' : 'Bonuses'}</span>
             </Link>
@@ -65,14 +80,21 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
                 to="/slots"
                 style={navItemStyle('slots')}
             >
-                <div style={activeTab === 'slots' ? {
-                    background: 'rgba(39, 245, 107, 0.1)',
-                    borderRadius: '12px',
-                    padding: '8px'
-                } : { padding: '8px' }}>
-                    <Gamepad2 size={24} style={iconStyle(activeTab === 'slots')} />
+                <div style={iconContainerStyle(activeTab === 'slots')}>
+                    <Gamepad2 size={22} style={iconStyle(activeTab === 'slots')} />
                 </div>
                 <span>{language === 'ru' ? 'Слоты' : 'Slots'}</span>
+            </Link>
+
+            {/* Tournaments Tab */}
+            <Link
+                to="/tournaments"
+                style={navItemStyle('tournaments')}
+            >
+                <div style={iconContainerStyle(activeTab === 'tournaments')}>
+                    <Trophy size={22} style={iconStyle(activeTab === 'tournaments')} />
+                </div>
+                <span>{language === 'ru' ? 'Турниры' : 'Tours'}</span>
             </Link>
 
             {/* Stream Tab */}
@@ -80,24 +102,19 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
                 to="/streams"
                 style={navItemStyle('streams')}
             >
-                <div style={activeTab === 'streams' ? {
-                    background: 'rgba(39, 245, 107, 0.1)',
-                    borderRadius: '12px',
-                    padding: '8px',
-                    position: 'relative'
-                } : { padding: '8px', position: 'relative' }}>
-                    <Tv size={24} style={iconStyle(activeTab === 'streams')} />
+                <div style={{ ...iconContainerStyle(activeTab === 'streams'), position: 'relative' }}>
+                    <Tv size={22} style={iconStyle(activeTab === 'streams')} />
                     {isLive && (
                         <div style={{
                             position: 'absolute',
-                            top: '6px',
-                            right: '6px',
-                            width: '8px',
-                            height: '8px',
-                            background: 'var(--neon-green)',
+                            top: '8px',
+                            right: '8px',
+                            width: '7px',
+                            height: '7px',
+                            background: 'var(--primary-orange)',
                             borderRadius: '50%',
-                            boxShadow: '0 0 5px var(--neon-green)',
-                            border: '1px solid var(--bg-card)'
+                            boxShadow: '0 0 8px var(--primary-orange)',
+                            border: '1.5px solid #141414'
                         }} />
                     )}
                 </div>
@@ -109,12 +126,12 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
                 href="https://t.me/KolyanDed"
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ ...navItemStyle('channel'), textDecoration: 'none' }}
+                style={navItemStyle('channel')}
             >
-                <div style={{ padding: '8px' }}>
-                    <Send size={24} style={iconStyle(false)} />
+                <div style={iconContainerStyle(false)}>
+                    <Send size={22} style={iconStyle(true)} />
                 </div>
-                <span>{language === 'ru' ? 'Канал' : 'Channel'}</span>
+                <span style={{ color: 'var(--primary-orange)' }}>{language === 'ru' ? 'Канал' : 'Channel'}</span>
             </a>
 
         </div>

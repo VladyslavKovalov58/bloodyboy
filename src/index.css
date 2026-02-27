@@ -1,17 +1,11 @@
 :root {
-  --primary-gold: #FFD700;
-  --secondary-gold: #B8860B;
-  --bg-dark: #0f0b1a;
-  /* Deep violet black */
-  --bg-sidebar: #1a122e;
-  /* Slightly lighter violet */
-  --bg-card: #251b3f;
-  /* Card violet */
+  --primary-orange: #ff6b00;
+  --accent-orange: #ff4500;
+  --bg-dark: #000000;
+  --bg-sidebar: #0a0a0a;
+  --bg-card: #141414;
   --text-light: #ffffff;
-  --text-dim: #a8a0c0;
-  --neon-purple: #bc13fe;
-  --neon-green: #00ff41;
-  --accent-purple: #6a0dad;
+  --text-dim: #999999;
   --font-main: 'Rubik', system-ui, sans-serif;
   --sidebar-width-expanded: 260px;
   --sidebar-width-collapsed: 80px;
@@ -53,12 +47,12 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--secondary-gold);
+  background: var(--accent-orange);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-gold);
+  background: var(--primary-orange);
 }
 
 @keyframes fadeIn {
@@ -143,6 +137,34 @@ button {
 .main-content {
   flex: 1;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.main-content::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(circle, rgba(255, 107, 0, 0.08) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(80px);
+}
+
+.main-content::after {
+  content: '';
+  position: fixed;
+  bottom: -10%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, rgba(88, 101, 242, 0.05) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(80px);
 }
 
 .top-bar {
@@ -157,20 +179,39 @@ button {
 .slots-switcher {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .slots-switcher-item {
   cursor: pointer;
   margin: 0;
-  transition: all 0.3s;
-  font-size: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-size: 0.9rem;
   white-space: nowrap;
-  font-weight: 700;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.slots-switcher-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.slots-switcher-item.active {
+  background: linear-gradient(135deg, #FFB400 0%, #FF6B00 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+  border: none;
 }
 
 .slots-switcher-divider {
-  font-size: 1.5rem;
-  opacity: 0.2;
-  color: #fff;
+  display: none;
 }

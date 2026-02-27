@@ -89,8 +89,8 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 /* Hover States */
                 .slot-card-inner:hover {
                     transform: translateY(-8px);
-                    border-color: rgba(37, 99, 235, 0.5);
-                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+                    border-color: var(--primary-orange);
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 107, 0, 0.2);
                 }
                 .slot-card-inner:hover .slot-image {
                     transform: scale(1.1);
@@ -105,16 +105,22 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                     transform: translateY(-20px);
                     transition: all 0.4s ease;
                     opacity: 0;
+                    flex: 0 0 60px; /* Fixed height for name/provider area */
                 }
                 .slot-play-container {
                     transform: scale(0.8);
                     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                     opacity: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex: 1; /* Take up middle space */
                 }
                 .slot-info-bottom {
                     transform: translateY(20px);
                     transition: all 0.4s ease;
                     opacity: 0;
+                    flex: 0 0 20px; /* Fixed height for RTP area */
                 }
 
                 .slot-card-inner:hover .slot-info-top,
@@ -131,7 +137,7 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 .slot-name-text {
                     margin: 0 0 4px 0;
                     color: #fff;
-                    font-size: 1.25rem; /* Reduced from 1.6rem */
+                    font-size: 1.1rem;
                     font-weight: 900;
                     text-transform: uppercase;
                     line-height: 1.1;
@@ -146,30 +152,30 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 .slot-provider-text {
                     margin: 0;
                     color: rgba(255, 255, 255, 0.5);
-                    font-size: 0.75rem;
+                    font-size: 0.7rem;
                     font-weight: 600;
                     text-transform: uppercase;
                     letter-spacing: 1px;
                 }
                 .slot-rtp-text {
                     color: rgba(255, 255, 255, 0.8);
-                    font-size: 0.85rem;
+                    font-size: 0.8rem;
                     font-weight: 700;
                     letter-spacing: 0.5px;
                 }
 
                 /* Play Button */
                 .slot-play-button {
-                    width: 80px;
-                    height: 80px;
+                    width: 70px;
+                    height: 70px;
                     border-radius: 50%;
-                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--accent-orange) 100%);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     text-decoration: none;
                     color: #fff;
-                    box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+                    box-shadow: 0 0 30px rgba(255, 107, 0, 0.4);
                     transition: all 0.3s ease;
                     margin: 0 auto;
                 }
@@ -182,8 +188,8 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                 }
                 .slot-play-button:not(.is-disabled):hover {
                     transform: scale(1.1);
-                    box-shadow: 0 0 40px rgba(37, 99, 235, 0.8);
-                    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+                    box-shadow: 0 0 40px rgba(255, 107, 0, 0.6);
+                    background: linear-gradient(135deg, #ff8c33 0%, var(--primary-orange) 100%);
                 }
             `}} />
         </div>
