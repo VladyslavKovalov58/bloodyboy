@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2, Trophy } from 'lucide-react';
 import { translations } from '../translations';
 
-const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive }) => {
+const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive, tgChat, tgGroup }) => {
     const t = translations[language];
+
+    // ... scroll down to links ...
 
     const linkStyle = (tabName) => ({
         background: activeTab === tabName ? 'var(--primary-orange)' : 'transparent',
@@ -215,7 +217,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                     gap: '8px',
                     padding: '0 5px'
                 }}>
-                    <a href="https://t.me/bloodyboy58" target="_blank" rel="noopener noreferrer" style={{
+                    <a href={tgGroup || "https://t.me/bloodyboy58"} target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
                         background: 'rgba(255, 255, 255, 0.03)',
                         color: 'var(--primary-orange)',
@@ -240,7 +242,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                         title="Telegram Channel">
                         <Send size={20} />
                     </a>
-                    <a href="https://t.me/+7b4HEtKQoqBkMzgy" target="_blank" rel="noopener noreferrer" style={{
+                    <a href={tgChat || "https://t.me/+7b4HEtKQoqBkMzgy"} target="_blank" rel="noopener noreferrer" style={{
                         flex: 1,
                         background: 'rgba(255, 255, 255, 0.03)',
                         color: 'var(--primary-orange)',

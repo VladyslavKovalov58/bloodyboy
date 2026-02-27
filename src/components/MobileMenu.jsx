@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Gift, Tv, Send, Gamepad2, Trophy } from 'lucide-react';
 import { translations } from '../translations';
 
-const MobileMenu = ({ activeTab, language, isLive }) => {
+const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
     const t = translations[language];
+
+    // ... existing style code ...
 
     const navItemStyle = (tabName) => ({
         display: 'flex',
@@ -123,7 +125,7 @@ const MobileMenu = ({ activeTab, language, isLive }) => {
 
             {/* Telegram Channel Link */}
             <a
-                href="https://t.me/bloodyboy58"
+                href={tgGroup || "https://t.me/bloodyboy58"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={navItemStyle('channel')}

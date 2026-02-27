@@ -8,6 +8,9 @@ import SlotCard from './components/SlotCard';
 import TournamentCard from './components/TournamentCard';
 import TournamentDetail from './components/TournamentDetail';
 import CommunityBanner from './components/CommunityBanner';
+import LoginPage from './components/LoginPage';
+import AdminDashboard from './components/AdminDashboard';
+import { supabase } from './supabaseClient';
 import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare } from 'lucide-react';
 import { translations } from './translations';
 
@@ -16,6 +19,10 @@ const AppContent = () => {
   const [language, setLanguage] = useState('ru');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLive, setIsLive] = useState(true);
+  const [user, setUser] = useState(null);
+  const [config, setConfig] = useState({});
+  const [tournaments, setTournaments] = useState([]);
+  const [bonuses, setBonuses] = useState([]);
 
   const [slotCategory, setSlotCategory] = useState('popular');
   const [tournamentCategory, setTournamentCategory] = useState('active');
@@ -24,84 +31,100 @@ const AppContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentTab = location.pathname.split('/')[1] || 'bonuses';
+
+  // Check auth session
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Fetch site config and tournaments
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch Config
+      const { data: configData } = await supabase.from('site_config').select('*');
+      if (configData) {
+        const configObj = {};
+        configData.forEach(item => {
+          configObj[item.id] = item.value;
+        });
+        setConfig(configObj);
+      }
+
+      // Fetch Tournaments (All of them, filtering happens in frontend)
+      const { data: tournamentData } = await supabase.from('tournaments')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (tournamentData) {
+        // Map DB snake_case to Frontend camelCase
+        const mappedTournaments = tournamentData.map(dbT => ({
+          id: dbT.id,
+          name: dbT.title,
+          image: dbT.image_url,
+          prize: dbT.prize_pool,
+          format: dbT.format,
+          link: dbT.link,
+          date: dbT.date,
+          targetDate: dbT.target_date,
+          isActive: dbT.is_active,
+          type: dbT.type,
+          joinedCount: dbT.joined_count,
+          briefDescription: dbT.brief_description,
+          fullDescription: dbT.full_description,
+          rules: dbT.rules,
+          sponsorName: dbT.sponsor_name,
+          sponsorIcon: dbT.sponsor_icon,
+          sponsorLink: dbT.sponsor_link
+        }));
+        setTournaments(mappedTournaments);
+      }
+
+      // Fetch Bonuses (All of them)
+      const { data: bonusData } = await supabase.from('bonuses')
+        .select('*')
+        .order('order_index', { ascending: true });
+
+      if (bonusData) {
+        const mappedBonuses = bonusData.map(dbB => ({
+          id: dbB.id,
+          siteName: dbB.site_name,
+          offer: dbB.offer,
+          promo: dbB.promo,
+          link: dbB.link,
+          color: dbB.color,
+          disableHover: dbB.link === '#',
+          isActive: dbB.is_active
+        }));
+        setBonuses(mappedBonuses);
+      }
+    };
+    fetchData();
+  }, []);
+
   const t = translations[language];
 
   useEffect(() => {
     document.title = t.logo;
   }, [t.logo]);
 
-  const bonuses = [
-    {
-      id: 1,
-      siteName: 'TIGER',
-      offer: t.tiger.offer,
-      promo: t.tiger.promo,
-      link: t.tiger.link,
-      color: 'linear-gradient(135deg, #FF9500 0%, #FF5E00 100%)'
-    },
-    {
-      id: 2,
-      siteName: 'CACTUS',
-      offer: t.cactus.offer,
-      promo: t.cactus.promo,
-      link: t.cactus.link,
-      color: '#00D100'
-    },
-    {
-      id: 3,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    },
-    {
-      id: 4,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    },
-    {
-      id: 5,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    },
-    {
-      id: 6,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    },
-    {
-      id: 7,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    },
-    {
-      id: 8,
-      siteName: t.soon.name,
-      offer: t.soon.offer,
-      promo: t.soon.promo,
-      link: '#',
-      color: '#333333',
-      disableHover: true
-    }
-  ];
+  // Use config values if available
+  const tgGroup = config.tg_group || 'https://t.me/bloodyboy58';
+  const tgChat = config.tg_chat || 'https://t.me/+7b4HEtKQoqBkMzgy';
+  const kickLink = config.kick_link || 'https://kick.com/bloodyboy58';
+  const discordLink = config.discord_link || 'https://discord.gg/gTkYrBDf';
+  const faceitLink = config.faceit_link || 'https://www.faceit.com/ru/club/44e432a6-3d12-49b8-b591-8b4f820e5d9e/parties';
+  const communityTg = config.community_tg || 'https://t.me/tigercasinoofficial';
+
+
+
 
   const slots = [
     {
@@ -224,27 +247,6 @@ const AppContent = () => {
     }
   ];
 
-  const tournaments = [
-    {
-      id: 1,
-      name: 'TIGER Wingmans Tournament',
-      image: 'https://i.ibb.co/LzNfS6Pq/image.png', // Temporary, will be replaced by character in detail
-      prize: '$1,500',
-      format: 'Wingmans',
-      link: 'https://www.faceit.com/ru/championship/70adb9b2-018d-428b-be81-104d48b898ba/Tiger%2520Wingmans%2520Cup',
-      date: '27.03.2026',
-      targetDate: '2026-03-27T18:00:00',
-      isActive: true,
-      type: 'FUN CUP',
-      joinedCount: '12/32',
-      briefDescription: t.tigerCup.brief,
-      fullDescription: t.tigerCup.full,
-      rules: t.tigerCup.rules,
-      sponsorName: 'Tiger Casino',
-      sponsorIcon: 'https://tgrcas.org/icon%20copy%20copy.svg',
-      sponsorLink: 'https://tgr.casino/'
-    }
-  ];
 
   const categorySlots = slots.filter(s => {
     if (slotCategory === 'popular') return !s.isComingSoon;
@@ -257,6 +259,8 @@ const AppContent = () => {
     if (tournamentCategory === 'finished') return !t.isActive;
     return true;
   });
+
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname.startsWith('/login');
 
   const LanguageSwitcher = () => (
     <div style={{ position: 'relative', zIndex: 1000 }}>
@@ -276,8 +280,6 @@ const AppContent = () => {
           fontSize: '0.9rem',
           fontWeight: '600'
         }}
-        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
-        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
       >
         <span style={{ fontSize: '1.2rem' }}>{language === 'ru' ? '🇷🇺' : '🇺🇸'}</span>
         <ChevronDown size={16} style={{
@@ -316,12 +318,6 @@ const AppContent = () => {
               transition: 'all 0.2s',
               fontWeight: language === 'en' ? '600' : '400'
             }}
-            onMouseEnter={(e) => {
-              if (language !== 'en') e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-            }}
-            onMouseLeave={(e) => {
-              if (language !== 'en') e.currentTarget.style.background = 'transparent';
-            }}
           >
             <span style={{ fontSize: '1.2rem' }}>🇺🇸</span> English
           </div>
@@ -339,12 +335,6 @@ const AppContent = () => {
               transition: 'all 0.2s',
               fontWeight: language === 'ru' ? '600' : '400'
             }}
-            onMouseEnter={(e) => {
-              if (language !== 'ru') e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
-            }}
-            onMouseLeave={(e) => {
-              if (language !== 'ru') e.currentTarget.style.background = 'transparent';
-            }}
           >
             <span style={{ fontSize: '1.2rem' }}>🇷🇺</span> Русский
           </div>
@@ -353,9 +343,17 @@ const AppContent = () => {
     </div>
   );
 
+  if (isAdminRoute) {
+    return (
+      <Routes>
+        <Route path="/login" element={user ? <Navigate to="/admin" /> : <LoginPage onLogin={setUser} />} />
+        <Route path="/admin" element={user ? <AdminDashboard onLogout={() => setUser(null)} /> : <Navigate to="/login" />} />
+      </Routes>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)' }}>
-      {/* Sidebar - Desktop Only */}
       <div className="desktop-only">
         <Sidebar
           activeTab={currentTab}
@@ -364,10 +362,11 @@ const AppContent = () => {
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
           isLive={isLive}
+          tgChat={tgChat}
+          tgGroup={tgGroup}
         />
       </div>
 
-      {/* Main Content Area - Dynamic Margin */}
       <main style={{
         flex: 1,
         marginLeft: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
@@ -376,7 +375,6 @@ const AppContent = () => {
         transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
       }} className="main-content">
 
-        {/* Top Bar */}
         <div className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             {currentTab === 'slots' ? (
@@ -444,7 +442,7 @@ const AppContent = () => {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                 gap: '20px'
               }}>
-                {bonuses.map(bonus => (
+                {bonuses.filter(b => b.isActive !== false).map(bonus => (
                   <BonusCard
                     key={bonus.id}
                     siteName={bonus.siteName}
@@ -539,7 +537,7 @@ const AppContent = () => {
                   </div>
                 )}
               </div>
-              <CommunityBanner language={language} />
+              <CommunityBanner language={language} communityTg={communityTg} discordLink={discordLink} faceitLink={faceitLink} />
             </div>
           } />
 
@@ -549,7 +547,7 @@ const AppContent = () => {
 
           <Route path="/streams" element={
             <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-              <StreamInfo language={language} isLive={isLive} />
+              <StreamInfo language={language} isLive={isLive} kickLink={kickLink} />
               <div style={{ marginTop: '30px', background: 'var(--bg-card)', padding: '30px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <h3 style={{ marginBottom: '15px', color: '#fff' }}>{t.chatRules}</h3>
                 <ul style={{ color: 'var(--text-dim)', paddingLeft: '20px', lineHeight: '1.8' }}>
@@ -566,12 +564,12 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {/* Mobile Menu - Mobile Only */}
       <div className="mobile-only">
         <MobileMenu
           activeTab={currentTab}
           language={language}
           isLive={isLive}
+          tgGroup={tgGroup}
         />
       </div>
     </div>

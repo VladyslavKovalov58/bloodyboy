@@ -2,7 +2,7 @@ import React from 'react';
 import { translations } from '../translations';
 import { Play } from 'lucide-react';
 
-const StreamInfo = ({ language = 'en', isLive = false }) => {
+const StreamInfo = ({ language = 'en', isLive = false, kickLink }) => {
     const t = translations[language];
 
     const statusColor = isLive ? 'var(--primary-orange)' : '#ff4444'; // Orange or Red
@@ -64,7 +64,7 @@ const StreamInfo = ({ language = 'en', isLive = false }) => {
             </p>
 
             <a
-                href="https://kick.com/bloodyboy58"
+                href={kickLink || "https://kick.com/bloodyboy58"}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

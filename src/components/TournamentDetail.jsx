@@ -8,7 +8,7 @@ const TournamentDetail = ({ tournaments, language }) => {
     const navigate = useNavigate();
     const t = translations[language];
 
-    const tournament = tournaments.find(t => t.id === parseInt(id));
+    const tournament = tournaments.find(t => t.id === id);
 
     if (!tournament) {
         return (
@@ -203,7 +203,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             fontSize: '1.1rem',
                             lineHeight: '2.5'
                         }}>
-                            {tournament.rules ? tournament.rules.map((rule, idx) => (
+                            {tournament.rules ? tournament.rules.split('\n').filter(r => r.trim()).map((rule, idx) => (
                                 <li key={idx} style={{
                                     display: 'flex',
                                     alignItems: 'flex-start',
@@ -229,7 +229,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                     }}>
                                         {idx + 1}
                                     </div>
-                                    <span style={{ paddingTop: '2px' }}>{rule}</span>
+                                    <span style={{ paddingTop: '2px' }}>{rule.replace(/^\d+\.\s*/, '')}</span>
                                 </li>
                             )) : (
                                 <>
