@@ -28,15 +28,15 @@ export const translations = {
         chat: 'Chat',
 
         // Casino Specifics
-        mad: {
-            offer: '100% + 70 FS',
+        tiger: {
+            offer: '100% to deposit',
             promo: 'First Deposit Bonus',
-            link: 'https://send.me2mad.com/affiliate/m_ps5to0n3?path=%2Fregistration'
+            link: 'https://tgr.casino/'
         },
         cactus: {
             offer: '175% + 125 FS',
-            promo: 'Promo code: KOLYAN',
-            link: 'https://elcongresoelias.xyz/affiliate/c_49k6bonh'
+            promo: 'Promo code: BloodyBoy',
+            link: 'https://lacoberturayanet.xyz/affiliate/c_xfq4ik86'
         },
         vodka: {
             offer: '125% to deposit',
@@ -85,13 +85,14 @@ export const translations = {
 
         // Tiger Cup
         tigerCup: {
-            brief: 'Two heads are better than one. Show your skill in the Wingman tournament!',
-            full: "Only for the bravest tigers. This Wingman tournament is designed for duos who want to prove their dominance and earn some serious stripes.\n\nWhether you are a seasoned predator or a hungry cub, the TIGER Wingmans Tournament is where you belong. Grab your partner, sharpen your claws, and get ready for the most intense 2v2 action in the savanna.",
+            brief: 'Get your claws ready and turn on the mic! 🎮🐾 TIGER Wingmans Tournament — the hunt for victory begins!',
+            full: "Welcome to TIGER Wingmans Tournament — the place where even the quietest tigers become real hunters on the battlefield! 🐅\n\nGrab a partner, turn on Faceit and Discord voice chat — it's time to show who is the real king of the jungle here.",
             rules: [
-                '1. No meowing. Only roaring.',
-                '2. Two heads are better than one (literally, bring a partner).',
-                '3. Friendly fire is NOT friendly.',
-                '4. Use the promo code TIGER for a speed boost (not really, but it sounds cool).'
+                'All participants must be in our Discord voice chat during matches.',
+                'The tournament is held exclusively on the Faceit platform.',
+                'Any match-fixing, cheating, and unsportsmanlike behavior are prohibited. Violators will be immediately disqualified.',
+                'Participants are required to comply with Faceit rules and fair play rules.',
+                'The decisions of the organizers are final.'
             ]
         },
         katowice: {
@@ -152,15 +153,15 @@ export const translations = {
         chat: 'Чат',
 
         // Casino Specifics
-        mad: {
-            offer: '100% + 70 FS',
+        tiger: {
+            offer: '100% к депозиту',
             promo: 'Бонус на первый депозит',
-            link: 'https://send.me2mad.com/affiliate/m_ps5to0n3?path=%2Fregistration'
+            link: 'https://tgr.casino/'
         },
         cactus: {
             offer: '175% + 125 FS',
-            promo: 'Промокод: KOLYAN',
-            link: 'https://elcongresoelias.xyz/affiliate/c_49k6bonh'
+            promo: 'Промокод: BloodyBoy',
+            link: 'https://lacoberturayanet.xyz/affiliate/c_xfq4ik86'
         },
         vodka: {
             offer: '125% к депозиту',
@@ -209,13 +210,14 @@ export const translations = {
 
         // Tiger Cup
         tigerCup: {
-            brief: 'Одна голова хорошо, а две — с диглом. Покажи свой скилл в Wingman турнире!',
-            full: "Только для самых смелых тигров. Этот Wingman турнир создан для дуэтов, которые хотят доказать свое превосходство и заработать реальные полоски.\n\nБудь вы опытным хищником или голодным котенком, TIGER Wingmans Tournament — это то место, где вам рады. Хватайте напарника, точите когти и готовьтесь к самому интенсивному 2 на 2 экшену в саванне.",
+            brief: 'Готовь когти и включай микрофон! 🎮🐾 TIGER Wingmans Tournament — охота на победу начинается!',
+            full: "Добро пожаловать в TIGER Wingmans Tournament — место, где даже самые тихие тигры становятся настоящими охотниками на поле боя! 🐅\n\nВозьмите напарника, включайте Faceit и голосовой чат Discord — пора показать, кто здесь настоящий король джунглей.",
             rules: [
-                '1. Никакого мяуканья. Только рычание.',
-                '2. Одна голова — хорошо, а две — еще лучше (приводи напарника).',
-                '3. Огонь по своим — это не по-дружески.',
-                '4. Используй промокод TIGER для ускорения (нет, но звучит круто).'
+                'Все участники должны находиться в голосовом чате нашего Discord во время матчей.',
+                'Турнир проводится исключительно на платформе Faceit.',
+                'Запрещены любые договорные матчи, читинг и неспортивное поведение. Нарушители будут немедленно дисквалифицированы.',
+                'Участники обязаны соблюдать правила Faceit и правила честной игры.',
+                'Решения организаторов являются окончательными.'
             ]
         },
         katowice: {

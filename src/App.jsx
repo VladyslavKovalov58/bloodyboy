@@ -33,11 +33,11 @@ const AppContent = () => {
   const bonuses = [
     {
       id: 1,
-      siteName: 'MAD',
-      offer: t.mad.offer,
-      promo: t.mad.promo,
-      link: t.mad.link,
-      color: '#E30052'
+      siteName: 'TIGER',
+      offer: t.tiger.offer,
+      promo: t.tiger.promo,
+      link: t.tiger.link,
+      color: 'linear-gradient(135deg, #FF9500 0%, #FF5E00 100%)'
     },
     {
       id: 2,
@@ -49,19 +49,21 @@ const AppContent = () => {
     },
     {
       id: 3,
-      siteName: 'VODKA',
-      offer: t.vodka.offer,
-      promo: t.vodka.promo,
-      link: t.vodka.link,
-      color: '#00ccff'
+      siteName: t.soon.name,
+      offer: t.soon.offer,
+      promo: t.soon.promo,
+      link: '#',
+      color: '#333333',
+      disableHover: true
     },
     {
       id: 4,
-      siteName: 'Spark',
-      offer: t.spark.offer,
-      promo: t.spark.promo,
-      link: t.spark.link,
-      color: 'linear-gradient(135deg, #FF007F 0%, #00BFFF 100%)'
+      siteName: t.soon.name,
+      offer: t.soon.offer,
+      promo: t.soon.promo,
+      link: '#',
+      color: '#333333',
+      disableHover: true
     },
     {
       id: 5,
@@ -228,7 +230,7 @@ const AppContent = () => {
       name: 'TIGER Wingmans Tournament',
       image: 'https://i.ibb.co/LzNfS6Pq/image.png', // Temporary, will be replaced by character in detail
       prize: '$1,500',
-      format: 'Duo (32 Teams)',
+      format: 'Wingmans',
       link: 'https://www.faceit.com/ru/championship/70adb9b2-018d-428b-be81-104d48b898ba/Tiger%2520Wingmans%2520Cup',
       date: '27.03.2026',
       targetDate: '2026-03-27T18:00:00',

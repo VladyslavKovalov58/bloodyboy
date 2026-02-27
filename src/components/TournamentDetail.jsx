@@ -206,16 +206,30 @@ const TournamentDetail = ({ tournaments, language }) => {
                             {tournament.rules ? tournament.rules.map((rule, idx) => (
                                 <li key={idx} style={{
                                     display: 'flex',
-                                    alignItems: 'center',
+                                    alignItems: 'flex-start',
                                     gap: '12px',
-                                    padding: '10px 20px',
+                                    padding: '12px 20px',
                                     background: 'rgba(255, 255, 255, 0.02)',
                                     borderRadius: '12px',
                                     marginBottom: '8px',
                                     border: '1px solid rgba(255, 255, 255, 0.03)'
                                 }}>
-                                    <div style={{ minWidth: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary-orange)' }} />
-                                    {rule}
+                                    <div style={{
+                                        minWidth: '24px',
+                                        height: '24px',
+                                        borderRadius: '8px',
+                                        background: 'rgba(255, 107, 0, 0.1)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        color: 'var(--primary-orange)',
+                                        fontSize: '0.85rem',
+                                        fontWeight: '900',
+                                        marginTop: '4px'
+                                    }}>
+                                        {idx + 1}
+                                    </div>
+                                    <span style={{ paddingTop: '2px' }}>{rule}</span>
                                 </li>
                             )) : (
                                 <>
