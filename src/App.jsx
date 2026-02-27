@@ -145,7 +145,7 @@ const AppContent = () => {
     {
       id: 2,
       name: 'Le Bandit',
-      image: 'https://i.ibb.co/1t06vgx1/image-1.jpg',
+      image: 'https://i.ibb.co/BW872rX/image-16.webp',
       hasDemo: true,
       link: 'https://static-live.hacksawgaming.com/1309/1.22.0/index.html?language=en&channel=desktop&gameid=1309&mode=2&token=123131&lobbyurl=https%3A%2F%2Fwww.hacksawgaming.com&currency=EUR&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api',
       provider: 'Hacksaw',
@@ -154,7 +154,7 @@ const AppContent = () => {
     {
       id: 3,
       name: 'The Dog House',
-      image: 'https://i.ibb.co/Ngx6qDC6/image-2.jpg',
+      image: 'https://i.ibb.co/Sws7s64r/image-15.webp',
       hasDemo: true,
       link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20doghouse&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
@@ -172,7 +172,7 @@ const AppContent = () => {
     {
       id: 5,
       name: 'Starlight Princess 1000',
-      image: 'https://i.ibb.co/BShbZJ1/image.png',
+      image: 'https://i.ibb.co/m5qvPjB3/image-14.webp',
       hasDemo: true,
       link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20starlightx&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
@@ -181,7 +181,7 @@ const AppContent = () => {
     {
       id: 6,
       name: 'Sugar Rush',
-      image: 'https://i.ibb.co/x9rJJBN/image.png',
+      image: 'https://i.ibb.co/Y7fGVsHz/image-13.webp',
       hasDemo: true,
       link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugarrush&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
@@ -190,7 +190,7 @@ const AppContent = () => {
     {
       id: 7,
       name: 'Le Fisherman',
-      image: 'https://i.ibb.co/sdkhpkr2/image-1.png',
+      image: 'https://i.ibb.co/qYYBwJgZ/image-12.webp',
       hasDemo: true,
       link: 'https://static-live.hacksawgaming.com/2057/1.19.1/index.html?language=en&channel=desktop&gameid=2057&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
       provider: 'Hacksaw',
@@ -199,7 +199,7 @@ const AppContent = () => {
     {
       id: 8,
       name: 'Lucky Penny 2',
-      image: 'https://i.ibb.co/YFPX8TLM/image-2.png',
+      image: 'https://i.ibb.co/7tvPSyGk/image-11.webp',
       hasDemo: true,
       link: 'https://3oaks.com/api/v1/games/lucky_penny_2/play?lang=en',
       provider: '3Oaks',
@@ -208,7 +208,7 @@ const AppContent = () => {
     {
       id: 9,
       name: 'Wild Bandito',
-      image: 'https://i.ibb.co/1tJXtDsP/image-3.jpg',
+      image: 'https://i.ibb.co/V0Wtmffn/image-10.webp',
       hasDemo: true,
       link: 'https://m.eajzzxhro.com/104/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&ao=06gvo%3Doimdff3kr%3Dius&or=19lmtmbv%3Dxtcssqakh%3Dvhf&__hv=2fMEUCIQDPTuHaeIhp%2BPPYu0pYjv1XRGDd2sfi7BUF4wEtlhPemAIgEJ%2BI5%2BfuP8tTXqhceqcJETEimZ6GtC%2FL97ihSN3JgPE%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg',
       provider: 'PG Soft',
@@ -217,7 +217,7 @@ const AppContent = () => {
     {
       id: 10,
       name: 'SixSixSix',
-      image: 'https://i.ibb.co/Mx7G2ZdM/image-3.png',
+      image: 'https://i.ibb.co/j9ZSyrHd/image-9.webp',
       hasDemo: true,
       link: 'https://static-live.hacksawgaming.com/1534/1.37.1/index.html?language=en&channel=desktop&gameid=1534&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
       provider: 'Hacksaw',
@@ -226,7 +226,7 @@ const AppContent = () => {
     {
       id: 11,
       name: 'RIP City',
-      image: 'https://i.ibb.co/ymZjnnMw/image-4.png',
+      image: 'https://i.ibb.co/VppHTd61/image-8.webp',
       hasDemo: true,
       link: 'https://static-live.hacksawgaming.com/1233/1.33.2/index.html?language=en&channel=desktop&gameid=1233&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
       provider: 'Hacksaw',
@@ -235,7 +235,7 @@ const AppContent = () => {
     {
       id: 12,
       name: 'Zeus vs Hades Gods of War 250',
-      image: 'https://i.ibb.co/SXw9kShM/image-4.jpg',
+      image: 'https://i.ibb.co/fdfMCcsn/image-7.webp',
       hasDemo: true,
       link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs15zeushadseq&lang=ru&cur=USD&playMode=demo',
       provider: 'Pragmatic Play',
@@ -244,13 +244,86 @@ const AppContent = () => {
     {
       id: 13,
       name: 'Le Rapper',
-      image: 'https://i.ibb.co/nqXPJWkX/image-5.jpg',
+      image: 'https://i.ibb.co/xtNsdZKc/image-6.webp',
       hasDemo: true,
       link: 'https://static-live.hacksawgaming.com/2155/1.0.2/index.html?language=en&channel=desktop&gameid=2155&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
       provider: 'Hacksaw',
       rtp: '96.34%',
       isComingSoon: true
+    },
+    {
+      id: 15,
+      name: 'Le Bunny',
+      image: 'https://i.ibb.co/sLyZst7/image-5.webp',
+      hasDemo: true,
+      link: 'https://static-live.hacksawgaming.com/2195/1.6.0/index.html?language=en&channel=desktop&gameid=2195&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
+      provider: 'Hacksaw',
+      rtp: '96.14%',
+      isComingSoon: true
     }
+    ,
+    {
+      id: 14,
+      name: 'Big Bass Raceday Repeat',
+      image: 'https://i.ibb.co/NgvhrWDJ/image-3.webp',
+      hasDemo: true,
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo',
+      provider: 'Pragmatic Play',
+      rtp: '96.51%',
+      isComingSoon: true
+    }
+    ,
+    {
+      id: 16,
+      name: 'Sugar Rush Super Scatter',
+      image: 'https://i.ibb.co/Wp0Hv0Kw/image-4.webp',
+      hasDemo: true,
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugrushss&lang=ru&cur=USD&playMode=demo',
+      provider: 'Pragmatic Play',
+      rtp: '96.58%',
+    }
+    ,
+    {
+      id: 17,
+      name: 'Duck Hunters',
+      image: 'https://i.ibb.co/Vc8xNRfm/image-2.webp',
+      hasDemo: true,
+      link: 'https://nolimitcity.com/demo?game=DuckHunters',
+      provider: 'Nolimit City',
+      rtp: '96.05%',
+    }
+    ,
+    {
+      id: 18,
+      name: 'Money Train 3',
+      image: 'https://i.ibb.co/RTFbT6hN/image-1.webp',
+      hasDemo: true,
+      link: 'https://d2drhksbtcqozo.cloudfront.net/casino/games/moneytrain3/index.html?gameid=moneytrain3&jurisdiction=MT&channel=web&moneymode=fun&partnerid=1&fullscreen=false',
+      provider: 'Relax Gaming',
+      rtp: '96.05%',
+    }
+    ,
+    {
+      id: 19,
+      name: 'Mental 2',
+      image: 'https://i.ibb.co/BHPCyZ3s/image.webp',
+      hasDemo: true,
+      link: 'https://nolimitcity.com/demo?game=Mental2',
+      provider: 'Nolimit City',
+      rtp: '96.05%',
+    }
+    ,
+    {
+      id: 20,
+      name: 'Big Bamboo 2',
+      image: 'https://i.ibb.co/203w8Df2/le-bandit.webp',
+      hasDemo: false,
+      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo',
+      provider: 'Push Gaming',
+      rtp: '96.36%',
+      isComingSoon: true
+    }
+
   ];
 
 
