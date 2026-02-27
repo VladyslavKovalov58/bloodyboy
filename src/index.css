@@ -113,7 +113,8 @@ button {
   }
 
   .slots-switcher-item {
-    font-size: 1rem !important;
+    font-size: 0.85rem !important;
+    padding: 8px 12px !important;
   }
 
   .slots-switcher-divider {
@@ -122,8 +123,9 @@ button {
 
   .top-bar {
     flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 8px;
     padding-bottom: 15px !important;
     margin-bottom: 20px !important;
   }
