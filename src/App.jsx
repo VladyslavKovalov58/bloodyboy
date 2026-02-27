@@ -426,10 +426,19 @@ const AppContent = () => {
                 </div>
               </div>
             ) : (
-              <h2 className="page-title">
-                {currentTab === 'bonuses' && t.bonusesTitle}
-                {currentTab === 'streams' && t.streamTitle}
-              </h2>
+              <div className="slots-switcher">
+                <div className="slots-switcher-item active">
+                  {currentTab === 'bonuses' ? (
+                    <>
+                      <Wallet size={18} /> {t.bonusesShort}
+                    </>
+                  ) : (
+                    <>
+                      <Video size={18} /> {t.liveStream}
+                    </>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 

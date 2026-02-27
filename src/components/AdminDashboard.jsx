@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy } from 'lucide-react';
+import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send } from 'lucide-react';
+import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../services/discord';
 
 const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [activeTab, setActiveTab] = useState('general');
@@ -14,6 +15,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [editingBonus, setEditingBonus] = useState(null);
     const [isAdding, setIsAdding] = useState(false);
     const [isAddingBonus, setIsAddingBonus] = useState(false);
+    const [pushingId, setPushingId] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -100,6 +102,32 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         if (!error) {
             fetchData();
         }
+    };
+
+    const handlePushToDiscord = async (tournament) => {
+        setPushingId(tournament.id);
+        const success = await sendTournamentToDiscord(tournament);
+        if (success) {
+            alert('Уведомление успешно отправлено в Discord!');
+        } else {
+            alert('Ошибка при отправке уведомления в Discord. Проверьте консоль или .env.');
+        }
+        setPushingId(null);
+    };
+
+    const handlePushResultsToDiscord = async (tournament) => {
+        if (!tournament.winner_1) {
+            alert('Сначала укажите хотя бы победителя за 1-е место!');
+            return;
+        }
+        setPushingId(`results-${tournament.id}`);
+        const success = await sendTournamentResultsToDiscord(tournament);
+        if (success) {
+            alert('Результаты успешно отправлены в специальный канал Discord!');
+        } else {
+            alert('Ошибка при отправке результатов в Discord. Проверьте консоль или .env.');
+        }
+        setPushingId(null);
     };
 
     const handleLogout = async () => {
@@ -625,6 +653,44 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                 </div>
                                                 <div style={{ display: 'flex', gap: '10px' }}>
                                                     <button
+                                                        onClick={() => handlePushToDiscord(t)}
+                                                        disabled={pushingId === t.id}
+                                                        title="Push Announcement to Discord"
+                                                        style={{
+                                                            background: 'rgba(255, 107, 0, 0.1)',
+                                                            border: '1px solid rgba(255, 107, 0, 0.2)',
+                                                            color: 'var(--primary-orange)',
+                                                            padding: '10px',
+                                                            borderRadius: '10px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            opacity: pushingId === t.id ? 0.5 : 1
+                                                        }}
+                                                    >
+                                                        {pushingId === t.id ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handlePushResultsToDiscord(t)}
+                                                        disabled={pushingId === `results-${t.id}`}
+                                                        title="Push Results to Discord"
+                                                        style={{
+                                                            background: 'rgba(88, 101, 242, 0.1)',
+                                                            border: '1px solid rgba(88, 101, 242, 0.2)',
+                                                            color: '#5865F2',
+                                                            padding: '10px',
+                                                            borderRadius: '10px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            opacity: pushingId === `results-${t.id}` ? 0.5 : 1
+                                                        }}
+                                                    >
+                                                        {pushingId === `results-${t.id}` ? <Loader2 size={18} className="animate-spin" /> : <Bell size={18} />}
+                                                    </button>
+                                                    <button
                                                         onClick={() => {
                                                             const { id, created_at, ...copyData } = t;
                                                             setEditingTournament({ ...copyData, title: `${t.title} (Copy)` });
@@ -755,7 +821,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             `}</style>
-        </div>
+        </div >
     );
 };
 
