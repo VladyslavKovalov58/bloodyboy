@@ -77,7 +77,7 @@ async function signedRequest(endpoint, data = {}) {
     try {
         // Clean URL building to avoid double/missing slashes
         const cleanRequest = request.startsWith('/') ? request.slice(1) : request;
-        const response = await fetch(`/api/whitebit/${cleanRequest}`, {
+        const response = await fetch(`/wb-proxy/${cleanRequest}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
