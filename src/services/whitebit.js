@@ -88,20 +88,10 @@ async function signedRequest(endpoint, data = {}) {
             body: payloadBuffer
         });
 
-        if (!response.ok) {
-            // Only warn on first occurrence of 404 to avoid console flooding
-            if (response.status === 404 && !window._whitebitWarned) {
-                console.warn('WhiteBIT API endpoint not found (404). Redirects might still be deploying.');
-                window._whitebitWarned = true;
-            } else if (response.status !== 404) {
-                console.warn(`WhiteBIT API issue (${response.status}), using fallback.`);
-            }
-            return fallbackResponse();
-        }
-
+        if (!response.ok) return fallbackResponse();
         return await response.json();
     } catch (err) {
-        console.error('WhiteBIT API Error:', err);
+        // Silent catch to keep console clean
         return fallbackResponse();
     }
 }
@@ -118,16 +108,24 @@ export const getDepositAddress = async (ticker, network = 'ERC20') => {
  */
 export const checkRecentDeposits = async (ticker) => {
     try {
-        const history = await signedRequest('main-account/get-deposit-withdraw-history', {
+        const response = await signedRequest('main-account/history', {
             ticker,
             limit: 10,
-            offset: 0
+            offset: 0,
+            transactionMethod: 1 // 1 for deposits as per docs
         });
 
-        if (!Array.isArray(history)) return false;
+        // The docs show transactions are in the 'records' field
+        const records = response?.records || [];
+        if (!Array.isArray(records)) return false;
 
-        const fiveMinsAgo = Date.now() - 5 * 60 * 1000;
-        return history.some(tx => tx.type === 'deposit' && tx.status === 'finished' && tx.createdAt * 1000 > fiveMinsAgo);
+        const fiveMinsAgo = Math.floor(Date.now() / 1000) - 300;
+
+        // According to docs, status 3 or 7 means successful
+        return records.some(tx =>
+            (tx.status === 3 || tx.status === 7) &&
+            tx.createdAt > fiveMinsAgo
+        );
     } catch (err) {
         return false;
     }

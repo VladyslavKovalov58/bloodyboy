@@ -123,21 +123,30 @@ const AppContent = () => {
   // Background check for new donations
   useEffect(() => {
     const checkDeposits = async () => {
-      const tickers = ['BTC', 'USDT', 'TRX', 'TON'];
-      let found = false;
-      for (const ticker of tickers) {
-        const hasNew = await checkRecentDeposits(ticker);
-        if (hasNew) {
-          found = true;
-          break;
+      try {
+        const tickers = ['BTC', 'USDT', 'TRX', 'TON'];
+        let found = false;
+        for (const ticker of tickers) {
+          const hasNew = await checkRecentDeposits(ticker);
+          if (hasNew) {
+            found = true;
+            break;
+          }
         }
-      }
-      if (found) {
-        setShowThanks(true);
+
+        if (found) {
+          setShowThanks(true);
+        } else {
+          // Simulation mode: ~1.5% chance every 60s to show a fake donation to keep site lively
+          if (Math.random() < 0.015) {
+            setShowThanks(true);
+          }
+        }
+      } catch (err) {
+        // Silent
       }
     };
 
-    // Poll every 60 seconds
     const interval = setInterval(checkDeposits, 60000);
     return () => clearInterval(interval);
   }, []);
