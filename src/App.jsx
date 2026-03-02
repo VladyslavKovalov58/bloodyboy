@@ -487,24 +487,6 @@ const AppContent = () => {
         language={language}
       />
 
-      {showThanks && (
-        <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          background: 'linear-gradient(45deg, #FF6B00, #FF3D00)',
-          color: '#fff',
-          padding: '15px 25px',
-          borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(255,107,0,0.4)',
-          zIndex: 3000,
-          fontWeight: '700',
-          animation: 'slideInRight 0.5s ease-out'
-        }}>
-          {t.thanksForSupport}
-        </div>
-      )}
-
       <main style={{
         flex: 1,
         marginLeft: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',

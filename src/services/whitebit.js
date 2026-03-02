@@ -87,7 +87,13 @@ async function signedRequest(endpoint, data = {}) {
         });
 
         if (!response.ok) {
-            console.warn('WhiteBIT API connection issue, using fallback addresses');
+            // Only warn on first occurrence of 404 to avoid console flooding
+            if (response.status === 404 && !window._whitebitWarned) {
+                console.warn('WhiteBIT API endpoint not found (404). Redirects might still be deploying.');
+                window._whitebitWarned = true;
+            } else if (response.status !== 404) {
+                console.warn(`WhiteBIT API issue (${response.status}), using fallback.`);
+            }
             return fallbackResponse();
         }
 
