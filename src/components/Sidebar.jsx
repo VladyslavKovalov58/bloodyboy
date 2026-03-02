@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2, Trophy } from 'lucide-react';
+import { Gift, Tv, Send, MessageCircle, ChevronLeft, ChevronRight, Gamepad2, Trophy, CreditCard } from 'lucide-react';
 import { translations } from '../translations';
 
-const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive, tgChat, tgGroup }) => {
+const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed, isLive, tgChat, tgGroup, onSupportClick }) => {
     const t = translations[language];
-
-    // ... scroll down to links ...
 
     const linkStyle = (tabName) => ({
         background: activeTab === tabName ? 'var(--primary-orange)' : 'transparent',
@@ -194,8 +192,74 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                 </Link>
             </nav>
 
-            {/* Socials - At Bottom, above Lang Switcher */}
-            <div style={{ marginBottom: '20px' }}>
+            {/* Support & Socials Section */}
+            <div style={{ paddingBottom: '20px' }}>
+
+                {/* Support Streamer Section */}
+                <div style={{ padding: '0 5px', marginBottom: '20px' }}>
+                    <button
+                        onClick={() => typeof onSupportClick === 'function' && onSupportClick()}
+                        style={{
+                            width: '100%',
+                            background: 'linear-gradient(135deg, #FF6B00 0%, #FF3D00 100%)',
+                            color: '#fff',
+                            padding: isCollapsed ? '12px' : '14px 15px',
+                            borderRadius: '16px',
+                            border: 'none',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: isCollapsed ? 'center' : 'flex-start',
+                            gap: isCollapsed ? '0' : '10px',
+                            transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                            boxShadow: '0 6px 20px rgba(255, 61, 0, 0.25)',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            outline: 'none'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 10px 25px rgba(255, 61, 0, 0.35)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'none';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 61, 0, 0.25)';
+                        }}
+                    >
+                        {/* Shimmer effect */}
+                        <div style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: '-100%',
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                            animation: 'shimmer 2.5s infinite'
+                        }} />
+
+                        <CreditCard size={isCollapsed ? 24 : 18} style={{ flexShrink: 0 }} />
+                        {!isCollapsed && (
+                            <span style={{
+                                fontWeight: '800',
+                                fontSize: '0.75rem',
+                                textAlign: 'left',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.3px',
+                                whiteSpace: 'nowrap'
+                            }}>
+                                {t.supportStreamer}
+                            </span>
+                        )}
+                    </button>
+
+                    <style>{`
+                        @keyframes shimmer {
+                            0% { left: -100%; }
+                            100% { left: 100%; }
+                        }
+                    `}</style>
+                </div>
+
                 {!isCollapsed && (
                     <p style={{
                         color: 'var(--text-dim)',
@@ -213,7 +277,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
 
                 <div style={{
                     display: 'flex',
-                    flexDirection: isCollapsed ? 'column' : 'row', // Stack in collapsed mode
+                    flexDirection: isCollapsed ? 'column' : 'row',
                     gap: '8px',
                     padding: '0 5px'
                 }}>
@@ -269,8 +333,6 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                     </a>
                 </div>
             </div>
-
-
 
         </aside>
     );

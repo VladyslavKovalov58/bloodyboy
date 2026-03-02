@@ -10,8 +10,11 @@ import TournamentDetail from './components/TournamentDetail';
 import CommunityBanner from './components/CommunityBanner';
 import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
+import SupportModal from './components/SupportModal';
+import ThanksPopup from './components/ThanksPopup';
 import { supabase } from './supabaseClient';
-import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare } from 'lucide-react';
+import { checkRecentDeposits } from './services/whitebit';
+import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare, CreditCard } from 'lucide-react';
 import { translations } from './translations';
 
 // Navigation Logic Wrapper
@@ -27,6 +30,8 @@ const AppContent = () => {
   const [slotCategory, setSlotCategory] = useState('popular');
   const [tournamentCategory, setTournamentCategory] = useState('active');
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [showThanks, setShowThanks] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -113,6 +118,35 @@ const AppContent = () => {
       }
     };
     fetchData();
+  }, []);
+
+  // Background check for new donations
+  useEffect(() => {
+    const checkDeposits = async () => {
+      const tickers = ['BTC', 'USDT', 'TRX', 'TON'];
+      let found = false;
+      for (const ticker of tickers) {
+        const hasNew = await checkRecentDeposits(ticker);
+        if (hasNew) {
+          found = true;
+          break;
+        }
+      }
+      if (found) {
+        setShowThanks(true);
+      }
+    };
+
+    // Poll every 60 seconds
+    const interval = setInterval(checkDeposits, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // For demonstration purposes
+  useEffect(() => {
+    const handleThanks = () => setShowThanks(true);
+    window.addEventListener('show-thanks', handleThanks);
+    return () => window.removeEventListener('show-thanks', handleThanks);
   }, []);
 
   const t = translations[language];
@@ -443,8 +477,33 @@ const AppContent = () => {
           isLive={isLive}
           tgChat={tgChat}
           tgGroup={tgGroup}
+          onSupportClick={() => setIsSupportModalOpen(true)}
         />
       </div>
+
+      <SupportModal
+        isOpen={isSupportModalOpen}
+        onClose={() => setIsSupportModalOpen(false)}
+        language={language}
+      />
+
+      {showThanks && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: 'linear-gradient(45deg, #FF6B00, #FF3D00)',
+          color: '#fff',
+          padding: '15px 25px',
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(255,107,0,0.4)',
+          zIndex: 3000,
+          fontWeight: '700',
+          animation: 'slideInRight 0.5s ease-out'
+        }}>
+          {t.thanksForSupport}
+        </div>
+      )}
 
       <main style={{
         flex: 1,
@@ -640,13 +699,63 @@ const AppContent = () => {
           <Route path="/streams" element={
             <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
               <StreamInfo language={language} isLive={isLive} kickLink={kickLink} />
-              <div style={{ marginTop: '30px', background: 'var(--bg-card)', padding: '30px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <h3 style={{ marginBottom: '15px', color: '#fff' }}>{t.chatRules}</h3>
-                <ul style={{ color: 'var(--text-dim)', paddingLeft: '20px', lineHeight: '1.8' }}>
-                  <li>1. No spam / Без спама</li>
-                  <li>2. Respect others / Уважайте других</li>
-                  <li>3. Have fun / Веселитесь!</li>
-                </ul>
+
+              {/* Support Widget (Replacing Chat Rules) */}
+              <div style={{
+                marginTop: '30px',
+                background: 'var(--bg-card)',
+                padding: '30px',
+                borderRadius: '24px',
+                border: '1px solid rgba(255,255,255,0.05)',
+                textAlign: 'center',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+              }}>
+                <h3 style={{ marginBottom: '10px', color: '#fff', fontSize: '1.4rem', fontWeight: '800' }}>
+                  {language === 'ru' ? 'ПОДДЕРЖАТЬ СТРИМЕРА' : 'SUPPORT STREAMER'}
+                </h3>
+                <p style={{ color: 'var(--text-dim)', marginBottom: '25px', fontSize: '0.95rem' }}>
+                  {language === 'ru'
+                    ? 'Ваша поддержка помогает улучшать качество контента и проводить больше турниров!'
+                    : 'Your support helps improve content quality and host more tournaments!'}
+                </p>
+                <button
+                  onClick={() => setIsSupportModalOpen(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #FF6B00 0%, #FF3D00 100%)',
+                    color: '#fff',
+                    padding: '16px 40px',
+                    borderRadius: '16px',
+                    border: 'none',
+                    fontWeight: '800',
+                    fontSize: '1.1rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    margin: '0 auto',
+                    boxShadow: '0 8px 30px rgba(255, 61, 0, 0.3)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                    outline: 'none'
+                  }}
+                  className="support-btn-main"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(255, 61, 0, 0.45)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(255, 61, 0, 0.3)';
+                  }}
+                >
+                  {/* Shimmer effect */}
+                  <div className="shimmer-effect" />
+
+                  <CreditCard size={22} />
+                  {language === 'ru' ? 'СДЕЛАТЬ ДОНАТ' : 'MAKE A DONATION'}
+                </button>
               </div>
             </div>
           } />
@@ -664,6 +773,12 @@ const AppContent = () => {
           tgGroup={tgGroup}
         />
       </div>
+
+      <ThanksPopup
+        isVisible={showThanks}
+        onClose={() => setShowThanks(false)}
+        language={language}
+      />
     </div>
   );
 };

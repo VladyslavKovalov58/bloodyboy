@@ -9,6 +9,12 @@ export const translations = {
         socials: 'Socials',
         chatRules: 'Chat rules',
         comingSoon: 'Coming Soon',
+        supportStreamer: 'Support Streamer',
+        selectCurrency: 'Select Currency',
+        copyAddress: 'Copy Address',
+        minDeposit: 'Min Deposit',
+        thanksForSupport: 'Thank you for your support!',
+        copied: 'Copied!',
 
         // Contact
         collaboration: 'Collaboration',
@@ -136,6 +142,12 @@ export const translations = {
         socials: 'Соцсети',
         chatRules: 'Правила чата',
         comingSoon: 'Скоро выйдут',
+        supportStreamer: 'Поддержать стримера',
+        selectCurrency: 'Выберите валюту',
+        copyAddress: 'Копировать адрес',
+        minDeposit: 'Мин. депозит',
+        thanksForSupport: 'Спасибо за поддержку!',
+        copied: 'Скопировано!',
 
         // Contact
         collaboration: 'Сотрудничество',
