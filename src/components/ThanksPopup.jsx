@@ -83,7 +83,7 @@ const ThanksPopup = ({ isVisible, onClose, language }) => {
                             margin: '0 0 4px',
                             textTransform: 'uppercase'
                         }}>
-                            {language === 'ru' ? 'Новая поддержка!' : 'New support!'}
+                            {language === 'ru' ? 'Пришел донат!' : 'New support!'}
                         </h4>
                         <p style={{
                             color: 'rgba(255,255,255,0.7)',
