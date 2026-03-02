@@ -11,10 +11,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/kick/, ''),
       },
-      '/api/whitebit': {
+      '/wb-proxy': {
         target: 'https://whitebit.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/whitebit/, ''),
+        rewrite: (path) => path.replace(/^\/wb-proxy/, ''),
       },
     },
   },

@@ -26,7 +26,7 @@ async function generateSignature(payload, secret) {
 /**
  * Base function for signed requests to WhiteBIT v4 API
  */
-async function signedRequest(endpoint, data = {}) {
+export async function signedRequest(endpoint, data = {}) {
     const apiKey = 'aece2aa60d22cd113dfde486e5450a18';
     const apiSecret = import.meta.env.VITE_WHITEBIT_API_SECRET;
 
@@ -123,6 +123,7 @@ export const checkRecentDeposits = async (ticker) => {
 
         // According to docs, status 3 or 7 means successful
         return records.some(tx =>
+            tx.method === 1 &&
             (tx.status === 3 || tx.status === 7) &&
             tx.createdAt > fiveMinsAgo
         );

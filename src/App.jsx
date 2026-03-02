@@ -136,11 +136,6 @@ const AppContent = () => {
 
         if (found) {
           setShowThanks(true);
-        } else {
-          // Simulation mode: ~1.5% chance every 60s to show a fake donation to keep site lively
-          if (Math.random() < 0.015) {
-            setShowThanks(true);
-          }
         }
       } catch (err) {
         // Silent

@@ -16,6 +16,9 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [isAddingBonus, setIsAddingBonus] = useState(false);
     const [pushingId, setPushingId] = useState(null);
+    const [donationHistory, setDonationHistory] = useState([]);
+    const [loadingDonations, setLoadingDonations] = useState(false);
+    const [donationFilter, setDonationFilter] = useState('all'); // 'all' or 'today'
 
     useEffect(() => {
         fetchData();
@@ -37,6 +40,44 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         setBonuses(bonusData || []);
         setLoading(false);
     };
+
+    const fetchDonations = async () => {
+        setLoadingDonations(true);
+        try {
+            const { getDepositAddress, signedRequest } = await import('../services/whitebit');
+            const tickers = ['BTC', 'USDT', 'TRX', 'TON'];
+            const allRecords = [];
+
+            for (const ticker of tickers) {
+                const response = await signedRequest('main-account/history', {
+                    ticker,
+                    limit: 10,
+                    offset: 0,
+                    transactionMethod: 1
+                });
+
+                if (response?.records) {
+                    // Method 1 is deposit, 2 is withdrawal according to WhiteBIT API
+                    const depositsOnly = response.records.filter(r => r.method === 1);
+                    allRecords.push(...depositsOnly);
+                }
+            }
+
+            // Sort by createdAt descending
+            const sorted = allRecords.sort((a, b) => b.createdAt - a.createdAt);
+            setDonationHistory(sorted);
+        } catch (err) {
+            console.error('Failed to fetch donations:', err);
+        } finally {
+            setLoadingDonations(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'donations') {
+            fetchDonations();
+        }
+    }, [activeTab]);
 
     const handleSaveConfig = async (e) => {
         e.preventDefault();
@@ -302,6 +343,25 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                     >
                         <Settings size={20} /> Casino Bonuses
                     </button>
+                    <button
+                        onClick={() => setActiveTab('donations')}
+                        style={{
+                            padding: '15px 20px',
+                            textAlign: 'left',
+                            borderRadius: '12px',
+                            background: activeTab === 'donations' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
+                            border: '1px solid transparent',
+                            color: '#fff',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            fontWeight: '600',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Bell size={20} /> Donations History
+                    </button>
                 </nav>
 
                 {/* Content Area */}
@@ -387,6 +447,119 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                     {saveStatus === 'success' ? 'Saved Successfully' : 'Save General Settings'}
                                 </button>
                             </form>
+                        </section>
+                    )}
+
+                    {activeTab === 'donations' && (
+                        <section className="animate-fade-in">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                    <h2 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>Recent Donations</h2>
+                                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <button
+                                            onClick={() => setDonationFilter('all')}
+                                            style={{
+                                                padding: '6px 15px',
+                                                borderRadius: '8px',
+                                                border: 'none',
+                                                fontSize: '0.8rem',
+                                                fontWeight: '700',
+                                                cursor: 'pointer',
+                                                background: donationFilter === 'all' ? 'var(--primary-orange)' : 'transparent',
+                                                color: '#fff'
+                                            }}
+                                        >
+                                            All Time
+                                        </button>
+                                        <button
+                                            onClick={() => setDonationFilter('today')}
+                                            style={{
+                                                padding: '6px 15px',
+                                                borderRadius: '8px',
+                                                border: 'none',
+                                                fontSize: '0.8rem',
+                                                fontWeight: '700',
+                                                cursor: 'pointer',
+                                                background: donationFilter === 'today' ? 'var(--primary-orange)' : 'transparent',
+                                                color: '#fff'
+                                            }}
+                                        >
+                                            Today
+                                        </button>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={fetchDonations}
+                                    disabled={loadingDonations}
+                                    style={{ ...submitButtonStyle, width: 'auto', margin: 0, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                >
+                                    {loadingDonations ? <Loader2 size={18} className="animate-spin" /> : <Settings size={18} />}
+                                    Refresh History
+                                </button>
+                            </div>
+
+                            {loadingDonations && donationHistory.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '40px' }}>
+                                    <Loader2 size={32} className="animate-spin" color="var(--primary-orange)" style={{ margin: '0 auto' }} />
+                                </div>
+                            ) : (
+                                <div style={{ overflowX: 'auto', background: 'rgba(0,0,0,0.2)', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+                                        <thead>
+                                            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                                                <th style={{ padding: '15px 20px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Date</th>
+                                                <th style={{ padding: '15px 20px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Asset</th>
+                                                <th style={{ padding: '15px 20px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Amount</th>
+                                                <th style={{ padding: '15px 20px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Status</th>
+                                                <th style={{ padding: '15px 20px', color: 'rgba(255,255,255,0.4)', fontWeight: '600' }}>Address</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {donationHistory.filter(tx => {
+                                                if (donationFilter === 'all') return true;
+                                                const txDate = new Date(tx.createdAt * 1000).toDateString();
+                                                const today = new Date().toDateString();
+                                                return txDate === today;
+                                            }).length === 0 ? (
+                                                <tr>
+                                                    <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.3)' }}>No donations found for this period.</td>
+                                                </tr>
+                                            ) : (
+                                                donationHistory
+                                                    .filter(tx => {
+                                                        if (donationFilter === 'all') return true;
+                                                        const txDate = new Date(tx.createdAt * 1000).toDateString();
+                                                        const today = new Date().toDateString();
+                                                        return txDate === today;
+                                                    })
+                                                    .map((tx, idx) => (
+                                                        <tr key={idx} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'} onMouseLeave={(e) => e.currentTarget.style.background = 'none'}>
+                                                            <td style={{ padding: '15px 20px' }}>{new Date(tx.createdAt * 1000).toLocaleString()}</td>
+                                                            <td style={{ padding: '15px 20px', fontWeight: '800', color: 'var(--primary-orange)' }}>{tx.ticker}</td>
+                                                            <td style={{ padding: '15px 20px', fontWeight: '700' }}>{tx.amount}</td>
+                                                            <td style={{ padding: '15px 20px' }}>
+                                                                <span style={{
+                                                                    padding: '4px 10px',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: '800',
+                                                                    background: (tx.status === 3 || tx.status === 7) ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)',
+                                                                    color: (tx.status === 3 || tx.status === 7) ? '#4CAF50' : '#FF9800',
+                                                                    border: (tx.status === 3 || tx.status === 7) ? '1px solid rgba(76, 175, 80, 0.2)' : '1px solid rgba(255, 152, 0, 0.2)'
+                                                                }}>
+                                                                    {(tx.status === 3 || tx.status === 7) ? 'SUCCESS' : `PENDING (${tx.status})`}
+                                                                </span>
+                                                            </td>
+                                                            <td style={{ padding: '15px 20px', fontFamily: 'monospace', fontSize: '0.8rem', opacity: 0.6 }}>
+                                                                {tx.address ? `${tx.address.substring(0, 8)}...${tx.address.substring(tx.address.length - 8)}` : 'N/A'}
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </section>
                     )}
 
