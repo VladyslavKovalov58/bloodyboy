@@ -102,7 +102,9 @@ const TournamentCard = ({ tournament, language }) => {
                     marginBottom: '30px',
                     fontWeight: '500'
                 }}>
-                    {tournament.briefDescription}
+                    {language === 'en' && tournament.briefDescriptionEn
+                        ? tournament.briefDescriptionEn
+                        : tournament.briefDescription}
                 </p>
 
                 {/* Info Pills */}

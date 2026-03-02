@@ -14,7 +14,7 @@ import SupportModal from './components/SupportModal';
 import ThanksPopup from './components/ThanksPopup';
 import { supabase } from './supabaseClient';
 import { checkRecentDeposits } from './services/whitebit';
-import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare, CreditCard } from 'lucide-react';
+import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare, CreditCard, X, Loader2 } from 'lucide-react';
 import { translations } from './translations';
 
 // Navigation Logic Wrapper
@@ -23,15 +23,18 @@ const AppContent = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLive, setIsLive] = useState(true);
   const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [config, setConfig] = useState({});
   const [tournaments, setTournaments] = useState([]);
   const [bonuses, setBonuses] = useState([]);
+  const [slots, setSlots] = useState([]);
 
   const [slotCategory, setSlotCategory] = useState('popular');
   const [tournamentCategory, setTournamentCategory] = useState('active');
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
+  const [activeGame, setActiveGame] = useState(null); // { name, link }
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,10 +44,12 @@ const AppContent = () => {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setAuthLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -83,8 +88,11 @@ const AppContent = () => {
           type: dbT.type,
           joinedCount: dbT.joined_count,
           briefDescription: dbT.brief_description,
+          briefDescriptionEn: dbT.brief_description_en,
           fullDescription: dbT.full_description,
+          fullDescriptionEn: dbT.full_description_en,
           rules: dbT.rules,
+          rulesEn: dbT.rules_en,
           sponsorName: dbT.sponsor_name,
           sponsorIcon: dbT.sponsor_icon,
           sponsorLink: dbT.sponsor_link,
@@ -115,6 +123,29 @@ const AppContent = () => {
           isActive: dbB.is_active
         }));
         setBonuses(mappedBonuses);
+      }
+
+      // Fetch Slots
+      const { data: slotData } = await supabase.from('slots')
+        .select('*')
+        .order('order_index', { ascending: true });
+
+      if (slotData) {
+        const mappedSlots = slotData.map(dbS => ({
+          id: dbS.id,
+          name: dbS.name,
+          image: dbS.image_url,
+          link: dbS.link,
+          provider: dbS.provider,
+          rtp: dbS.rtp,
+          hasDemo: dbS.has_demo,
+          category: dbS.category,
+          descriptionRu: dbS.description_ru,
+          descriptionEn: dbS.description_en,
+          orderIndex: dbS.order_index,
+          isActive: dbS.is_active
+        }));
+        setSlots(mappedSlots);
       }
     };
     fetchData();
@@ -170,204 +201,10 @@ const AppContent = () => {
 
 
 
-  const slots = [
-    {
-      id: 1,
-      name: 'Wild Bounty Showdown',
-      image: 'https://i.ibb.co/4nBDdn4k/image.png',
-      hasDemo: true,
-      link: 'https://m.eajzzxhro.com/135/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&or=21novodx%3Dzveuuscmj%3Dxjh&__hv=2fMEQCICuqoNGFMML4fGBdQE%2BkWN6hW4%2FfORGq%2Fnk1ZEMnawwmAiAxGYxJjOCWQZyBSVILpJeMljpfcPHLJNuUZN5itlB12A%3D%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg',
-      provider: 'PG SOFT',
-      rtp: '96.65%'
-    },
-    {
-      id: 2,
-      name: 'Le Bandit',
-      image: 'https://i.ibb.co/BW872rX/image-16.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/1309/1.22.0/index.html?language=en&channel=desktop&gameid=1309&mode=2&token=123131&lobbyurl=https%3A%2F%2Fwww.hacksawgaming.com&currency=EUR&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api',
-      provider: 'Hacksaw',
-      rtp: '96.34%'
-    },
-    {
-      id: 3,
-      name: 'The Dog House',
-      image: 'https://i.ibb.co/Sws7s64r/image-15.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20doghouse&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.08%'
-    },
-    {
-      id: 4,
-      name: 'Gates of Olympus 1000',
-      image: 'https://i.ibb.co/Z18Xgvwn/image.png',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympx&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.50%'
-    },
-    {
-      id: 5,
-      name: 'Starlight Princess 1000',
-      image: 'https://i.ibb.co/m5qvPjB3/image-14.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20starlightx&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.50%'
-    },
-    {
-      id: 6,
-      name: 'Sugar Rush',
-      image: 'https://i.ibb.co/Y7fGVsHz/image-13.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugarrush&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.50%'
-    },
-    {
-      id: 7,
-      name: 'Le Fisherman',
-      image: 'https://i.ibb.co/qYYBwJgZ/image-12.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/2057/1.19.1/index.html?language=en&channel=desktop&gameid=2057&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
-      provider: 'Hacksaw',
-      rtp: '96.33%'
-    },
-    {
-      id: 8,
-      name: 'Lucky Penny 2',
-      image: 'https://i.ibb.co/7tvPSyGk/image-11.webp',
-      hasDemo: true,
-      link: 'https://3oaks.com/api/v1/games/lucky_penny_2/play?lang=en',
-      provider: '3Oaks',
-      rtp: '96.45%'
-    },
-    {
-      id: 9,
-      name: 'Wild Bandito',
-      image: 'https://i.ibb.co/V0Wtmffn/image-10.webp',
-      hasDemo: true,
-      link: 'https://m.eajzzxhro.com/104/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&ao=06gvo%3Doimdff3kr%3Dius&or=19lmtmbv%3Dxtcssqakh%3Dvhf&__hv=2fMEUCIQDPTuHaeIhp%2BPPYu0pYjv1XRGDd2sfi7BUF4wEtlhPemAIgEJ%2BI5%2BfuP8tTXqhceqcJETEimZ6GtC%2FL97ihSN3JgPE%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg',
-      provider: 'PG Soft',
-      rtp: '96.73%'
-    },
-    {
-      id: 10,
-      name: 'SixSixSix',
-      image: 'https://i.ibb.co/j9ZSyrHd/image-9.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/1534/1.37.1/index.html?language=en&channel=desktop&gameid=1534&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
-      provider: 'Hacksaw',
-      rtp: '96.15%'
-    },
-    {
-      id: 11,
-      name: 'RIP City',
-      image: 'https://i.ibb.co/VppHTd61/image-8.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/1233/1.33.2/index.html?language=en&channel=desktop&gameid=1233&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
-      provider: 'Hacksaw',
-      rtp: '96.22%'
-    },
-    {
-      id: 12,
-      name: 'Zeus vs Hades Gods of War 250',
-      image: 'https://i.ibb.co/fdfMCcsn/image-7.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs15zeushadseq&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.56%'
-    },
-    {
-      id: 13,
-      name: 'Le Rapper',
-      image: 'https://i.ibb.co/xtNsdZKc/image-6.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/2155/1.0.2/index.html?language=en&channel=desktop&gameid=2155&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
-      provider: 'Hacksaw',
-      rtp: '96.34%',
-      isComingSoon: true
-    },
-    {
-      id: 15,
-      name: 'Le Bunny',
-      image: 'https://i.ibb.co/sLyZst7/image-5.webp',
-      hasDemo: true,
-      link: 'https://static-live.hacksawgaming.com/2195/1.6.0/index.html?language=en&channel=desktop&gameid=2195&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true',
-      provider: 'Hacksaw',
-      rtp: '96.14%',
-      isComingSoon: true
-    }
-    ,
-    {
-      id: 14,
-      name: 'Big Bass Raceday Repeat',
-      image: 'https://i.ibb.co/NgvhrWDJ/image-3.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.51%',
-      isComingSoon: true
-    }
-    ,
-    {
-      id: 16,
-      name: 'Sugar Rush Super Scatter',
-      image: 'https://i.ibb.co/Wp0Hv0Kw/image-4.webp',
-      hasDemo: true,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugrushss&lang=ru&cur=USD&playMode=demo',
-      provider: 'Pragmatic Play',
-      rtp: '96.58%',
-    }
-    ,
-    {
-      id: 17,
-      name: 'Duck Hunters',
-      image: 'https://i.ibb.co/Vc8xNRfm/image-2.webp',
-      hasDemo: true,
-      link: 'https://nolimitcity.com/demo?game=DuckHunters',
-      provider: 'Nolimit City',
-      rtp: '96.05%',
-    }
-    ,
-    {
-      id: 18,
-      name: 'Money Train 3',
-      image: 'https://i.ibb.co/RTFbT6hN/image-1.webp',
-      hasDemo: true,
-      link: 'https://d2drhksbtcqozo.cloudfront.net/casino/games/moneytrain3/index.html?gameid=moneytrain3&jurisdiction=MT&channel=web&moneymode=fun&partnerid=1&fullscreen=false',
-      provider: 'Relax Gaming',
-      rtp: '96.05%',
-    }
-    ,
-    {
-      id: 19,
-      name: 'Mental 2',
-      image: 'https://i.ibb.co/BHPCyZ3s/image.webp',
-      hasDemo: true,
-      link: 'https://nolimitcity.com/demo?game=Mental2',
-      provider: 'Nolimit City',
-      rtp: '96.05%',
-    }
-    ,
-    {
-      id: 20,
-      name: 'Big Bamboo 2',
-      image: 'https://i.ibb.co/203w8Df2/le-bandit.webp',
-      hasDemo: false,
-      link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo',
-      provider: 'Push Gaming',
-      rtp: '96.36%',
-      isComingSoon: true
-    }
-
-  ];
-
-
   const categorySlots = slots.filter(s => {
-    if (slotCategory === 'popular') return !s.isComingSoon;
-    if (slotCategory === 'soon') return s.isComingSoon;
+    if (s.isActive === false) return false;
+    if (slotCategory === 'popular') return s.category === 'popular';
+    if (slotCategory === 'soon') return s.category === 'soon';
     return true;
   });
 
@@ -461,6 +298,14 @@ const AppContent = () => {
   );
 
   if (isAdminRoute) {
+    if (authLoading) {
+      return (
+        <div style={{ height: '100vh', background: 'var(--bg-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Loader2 className="animate-spin" color="var(--primary-orange)" size={48} />
+        </div>
+      );
+    }
+
     return (
       <Routes>
         <Route path="/login" element={user ? <Navigate to="/admin" /> : <LoginPage onLogin={setUser} />} />
@@ -609,6 +454,7 @@ const AppContent = () => {
                       language={language}
                       rtp={slot.rtp}
                       provider={slot.provider}
+                      onPlay={(link, name) => setActiveGame({ link, name })}
                     />
                   ))
                 ) : (
@@ -765,6 +611,71 @@ const AppContent = () => {
         onClose={() => setShowThanks(false)}
         language={language}
       />
+
+      {/* Game Iframe Modal */}
+      {activeGame && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          background: 'rgba(0,0,0,0.95)',
+          display: 'flex',
+          flexDirection: 'column',
+          backdropFilter: 'blur(10px)',
+          animation: 'fade-in 0.3s ease'
+        }}>
+          {/* Top Bar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '15px 30px',
+            background: 'rgba(255,107,0,0.1)',
+            borderBottom: '1px solid rgba(255,255,255,0.05)'
+          }}>
+            <h3 style={{ margin: 0, color: '#fff', fontSize: '1.2rem', fontWeight: '800', textTransform: 'uppercase' }}>
+              {activeGame.name}
+            </h3>
+            <button
+              onClick={() => setActiveGame(null)}
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: 'none',
+                color: '#fff',
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'var(--primary-orange)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* Iframe Wrapper */}
+          <div style={{ flex: 1, position: 'relative' }}>
+            <iframe
+              src={activeGame.link}
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none'
+              }}
+              title={activeGame.name}
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
-import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send } from 'lucide-react';
+import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../services/discord';
 
 const AdminDashboard = ({ onLogout, language = 'ru' }) => {
-    const [activeTab, setActiveTab] = useState('general');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'general';
+
+    const setActiveTab = (tab) => {
+        setSearchParams({ tab });
+    };
+
     const [config, setConfig] = useState({});
     const [tournaments, setTournaments] = useState([]);
     const [bonuses, setBonuses] = useState([]);
@@ -19,6 +26,10 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [donationHistory, setDonationHistory] = useState([]);
     const [loadingDonations, setLoadingDonations] = useState(false);
     const [donationFilter, setDonationFilter] = useState('all'); // 'all' or 'today'
+    const [slots, setSlots] = useState([]);
+    const [editingSlot, setEditingSlot] = useState(null);
+    const [isAddingSlot, setIsAddingSlot] = useState(false);
+    const [restoringSlots, setRestoringSlots] = useState(false);
 
     useEffect(() => {
         fetchData();
@@ -29,6 +40,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         const { data: configData } = await supabase.from('site_config').select('*');
         const { data: tournamentData } = await supabase.from('tournaments').select('*').order('created_at', { ascending: false });
         const { data: bonusData } = await supabase.from('bonuses').select('*').order('order_index', { ascending: true });
+        const { data: slotData } = await supabase.from('slots').select('*').order('order_index', { ascending: true });
 
         const configObj = {};
         configData?.forEach(item => {
@@ -38,6 +50,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         setConfig(configObj);
         setTournaments(tournamentData || []);
         setBonuses(bonusData || []);
+        setSlots(slotData || []);
         setLoading(false);
     };
 
@@ -145,6 +158,68 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         }
     };
 
+    const handleSaveSlot = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+
+        const { error } = await supabase.from('slots').upsert(editingSlot);
+
+        if (!error) {
+            setEditingSlot(null);
+            setIsAddingSlot(false);
+            fetchData();
+        } else {
+            alert('Error saving slot: ' + error.message);
+        }
+        setSaving(false);
+    };
+
+    const handleDeleteSlot = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this slot?')) return;
+
+        const { error } = await supabase.from('slots').delete().eq('id', id);
+        if (!error) {
+            fetchData();
+        }
+    };
+
+    const handleRestoreSlots = async () => {
+        if (!window.confirm('Restore initial slots from hardcoded list? This will add 20 slots if they are missing.')) return;
+        setRestoringSlots(true);
+
+        const initialSlots = [
+            { name: 'Wild Bounty Showdown', image_url: 'https://i.ibb.co/4nBDdn4k/image.png', has_demo: true, link: 'https://m.eajzzxhro.com/135/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&or=21novodx%3Dzveuuscmj%3Dxjh&__hv=2fMEQCICuqoNGFMML4fGBdQE%2BkWN6hW4%2FfORGq%2Fnk1ZEMnawwmAiAxGYxJjOCWQZyBSVILpJeMljpfcPHLJNuUZN5itlB12A%3D%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg', provider: 'PG SOFT', rtp: '96.65%', category: 'popular', order_index: 1 },
+            { name: 'Le Bandit', image_url: 'https://i.ibb.co/BW872rX/image-16.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/1309/1.22.0/index.html?language=en&channel=desktop&gameid=1309&mode=2&token=123131&lobbyurl=https%3A%2F%2Fwww.hacksawgaming.com&currency=EUR&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api', provider: 'Hacksaw', rtp: '96.34%', category: 'popular', order_index: 2 },
+            { name: 'The Dog House', image_url: 'https://i.ibb.co/Sws7s64r/image-15.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20doghouse&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.08%', category: 'popular', order_index: 3 },
+            { name: 'Gates of Olympus 1000', image_url: 'https://i.ibb.co/Z18Xgvwn/image.png', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20olympx&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.50%', category: 'popular', order_index: 4 },
+            { name: 'Starlight Princess 1000', image_url: 'https://i.ibb.co/m5qvPjB3/image-14.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20starlightx&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.50%', category: 'popular', order_index: 5 },
+            { name: 'Sugar Rush', image_url: 'https://i.ibb.co/Y7fGVsHz/image-13.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugarrush&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.50%', category: 'popular', order_index: 6 },
+            { name: 'Le Fisherman', image_url: 'https://i.ibb.co/qYYBwJgZ/image-12.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/2057/1.19.1/index.html?language=en&channel=desktop&gameid=2057&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true', provider: 'Hacksaw', rtp: '96.33%', category: 'popular', order_index: 7 },
+            { name: 'Lucky Penny 2', image_url: 'https://i.ibb.co/7tvPSyGk/image-11.webp', has_demo: true, link: 'https://3oaks.com/api/v1/games/lucky_penny_2/play?lang=en', provider: '3Oaks', rtp: '96.45%', category: 'popular', order_index: 8 },
+            { name: 'Wild Bandito', image_url: 'https://i.ibb.co/V0Wtmffn/image-10.webp', has_demo: true, link: 'https://m.eajzzxhro.com/104/index.html?ot=ca7094186b309ee149c55c8822e7ecf2&l=en&btt=2&ao=06gvo%3Doimdff3kr%3Dius&or=19lmtmbv%3Dxtcssqakh%3Dvhf&__hv=2fMEUCIQDPTuHaeIhp%2BPPYu0pYjv1XRGDd2sfi7BUF4wEtlhPemAIgEJ%2BI5%2BfuP8tTXqhceqcJETEimZ6GtC%2FL97ihSN3JgPE%3D&__sv=010401YytG6oT6vOl81kKt_NDwR6QjynyruQC7y9kpWiV7QEg', provider: 'PG Soft', rtp: '96.73%', category: 'popular', order_index: 9 },
+            { name: 'SixSixSix', image_url: 'https://i.ibb.co/j9ZSyrHd/image-9.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/1534/1.37.1/index.html?language=en&channel=desktop&gameid=1534&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true', provider: 'Hacksaw', rtp: '96.15%', category: 'popular', order_index: 10 },
+            { name: 'RIP City', image_url: 'https://i.ibb.co/VppHTd61/image-8.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/1233/1.33.2/index.html?language=en&channel=desktop&gameid=1233&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true', provider: 'Hacksaw', rtp: '96.22%', category: 'popular', order_index: 11 },
+            { name: 'Zeus vs Hades Gods of War 250', image_url: 'https://i.ibb.co/fdfMCcsn/image-7.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs15zeushadseq&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.56%', category: 'popular', order_index: 12 },
+            { name: 'Le Rapper', image_url: 'https://i.ibb.co/xtNsdZKc/image-6.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/2155/1.0.2/index.html?language=en&channel=desktop&gameid=2155&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true', provider: 'Hacksaw', rtp: '96.34%', category: 'soon', order_index: 13 },
+            { name: 'Le Bunny', image_url: 'https://i.ibb.co/sLyZst7/image-5.webp', has_demo: true, link: 'https://static-live.hacksawgaming.com/2195/1.6.0/index.html?language=en&channel=desktop&gameid=2195&mode=2&token=123&partner=demo&env=https://rgs-demo.hacksawgaming.com/api&realmoneyenv=https://rgs-demo.hacksawgaming.com/api&alwaysredirect=true', provider: 'Hacksaw', rtp: '96.14%', category: 'soon', order_index: 15 },
+            { name: 'Big Bass Raceday Repeat', image_url: 'https://i.ibb.co/NgvhrWDJ/image-3.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.51%', category: 'soon', order_index: 14 },
+            { name: 'Sugar Rush Super Scatter', image_url: 'https://i.ibb.co/Wp0Hv0Kw/image-4.webp', has_demo: true, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs20sugrushss&lang=ru&cur=USD&playMode=demo', provider: 'Pragmatic Play', rtp: '96.58%', category: 'popular', order_index: 16 },
+            { name: 'Duck Hunters', image_url: 'https://i.ibb.co/Vc8xNRfm/image-2.webp', has_demo: true, link: 'https://nolimitcity.com/demo?game=DuckHunters', provider: 'Nolimit City', rtp: '96.05%', category: 'popular', order_index: 17 },
+            { name: 'Money Train 3', image_url: 'https://i.ibb.co/RTFbT6hN/image-1.webp', has_demo: true, link: 'https://d2drhksbtcqozo.cloudfront.net/casino/games/moneytrain3/index.html?gameid=moneytrain3&jurisdiction=MT&channel=web&moneymode=fun&partnerid=1&fullscreen=false', provider: 'Relax Gaming', rtp: '96.05%', category: 'popular', order_index: 18 },
+            { name: 'Mental 2', image_url: 'https://i.ibb.co/BHPCyZ3s/image.webp', has_demo: true, link: 'https://nolimitcity.com/demo?game=Mental2', provider: 'Nolimit City', rtp: '96.05%', category: 'popular', order_index: 19 },
+            { name: 'Big Bamboo 2', image_url: 'https://i.ibb.co/203w8Df2/le-bandit.webp', has_demo: false, link: 'https://demogamesfree.pragmaticplay.net/gs2c/openGame.do?gameSymbol=vs10bbrcdr&lang=ru&cur=USD&playMode=demo', provider: 'Push Gaming', rtp: '96.36%', category: 'soon', order_index: 20 }
+        ];
+
+        const { error } = await supabase.from('slots').upsert(initialSlots, { onConflict: 'name' });
+        if (error) {
+            alert('Error restoring slots: ' + error.message);
+        } else {
+            alert('Slots restored successfully!');
+            fetchData();
+        }
+        setRestoringSlots(false);
+    };
+
     const handlePushToDiscord = async (tournament) => {
         setPushingId(tournament.id);
         const success = await sendTournamentToDiscord(tournament);
@@ -187,8 +262,11 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         image_url: '',
         link: '',
         brief_description: '',
+        brief_description_en: '',
         full_description: '',
+        full_description_en: '',
         rules: '',
+        rules_en: '',
         sponsor_name: '',
         sponsor_icon: '',
         sponsor_link: '',
@@ -209,6 +287,20 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         color: '#FF9500',
         order_index: 0,
         is_active: true
+    };
+
+    const emptySlot = {
+        name: '',
+        image_url: '',
+        link: '',
+        provider: '',
+        rtp: '',
+        has_demo: true,
+        is_active: true,
+        category: 'popular',
+        description_ru: '',
+        description_en: '',
+        order_index: 0
     };
 
     if (loading) {
@@ -323,6 +415,25 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                         }}
                     >
                         <Trophy size={20} /> Tournaments
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('slots')}
+                        style={{
+                            padding: '15px 20px',
+                            textAlign: 'left',
+                            borderRadius: '12px',
+                            background: activeTab === 'slots' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
+                            border: '1px solid transparent',
+                            color: '#fff',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            fontWeight: '600',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Gamepad2 size={20} /> Game Slots
                     </button>
                     <button
                         onClick={() => setActiveTab('bonuses')}
@@ -615,19 +726,37 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             <input type="text" value={editingTournament?.link || ''} onChange={(e) => setEditingTournament({ ...editingTournament, link: e.target.value })} style={inputStyle} />
                                         </div>
 
-                                        <div style={{ gridColumn: '1 / -1' }}>
-                                            <label style={labelStyle}>Brief Description</label>
-                                            <textarea value={editingTournament?.brief_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                            <div>
+                                                <label style={labelStyle}>Brief Description (RU)</label>
+                                                <textarea value={editingTournament?.brief_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Brief Description (EN)</label>
+                                                <textarea value={editingTournament?.brief_description_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description_en: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
+                                            </div>
                                         </div>
 
-                                        <div style={{ gridColumn: '1 / -1' }}>
-                                            <label style={labelStyle}>Full Description</label>
-                                            <textarea value={editingTournament?.full_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                            <div>
+                                                <label style={labelStyle}>Full Description (RU)</label>
+                                                <textarea value={editingTournament?.full_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Full Description (EN)</label>
+                                                <textarea value={editingTournament?.full_description_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description_en: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
+                                            </div>
                                         </div>
 
-                                        <div style={{ gridColumn: '1 / -1' }}>
-                                            <label style={labelStyle}>Rules</label>
-                                            <textarea value={editingTournament?.rules || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                            <div>
+                                                <label style={labelStyle}>Rules (RU)</label>
+                                                <textarea value={editingTournament?.rules || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Rules (EN)</label>
+                                                <textarea value={editingTournament?.rules_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules_en: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                            </div>
                                         </div>
 
                                         <div>
@@ -886,6 +1015,180 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             </div>
                                         )}
                                     </div>
+                                </div>
+                            )}
+                        </section>
+                    )}
+
+                    {activeTab === 'slots' && (
+                        <section className="animate-fade-in">
+                            {(editingSlot || isAddingSlot) ? (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>{isAddingSlot ? 'Add New Slot' : 'Edit Slot'}</h2>
+                                        <button onClick={() => { setEditingSlot(null); setIsAddingSlot(false); }} style={cancelButtonStyle}>Cancel</button>
+                                    </div>
+
+                                    <form onSubmit={handleSaveSlot} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label style={labelStyle}>Slot Name</label>
+                                            <input required type="text" value={editingSlot?.name || ''} onChange={(e) => setEditingSlot({ ...editingSlot, name: e.target.value })} style={inputStyle} />
+                                        </div>
+
+                                        <div>
+                                            <label style={labelStyle}>Provider</label>
+                                            <input type="text" value={editingSlot?.provider || ''} onChange={(e) => setEditingSlot({ ...editingSlot, provider: e.target.value })} style={inputStyle} />
+                                        </div>
+                                        <div>
+                                            <label style={labelStyle}>RTP (e.g. 96.5%)</label>
+                                            <input type="text" value={editingSlot?.rtp || ''} onChange={(e) => setEditingSlot({ ...editingSlot, rtp: e.target.value })} style={inputStyle} />
+                                        </div>
+
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label style={labelStyle}>Image URL</label>
+                                            <input type="text" value={editingSlot?.image_url || ''} onChange={(e) => setEditingSlot({ ...editingSlot, image_url: e.target.value })} style={inputStyle} />
+                                        </div>
+
+                                        <div style={{ gridColumn: '1 / -1' }}>
+                                            <label style={labelStyle}>Play/Demo Link</label>
+                                            <input type="text" value={editingSlot?.link || ''} onChange={(e) => setEditingSlot({ ...editingSlot, link: e.target.value })} style={inputStyle} />
+                                        </div>
+
+                                        <div>
+                                            <label style={labelStyle}>Category</label>
+                                            <select
+                                                value={editingSlot?.category || 'popular'}
+                                                onChange={(e) => setEditingSlot({ ...editingSlot, category: e.target.value })}
+                                                style={inputStyle}
+                                            >
+                                                <option value="popular">Popular Slots</option>
+                                                <option value="soon">New Slots (Coming Soon)</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label style={labelStyle}>Order Index (Sorting)</label>
+                                            <input type="number" value={editingSlot?.order_index ?? 0} onChange={(e) => setEditingSlot({ ...editingSlot, order_index: parseInt(e.target.value) || 0 })} style={inputStyle} />
+                                        </div>
+
+                                        <div style={{ display: 'flex', gap: '20px', gridColumn: '1 / -1' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id="has_demo"
+                                                    checked={editingSlot?.has_demo ?? true}
+                                                    onChange={(e) => setEditingSlot({ ...editingSlot, has_demo: e.target.checked })}
+                                                    style={{ width: '20px', height: '20px', accentColor: 'var(--primary-orange)' }}
+                                                />
+                                                <label htmlFor="has_demo" style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}>Has Demo Version</label>
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id="is_active_slot"
+                                                    checked={editingSlot?.is_active ?? true}
+                                                    onChange={(e) => setEditingSlot({ ...editingSlot, is_active: e.target.checked })}
+                                                    style={{ width: '20px', height: '20px', accentColor: 'var(--primary-orange)' }}
+                                                />
+                                                <label htmlFor="is_active_slot" style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer' }}>Visible on Site (Active)</label>
+                                            </div>
+                                        </div>
+
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                            <div>
+                                                <label style={labelStyle}>Description (RU)</label>
+                                                <textarea value={editingSlot?.description_ru || ''} onChange={(e) => setEditingSlot({ ...editingSlot, description_ru: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Description (EN)</label>
+                                                <textarea value={editingSlot?.description_en || ''} onChange={(e) => setEditingSlot({ ...editingSlot, description_en: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                            </div>
+                                        </div>
+
+                                        <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
+                                            <button type="submit" disabled={saving} style={submitButtonStyle}>
+                                                {saving ? <Loader2 size={20} className="animate-spin" /> : <Save size={20} />}
+                                                Save Slot
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            ) : (
+                                <div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Manage Game Slots</h2>
+                                        <div style={{ display: 'flex', gap: '15px' }}>
+                                            <button
+                                                onClick={handleRestoreSlots}
+                                                disabled={restoringSlots}
+                                                style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer' }}
+                                            >
+                                                {restoringSlots ? <Loader2 size={18} className="animate-spin" /> : 'Restore Initial Slots'}
+                                            </button>
+                                            <button
+                                                onClick={() => { setIsAddingSlot(true); setEditingSlot(emptySlot); }}
+                                                style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)' }}
+                                            >
+                                                + Add New Slot
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {slots.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '80px 40px', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                                            <Gamepad2 size={48} style={{ marginBottom: '20px', opacity: 0.1 }} />
+                                            <div style={{ color: 'var(--text-dim)', fontSize: '1.1rem', marginBottom: '20px' }}>No slots found in database.</div>
+                                            <button onClick={handleRestoreSlots} style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '700' }}>Import From Initial List</button>
+                                        </div>
+                                    ) : (
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                                            {slots.map(slot => (
+                                                <div key={slot.id} style={{
+                                                    padding: '20px',
+                                                    background: 'rgba(255,255,255,0.03)',
+                                                    borderRadius: '20px',
+                                                    border: '1px solid rgba(255,255,255,0.05)',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '15px'
+                                                }}>
+                                                    <div style={{ display: 'flex', gap: '15px', opacity: slot.is_active === false ? 0.5 : 1 }}>
+                                                        <img src={slot.image_url} alt="" style={{ width: '80px', height: '80px', borderRadius: '12px', objectFit: 'cover', filter: slot.is_active === false ? 'grayscale(100%)' : 'none' }} />
+                                                        <div>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                                <div style={{ fontWeight: '800', fontSize: '1.1rem' }}>{slot.name}</div>
+                                                                {slot.is_active === false ? <EyeOff size={14} color="#ff4444" /> : <Eye size={14} color="#4ade80" />}
+                                                            </div>
+                                                            <div style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>#{slot.order_index} • {slot.provider} • RTP: {slot.rtp}</div>
+                                                            <div style={{
+                                                                marginTop: '5px',
+                                                                display: 'flex',
+                                                                gap: '8px'
+                                                            }}>
+                                                                <span style={{
+                                                                    fontSize: '0.7rem',
+                                                                    fontWeight: '800',
+                                                                    textTransform: 'uppercase',
+                                                                    color: slot.category === 'popular' ? 'var(--primary-orange)' : '#4ade80'
+                                                                }}>
+                                                                    {slot.category === 'popular' ? 'Popular' : 'New/Soon'}
+                                                                </span>
+                                                                {slot.is_active === false && (
+                                                                    <span style={{ fontSize: '0.7rem', fontWeight: '800', color: '#ff4444', textTransform: 'uppercase' }}>• Hidden</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                                        <button onClick={() => { setEditingSlot(slot); setIsAddingSlot(false); }} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
+                                                        <button onClick={() => handleDeleteSlot(slot.id)} style={{ padding: '10px', background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', borderRadius: '10px', cursor: 'pointer' }}>
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </section>

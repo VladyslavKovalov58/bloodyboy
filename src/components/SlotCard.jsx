@@ -2,8 +2,20 @@ import React from 'react';
 import { Play } from 'lucide-react';
 import { translations } from '../translations';
 
-const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
+const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider, onPlay }) => {
     const t = translations[language];
+
+    const handlePlayClick = (e) => {
+        if (!hasDemo) {
+            e.preventDefault();
+            return;
+        }
+
+        if (onPlay) {
+            e.preventDefault();
+            onPlay(link, name);
+        }
+    };
 
     return (
         <div className="slot-card-container">
@@ -27,7 +39,7 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider }) => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`slot-play-button ${!hasDemo ? 'is-disabled' : ''}`}
-                            onClick={e => !hasDemo && e.preventDefault()}
+                            onClick={handlePlayClick}
                         >
                             <Play size={36} fill={hasDemo ? "white" : "rgba(255, 255, 255, 0.3)"} style={{ marginLeft: hasDemo ? '4px' : '0' }} />
                         </a>

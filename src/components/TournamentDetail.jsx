@@ -267,7 +267,9 @@ const TournamentDetail = ({ tournaments, language }) => {
                             whiteSpace: 'pre-line',
                             fontWeight: '500'
                         }}>
-                            {tournament.fullDescription}
+                            {(language === 'en' && tournament.fullDescriptionEn)
+                                ? tournament.fullDescriptionEn
+                                : tournament.fullDescription}
                         </p>
                     </section>
 
@@ -290,7 +292,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             fontSize: '1.1rem',
                             lineHeight: '2.5'
                         }}>
-                            {tournament.rules ? tournament.rules.split('\n').filter(r => r.trim()).map((rule, idx) => (
+                            {((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules) ? ((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules).split('\n').filter(r => r.trim()).map((rule, idx) => (
                                 <li key={idx} style={{
                                     display: 'flex',
                                     alignItems: 'flex-start',
