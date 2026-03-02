@@ -75,7 +75,9 @@ async function signedRequest(endpoint, data = {}) {
     const signature = await generateSignature(payload, apiSecret);
 
     try {
-        const response = await fetch(`/api/whitebit${request}`, {
+        // Clean URL building to avoid double/missing slashes
+        const cleanRequest = request.startsWith('/') ? request.slice(1) : request;
+        const response = await fetch(`/api/whitebit/${cleanRequest}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
