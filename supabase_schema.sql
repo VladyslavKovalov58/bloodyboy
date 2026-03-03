@@ -78,6 +78,9 @@ CREATE TABLE IF NOT EXISTS tournaments (
     winner_3 TEXT,
     winner_3_prize TEXT,
     is_active BOOLEAN DEFAULT true,
+    faceit_id TEXT,
+    faceit_sync_enabled BOOLEAN DEFAULT false,
+    map_pool TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -129,3 +132,9 @@ VALUES
 ('Скоро...', 'Новые бонусы', '—', '#', '#333333', 7),
 ('Скоро...', 'Новые бонусы', '—', '#', '#333333', 8)
 ON CONFLICT DO NOTHING;
+
+-- МИГРАЦИЯ: Если у вас уже есть таблицы, выполните эти команды в SQL Editor:
+-- ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS map_pool TEXT;
+-- ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS brief_description_en TEXT;
+-- ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS full_description_en TEXT;
+-- ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS rules_en TEXT;

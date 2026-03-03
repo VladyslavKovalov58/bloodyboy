@@ -1,10 +1,35 @@
+import { useState, useEffect } from 'react';
 import { Users, Calendar, Info, Rocket, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { translations } from '../translations';
 import CountdownTimer from './CountdownTimer';
+import { fetchChampionshipDetails } from '../services/faceit';
 
 const TournamentCard = ({ tournament, language }) => {
     const t = translations[language];
+    const [liveData, setLiveData] = useState(null);
+
+    useEffect(() => {
+        if (tournament.faceitSyncEnabled && tournament.faceitId) {
+            fetchChampionshipDetails(tournament.faceitId).then(data => {
+                if (data) setLiveData(data);
+            }).catch(() => { });
+        }
+    }, [tournament.faceitId, tournament.faceitSyncEnabled]);
+
+    const parseCount = (val) => {
+        if (!val) return 0;
+        const str = val.toString();
+        // Extract the numbers only, ignoring any text like "участников"
+        const parts = str.split('/');
+        const joined = parts[0].replace(/[^0-9]/g, '');
+        const max = parts[1] ? parts[1].replace(/[^0-9]/g, '') : '';
+        return { joined: joined || '0', max: max || '256' };
+    };
+
+    const cardCounts = parseCount(tournament.joinedCount);
+    const displayJoined = liveData ? (liveData.slots_filled || liveData.participant_count || liveData.total_subscriptions || cardCounts.joined || 0) : cardCounts.joined;
+    const displaySlots = liveData ? (liveData.slots || liveData.slots_total || cardCounts.max || 256) : cardCounts.max;
 
     return (
         <div className="tournament-card" style={{
@@ -110,6 +135,7 @@ const TournamentCard = ({ tournament, language }) => {
                 {/* Info Pills */}
                 <div style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     gap: '25px',
                     marginBottom: '35px',
                     color: 'rgba(255, 255, 255, 0.5)',
@@ -119,6 +145,14 @@ const TournamentCard = ({ tournament, language }) => {
                         <Users size={20} color="var(--primary-orange)" />
                         <span style={{ fontWeight: '800' }}>{tournament.format}</span>
                     </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Trophy size={20} color="var(--primary-orange)" />
+                        <span style={{ fontWeight: '800' }}>
+                            {displaySlots} {language === 'ru' ? 'команды' : 'teams'}
+                        </span>
+                    </div>
+
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <Calendar size={20} color="var(--primary-orange)" />

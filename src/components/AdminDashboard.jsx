@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+const CS2_MAPS = ['de_mirage', 'de_nuke', 'de_inferno', 'de_dust2', 'de_ancient', 'de_anubis', 'de_vertigo', 'de_overpass', 'de_train', 'cs_office', 'cs_italy'];
 import { supabase } from '../supabaseClient';
-import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
 import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../services/discord';
+import { fetchChampionshipDetails, extractChampionshipId, fetchChampionshipResults } from '../services/faceit';
+import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 
 const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -251,13 +253,101 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         onLogout();
     };
 
+    const [syncing, setSyncing] = useState(false);
+
+    const handleFaceitSync = async () => {
+        let faceitFetchTarget = editingTournament?.faceit_id;
+
+        if (!faceitFetchTarget && editingTournament?.link) {
+            faceitFetchTarget = extractChampionshipId(editingTournament.link);
+        }
+
+        if (!faceitFetchTarget) {
+            alert('Пожалуйста, введите Faceit ID или ссылку на чемпионат.');
+            return;
+        }
+
+        setSyncing(true);
+        console.log(`Starting Faceit sync for target:`, faceitFetchTarget);
+        const data = await fetchChampionshipDetails(faceitFetchTarget);
+        console.log(`Faceit sync returned data:`, data);
+        setSyncing(false);
+
+        if (data) {
+            const updates = { ...editingTournament };
+            // Mapping Faceit data to our schema
+            // updates.title = data.name; // We keep our manual title
+
+            const max = data.slots || data.max_slots || data.slots_total || data.total_slots || data.max_participants || data.number_of_players || 32;
+            const current = Math.max(
+                data.slots_filled || 0,
+                data.slots_total_filled || 0,
+                data.subscriptions_count || 0,
+                data.current_subscription_count || 0,
+                data.members_count || 0,
+                data.joined || 0,
+                data.number_of_players_joined || 0,
+                data.number_of_players_participants || 0
+            );
+
+            // Normalize for 2v2/solo if needed (same logic as faceit.js)
+            let teamSize = data.game_settings?.team_size || data.game_configuration?.team_size || data.team_size;
+            const name = (data.name || '').toLowerCase();
+            if (!teamSize) {
+                if (name.includes('wingman') || name.includes('2v2') || name.includes('2x2')) teamSize = 2;
+                else if (name.includes('1v1') || name.includes('solo')) teamSize = 1;
+                else teamSize = 5;
+            }
+
+            const normalizedJoined = (teamSize >= 2 && max > 32) ? Math.ceil(current / teamSize) : current;
+            const normalizedMax = (teamSize >= 2 && max > 32) ? Math.floor(max / teamSize) : max;
+
+            updates.joined_count = `${normalizedJoined}/${normalizedMax}`;
+
+            // 2. Update Dates
+            if (data.starts_at) {
+                const startDate = new Date(data.starts_at * 1000);
+                updates.target_date = startDate.toISOString().split('.')[0];
+                updates.date = startDate.toLocaleDateString('ru-RU');
+            }
+
+            // 3. Update Status
+            if (data.status === 'FINISHED' || data.status === 'COMPLETED') {
+                updates.is_active = false;
+            } else {
+                updates.is_active = true;
+            }
+
+            // 4. Update ID (This is CRITICAL for bracket/teams sync on frontend)
+            const actualId = data.championship_id || data.tournament_id || (typeof faceitFetchTarget === 'object' ? faceitFetchTarget.id : faceitFetchTarget);
+            updates.faceit_id = actualId;
+            updates.faceit_sync_enabled = true; // Auto-enable if it wasn't
+
+            // 5. Update Results for finished tournaments
+            if (!updates.is_active) {
+                const results = await fetchChampionshipResults(actualId);
+                if (results?.items?.length > 0) {
+                    const winners = results.items.sort((a, b) => a.position - b.position);
+                    if (winners[0]) updates.winner_1 = winners[0].team?.name || winners[0].label;
+                    if (winners[1]) updates.winner_2 = winners[1].team?.name || winners[1].label;
+                    if (winners[2]) updates.winner_3 = winners[2].team?.name || winners[2].label;
+                }
+            }
+
+            setEditingTournament(updates);
+            alert('Данные Faceit загружены! Не забудьте нажать "Save Tournament" внизу.');
+        } else {
+            alert('Не удалось получить данные с Faceit. Проверьте ID или ссылку.');
+        }
+    };
+
     const emptyTournament = {
         title: '',
         date: '',
         target_date: '',
         prize_pool: '',
         format: '',
-        type: 'FUN CUP',
+        type: 'TOURNAMENT',
         joined_count: '',
         image_url: '',
         link: '',
@@ -276,7 +366,9 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         winner_2_prize: '',
         winner_3: '',
         winner_3_prize: '',
-        is_active: true
+        is_active: true,
+        faceit_id: '',
+        faceit_sync_enabled: false
     };
 
     const emptyBonus = {
@@ -708,10 +800,6 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         </div>
 
                                         <div>
-                                            <label style={labelStyle}>Type (e.g. FUN CUP, MAJOR)</label>
-                                            <input type="text" value={editingTournament?.type || ''} onChange={(e) => setEditingTournament({ ...editingTournament, type: e.target.value })} style={inputStyle} />
-                                        </div>
-                                        <div>
                                             <label style={labelStyle}>Participants (e.g. 12/32)</label>
                                             <input type="text" value={editingTournament?.joined_count || ''} onChange={(e) => setEditingTournament({ ...editingTournament, joined_count: e.target.value })} style={inputStyle} />
                                         </div>
@@ -724,6 +812,52 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <div style={{ gridColumn: '1 / -1' }}>
                                             <label style={labelStyle}>Registration Link</label>
                                             <input type="text" value={editingTournament?.link || ''} onChange={(e) => setEditingTournament({ ...editingTournament, link: e.target.value })} style={inputStyle} />
+                                        </div>
+
+                                        <div style={{ gridColumn: '1 / -1', background: 'rgba(255, 107, 0, 0.05)', padding: '20px', borderRadius: '15px', border: '1px solid rgba(255, 107, 0, 0.1)', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        id="faceit_sync"
+                                                        checked={editingTournament?.faceit_sync_enabled || false}
+                                                        onChange={(e) => setEditingTournament({ ...editingTournament, faceit_sync_enabled: e.target.checked })}
+                                                        style={{ width: '20px', height: '20px', accentColor: 'var(--primary-orange)', cursor: 'pointer' }}
+                                                    />
+                                                    <label htmlFor="faceit_sync" style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer', color: '#fff' }}>Синхронизировать с Faceit</label>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleFaceitSync}
+                                                    disabled={syncing}
+                                                    style={{
+                                                        background: 'var(--primary-orange)',
+                                                        color: '#fff',
+                                                        border: 'none',
+                                                        padding: '8px 16px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: '700',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px'
+                                                    }}
+                                                >
+                                                    {syncing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+                                                    Обновить сейчас
+                                                </button>
+                                            </div>
+                                            <div style={{ opacity: editingTournament?.faceit_sync_enabled ? 1 : 0.5, transition: 'opacity 0.3s' }}>
+                                                <label style={{ ...labelStyle, fontSize: '0.75rem' }}>Faceit Championship ID (можно оставить пустым, если есть ссылка)</label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="ID: 70adb9b2-018d-428b-be81-104d48b898ba"
+                                                    value={editingTournament?.faceit_id || ''}
+                                                    onChange={(e) => setEditingTournament({ ...editingTournament, faceit_id: e.target.value })}
+                                                    style={{ ...inputStyle, padding: '12px', fontSize: '0.9rem' }}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
@@ -766,6 +900,89 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <div>
                                             <label style={labelStyle}>Sponsor Link</label>
                                             <input type="text" value={editingTournament?.sponsor_link || ''} onChange={(e) => setEditingTournament({ ...editingTournament, sponsor_link: e.target.value })} style={inputStyle} />
+                                        </div>
+                                        <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.02)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <Trophy size={18} color="var(--primary-orange)" />
+                                                    <label style={{ ...labelStyle, marginBottom: 0, color: '#fff' }}>Graphical Map Selection</label>
+                                                </div>
+                                                <div style={{ fontSize: '0.75rem', opacity: 0.5, fontWeight: '700', color: '#fff' }}>Click to toggle maps</div>
+                                            </div>
+
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                                                gap: '12px',
+                                                marginBottom: '20px',
+                                                maxHeight: '300px',
+                                                overflowY: 'auto',
+                                                padding: '5px'
+                                            }}>
+                                                {CS2_MAPS.map(map => {
+                                                    const mapClean = map.toLowerCase();
+                                                    const isSelected = editingTournament?.map_pool?.toLowerCase().split(',').map(m => m.trim()).includes(mapClean);
+                                                    const bgImg = `https://raw.githubusercontent.com/ghostcap-gaming/cs2-map-images/main/cs2/${mapClean}.png`;
+
+                                                    return (
+                                                        <div
+                                                            key={map}
+                                                            onClick={() => {
+                                                                const current = editingTournament?.map_pool ? editingTournament.map_pool.split(',').map(m => m.trim().toLowerCase()).filter(Boolean) : [];
+                                                                const next = current.includes(mapClean) ? current.filter(m => m !== mapClean) : [...current, mapClean];
+                                                                setEditingTournament({ ...editingTournament, map_pool: next.join(', ') });
+                                                            }}
+                                                            style={{
+                                                                height: '70px',
+                                                                borderRadius: '14px',
+                                                                overflow: 'hidden',
+                                                                position: 'relative',
+                                                                cursor: 'pointer',
+                                                                border: isSelected ? '2px solid var(--primary-orange)' : '1px solid rgba(255,255,255,0.06)',
+                                                                background: `rgba(0,0,0,0.8) url("${bgImg}") center/cover no-repeat`,
+                                                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                                transform: isSelected ? 'scale(1.02)' : 'none',
+                                                                boxShadow: isSelected ? '0 10px 20px rgba(255,107,0,0.15)' : 'none'
+                                                            }}
+                                                        >
+                                                            <div style={{
+                                                                position: 'absolute',
+                                                                inset: 0,
+                                                                background: isSelected ? 'rgba(255,107,0,0.1)' : 'rgba(0,0,0,0.4)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                backdropFilter: isSelected ? 'none' : 'blur(1px)',
+                                                            }}>
+                                                                <span style={{
+                                                                    fontSize: '0.7rem',
+                                                                    fontWeight: '900',
+                                                                    color: '#fff',
+                                                                    textTransform: 'uppercase',
+                                                                    letterSpacing: '1px',
+                                                                    textShadow: '0 2px 4px rgba(0,0,0,0.8)'
+                                                                }}>
+                                                                    {map.replace('de_', '').replace('cs_', '').toUpperCase()}
+                                                                </span>
+                                                                {isSelected && (
+                                                                    <div style={{ position: 'absolute', top: '6px', right: '6px', background: 'var(--primary-orange)', borderRadius: '6px', padding: '2px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+                                                                        <CheckCircle size={12} color="#fff" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+
+                                            <label style={{ ...labelStyle, fontSize: '0.7rem', marginTop: '10px' }}>Manual Map Pool String (for custom maps)</label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Mirage, Nuke, Dust2"
+                                                value={editingTournament?.map_pool || ''}
+                                                onChange={(e) => setEditingTournament({ ...editingTournament, map_pool: e.target.value })}
+                                                style={{ ...inputStyle, padding: '12px', fontSize: '0.85rem' }}
+                                            />
                                         </div>
                                         <div style={{ gridColumn: '1 / -1' }}>
                                             <h3 style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', marginTop: '10px', color: 'var(--primary-orange)', fontSize: '1rem', marginBottom: '15px' }}>Tournament Winners (Top 3)</h3>
@@ -1297,7 +1514,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                 .animate-fade-in { animation: fadeIn 0.4s ease-out; }
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
             `}</style>
-        </div >
+        </div>
     );
 };
 

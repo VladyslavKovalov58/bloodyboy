@@ -1,7 +1,10 @@
-import { ArrowLeft, Users, Calendar, Rocket, ShieldCheck, Trophy, Info } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowLeft, Users, Calendar, Rocket, ShieldCheck, Trophy, Info, LayoutGrid, Map as MapIcon, Activity, ChevronRight, User, Loader2 } from 'lucide-react';
+import { fetchChampionshipDetails, fetchChampionshipMatches, fetchChampionshipParticipants, fetchMatchDetails, fetchMatchStats } from '../services/faceit';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { translations } from '../translations';
 import CountdownTimer from './CountdownTimer';
+import MatchModal from './MatchModal';
 
 const TournamentDetail = ({ tournaments, language }) => {
     const { id } = useParams();
@@ -10,16 +13,237 @@ const TournamentDetail = ({ tournaments, language }) => {
 
     const tournament = tournaments.find(t => t.id === id);
 
-    if (!tournament) {
+    const [faceitData, setFaceitData] = useState(null);
+    const [matches, setMatches] = useState([]);
+    const [teams, setTeams] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState('info'); // info, bracket, teams
+    const [selectedMatch, setSelectedMatch] = useState(null);
+    const [selectedMatchDetails, setSelectedMatchDetails] = useState(null);
+    const [selectedMatchStats, setSelectedMatchStats] = useState(null);
+    const [loadingMatchDetails, setLoadingMatchDetails] = useState(false);
+    const contentRef = React.useRef(null);
+
+    const handleMatchClick = async (match) => {
+        setSelectedMatch(match);
+        setSelectedMatchDetails(null);
+        setSelectedMatchStats(null);
+        setLoadingMatchDetails(true);
+        if (match.match_id) {
+            const [details, stats] = await Promise.all([
+                fetchMatchDetails(match.match_id),
+                fetchMatchStats(match.match_id)
+            ]);
+            setSelectedMatchDetails(details);
+            setSelectedMatchStats(stats);
+        }
+        setLoadingMatchDetails(false);
+    };
+
+    // Scroll to content when tab changes (especially on mobile)
+    useEffect(() => {
+        if (activeTab !== 'info' && contentRef.current) {
+            const yOffset = -80; // offset for sticky tabs/header
+            const element = contentRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+    }, [activeTab]);
+
+    useEffect(() => {
+        if (tournament?.faceitId && tournament.faceitSyncEnabled) {
+            const loadData = async (showLoading = true) => {
+                if (showLoading) setLoading(true);
+                const [details, mData, sData] = await Promise.all([
+                    fetchChampionshipDetails(tournament.faceitId),
+                    fetchChampionshipMatches(tournament.faceitId),
+                    fetchChampionshipParticipants(tournament.faceitId)
+                ]);
+                if (details) setFaceitData(details);
+                if (mData?.items) setMatches(mData.items);
+                if (sData?.items) setTeams(sData.items);
+                if (showLoading) setLoading(false);
+            };
+
+            loadData(true);
+
+            // Auto-refresh every 30 seconds
+            const interval = setInterval(() => loadData(false), 30000);
+            return () => clearInterval(interval);
+        }
+    }, [tournament?.faceitId, tournament?.faceitSyncEnabled]);
+
+    const mapPool = useMemo(() => {
+        // Priority 1: Manual map pool from DB
+        if (tournament?.mapPool) {
+            return tournament.mapPool.split(',').map(m => {
+                let s = m.trim().toLowerCase();
+                if (s && !s.startsWith('de_') && !s.startsWith('cs_')) s = `de_${s}`;
+                return s;
+            }).filter(Boolean);
+        }
+
+        // Priority 2: Faceit Sync Data
+        if (faceitData && tournament?.faceitSyncEnabled) {
+            let maps = [];
+            if (Array.isArray(faceitData.game_configuration?.maps)) maps = faceitData.game_configuration.maps.map(m => m.name || m.class_name);
+            if (maps.length === 0) {
+                const pool = faceitData.game_configuration?.map_pool;
+                if (Array.isArray(pool)) maps = pool; else if (typeof pool === 'string') maps = pool.split(',').map(s => s.trim());
+            }
+            if (maps.length === 0) {
+                const settingsPool = faceitData.game_settings?.map_pool;
+                if (Array.isArray(settingsPool)) maps = settingsPool; else if (typeof settingsPool === 'string') maps = settingsPool.split(',').map(s => s.trim());
+            }
+            if (maps.length === 0 && matches && matches.length > 0) {
+                matches.forEach(m => {
+                    if (!m) return;
+                    const picks = m.voting?.map?.pick;
+                    if (Array.isArray(picks)) maps.push(...picks);
+                });
+            }
+
+            return [...new Set(maps)]
+                .filter(m => typeof m === 'string' && m.length > 0)
+                .map(m => {
+                    let cleaned = m.toLowerCase().trim();
+                    if (cleaned.startsWith('de_')) {
+                        const parts = cleaned.split('_');
+                        if (parts.length > 2) cleaned = `${parts[0]}_${parts[1]}`;
+                    } else if (cleaned && !cleaned.includes(' ')) {
+                        cleaned = `de_${cleaned}`;
+                    }
+                    return cleaned;
+                });
+        }
+
+        return [];
+    }, [faceitData, tournament?.faceitSyncEnabled, tournament?.mapPool, matches]);
+
+    const totalJoined = useMemo(() => {
+        // Helper to get only the number from a string like "39/256 участников"
+        const parseCount = (val) => {
+            if (!val) return 0;
+            const str = val.toString();
+            // Try to get first number from "39/256"
+            const match = str.match(/(\d+)/);
+            return match ? parseInt(match[1]) : 0;
+        };
+
+        if (!faceitData) return parseCount(tournament?.joinedCount);
+
+        // Find the maximum value from all possible participant/subscription fields
+        const joined = Math.max(
+            Number(faceitData?.slots_filled || 0),
+            Number(faceitData?.participant_count || 0),
+            Number(faceitData?.subscriptions_count || 0),
+            Number(faceitData?.total_subscriptions || 0),
+            Number(faceitData?.members_count || 0),
+            Number(faceitData?.total_members || 0),
+            Number(teams?.length || 0)
+        );
+        return joined;
+    }, [faceitData, teams.length, tournament?.joinedCount]);
+
+    const mapStats = useMemo(() => {
+        if (!matches || !matches.length) return [];
+        const stats = {};
+        matches.forEach(m => {
+            if (!m) return;
+            // Check voting picks
+            const picks = m.voting?.map?.pick;
+            if (Array.isArray(picks)) {
+                picks.forEach(map => {
+                    if (!map) return;
+                    // Try to find a nice name if 'map' looks like a ID
+                    let mapName = map.toString().toLowerCase().trim();
+                    if (/^[0-9a-f-]{10,}$/i.test(mapName)) {
+                        // It's likely a GUID, look for name in voting entities
+                        const entities = m.voting?.map?.entities;
+                        const entity = Array.isArray(entities) ? entities.find(e => e.guid === map || e.id === map) : null;
+                        if (entity?.name) mapName = entity.name.toLowerCase();
+                    }
+
+                    if (!mapName.startsWith('de_') && !mapName.startsWith('cs_')) mapName = `de_${mapName}`;
+                    stats[mapName] = (stats[mapName] || 0) + 1;
+                });
+            } else if (m.voting?.map?.entities) {
+                // If single map championship or specific format
+                const entities = m.voting.map.entities;
+                if (Array.isArray(entities) && entities.length === 1) {
+                    let mapName = entities[0].name?.toLowerCase() || entities[0].guid?.toLowerCase();
+                    if (mapName) {
+                        if (!mapName.startsWith('de_') && !mapName.startsWith('cs_')) mapName = `de_${mapName}`;
+                        stats[mapName] = (stats[mapName] || 0) + 1;
+                    }
+                }
+            }
+        });
+        return Object.entries(stats).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    }, [matches]);
+
+    const isFaceitTournament = !!tournament?.faceitId && tournament?.faceitSyncEnabled;
+
+    useEffect(() => {
+        if (faceitData) {
+            console.log(`Faceit Tournament ID:`, tournament?.faceitId);
+            console.log(`Faceit Detected Name:`, faceitData.name);
+            console.log(`Faceit Slots/Filled:`, faceitData.slots, '/', faceitData.slots_filled, '(Real total:', totalJoined, ')');
+            console.log(`Loaded Teams:`, teams.length, `Matches:`, matches.length);
+            if (mapPool.length > 0) console.log(`Faceit Extracted Maps:`, mapPool);
+        }
+    }, [faceitData, mapPool, teams.length, matches.length, tournament?.faceitId, totalJoined]);
+
+    if (loading && !faceitData) {
         return (
-            <div style={{ padding: '40px', textAlign: 'center', color: '#fff' }}>
-                <h2>Tournament not found</h2>
-                <Link to="/tournaments" style={{ color: 'var(--primary-orange)' }}>Back to list</Link>
+            <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+                <Loader2 size={48} className="animate-spin" color="var(--primary-orange)" />
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>
+                    {language === 'ru' ? 'Загрузка данных турнира...' : 'Loading tournament data...'}
+                </div>
             </div>
         );
     }
 
-    const isTigerTournament = tournament.name === 'TIGER Wingmans Tournament' || tournament.name === 'Tiger Duo Cup';
+    if (!tournament) {
+        if (tournaments.length === 0) {
+            return (
+                <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px', background: 'var(--bg-dark)' }}>
+                    <Loader2 size={48} className="animate-spin" color="var(--primary-orange)" />
+                    <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>
+                        {language === 'ru' ? 'Загрузка турнира...' : 'Loading tournament...'}
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div style={{ padding: '80px 40px', textAlign: 'center', color: '#fff', background: 'var(--bg-dark)', minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <Trophy size={64} style={{ marginBottom: '20px', opacity: 0.2, color: 'var(--primary-orange)' }} />
+                <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '10px' }}>
+                    {language === 'ru' ? 'Турнир не найден' : 'Tournament not found'}
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '30px' }}>
+                    {language === 'ru' ? 'Возможно, ссылка устарела или турнир был удален' : 'The link might be outdated or the tournament was deleted'}
+                </p>
+                <button
+                    onClick={() => navigate('/tournaments')}
+                    style={{
+                        background: 'rgba(255,107,0,0.1)',
+                        border: '1px solid var(--primary-orange)',
+                        color: 'var(--primary-orange)',
+                        padding: '12px 30px',
+                        borderRadius: '12px',
+                        fontWeight: '800',
+                        cursor: 'pointer'
+                    }}
+                >
+                    {language === 'ru' ? 'К списку турниров' : 'Back to tournaments'}
+                </button>
+            </div>
+        );
+    }
+
 
     return (
         <div className="tournament-detail-container" style={{
@@ -40,6 +264,13 @@ const TournamentDetail = ({ tournaments, language }) => {
                         0% { opacity: 0.3; transform: scale(1); }
                         50% { opacity: 0.6; transform: scale(1.1); }
                         100% { opacity: 0.3; transform: scale(1); }
+                    }
+                    .tabs-container::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .tabs-container {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
                     }
                 `}
             </style>
@@ -68,7 +299,7 @@ const TournamentDetail = ({ tournaments, language }) => {
             </button>
 
             {/* New Title Section */}
-            <div style={{ marginBottom: '40px' }}>
+            <div style={{ marginBottom: isFaceitTournament ? '20px' : '40px' }}>
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -87,15 +318,6 @@ const TournamentDetail = ({ tournaments, language }) => {
                     }}>
                         {tournament.isActive ? t.activeTournaments : t.finishedTournaments}
                     </div>
-                    <div style={{
-                        color: 'rgba(255,255,255,0.4)',
-                        fontSize: '0.8rem',
-                        fontWeight: '800',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px'
-                    }}>
-                        {tournament.type}
-                    </div>
                 </div>
 
                 <h1 style={{
@@ -110,6 +332,39 @@ const TournamentDetail = ({ tournaments, language }) => {
                 </h1>
             </div>
 
+            {/* Tabs Navigation */}
+            {
+                isFaceitTournament && (
+                    <div className="tabs-container" style={{ display: 'flex', gap: '30px', marginBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto', whiteSpace: 'nowrap' }}>
+                        {[
+                            { id: 'info', label: language === 'ru' ? 'Информация' : 'Info', icon: <Info size={18} /> },
+                            { id: 'bracket', label: language === 'ru' ? 'Сетка и Счет' : 'Brackets & Live', icon: <LayoutGrid size={18} /> },
+                            { id: 'teams', label: language === 'ru' ? 'Участники' : 'Teams', icon: <Users size={18} /> }
+                        ].map(tab => (
+                            <div
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '15px 5px',
+                                    borderBottom: activeTab === tab.id ? '2px solid var(--primary-orange)' : '2px solid transparent',
+                                    color: activeTab === tab.id ? '#fff' : 'rgba(255,255,255,0.4)',
+                                    cursor: 'pointer',
+                                    fontWeight: '800',
+                                    fontSize: '0.9rem',
+                                    textTransform: 'uppercase',
+                                    transition: 'all 0.3s'
+                                }}
+                            >
+                                {tab.icon} {tab.label}
+                            </div>
+                        ))}
+                    </div>
+                )
+            }
+
             {/* Content Grid */}
             <div className="detail-content-grid" style={{
                 display: 'grid',
@@ -117,218 +372,362 @@ const TournamentDetail = ({ tournaments, language }) => {
                 gap: window.innerWidth < 768 ? '30px' : '40px'
             }}>
                 {/* Left Column: Info */}
-                <div>
-                    {!tournament.isActive && (tournament.winner1 || tournament.winner2 || tournament.winner3) && (
-                        <section style={{ marginBottom: '50px', animation: 'fadeIn 0.8s ease-out' }}>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '15px',
-                                marginBottom: '40px',
-                                justifyContent: window.innerWidth < 1024 ? 'center' : 'flex-start'
-                            }}>
-                                <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '12px',
-                                    background: 'rgba(255, 107, 0, 0.1)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'var(--primary-orange)'
-                                }}>
-                                    <Trophy size={24} />
-                                </div>
-                                <h2 style={{
-                                    fontSize: '2rem',
-                                    fontWeight: '900',
-                                    margin: 0,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '1px',
-                                    background: 'linear-gradient(to right, #fff, rgba(255,255,255,0.7))',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent'
-                                }}>
-                                    {language === 'ru' ? 'Победители турнира' : 'Tournament Winners'}
-                                </h2>
-                            </div>
-
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(3, 1fr)',
-                                gap: '40px',
-                                alignItems: 'flex-end',
-                                maxWidth: '1000px',
-                                margin: '0 auto',
-                                paddingTop: '45px'
-                            }}>
-                                {[
-                                    { rank: 2, name: tournament.winner2, prize: tournament.winner2Prize, medal: '🥈', color: '#c0c0c0', label: language === 'ru' ? 'II МЕСТО' : '2ND PLACE', scale: '1.0', order: window.innerWidth < 768 ? 2 : 1 },
-                                    { rank: 1, name: tournament.winner1, prize: tournament.winner1Prize, medal: '🥇', color: '#FFD700', label: language === 'ru' ? 'I МЕСТО' : '1ST PLACE', scale: '1.15', order: window.innerWidth < 768 ? 1 : 2, isMain: true },
-                                    { rank: 3, name: tournament.winner3, prize: tournament.winner3Prize, medal: '🥉', color: '#cd7f32', label: language === 'ru' ? 'III МЕСТО' : '3RD PLACE', scale: '0.95', order: window.innerWidth < 768 ? 3 : 3 }
-                                ].filter(w => w.name).sort((a, b) => a.order - b.order).map((w, i) => (
-                                    <div key={i} style={{
-                                        background: 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
-                                        padding: w.isMain ? '45px 30px' : '35px 25px',
-                                        borderRadius: '35px',
-                                        border: `1px solid ${w.isMain ? 'rgba(255, 180, 0, 0.2)' : 'rgba(255,255,255,0.05)'}`,
-                                        textAlign: 'center',
-                                        position: 'relative',
-                                        transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                                        transform: `scale(${w.scale})`,
-                                        boxShadow: w.isMain ? '0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(255, 180, 0, 0.05)' : '0 15px 40px rgba(0,0,0,0.3)',
-                                        zIndex: w.isMain ? 2 : 1
-                                    }}
-                                        onMouseEnter={(e) => {
-                                            e.currentTarget.style.transform = `scale(${parseFloat(w.scale) + 0.05}) translateY(-10px)`;
-                                            e.currentTarget.style.borderColor = w.isMain ? 'rgba(255, 180, 0, 0.4)' : 'rgba(255,255,255,0.15)';
-                                            e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.03) 100%)';
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.currentTarget.style.transform = `scale(${w.scale})`;
-                                            e.currentTarget.style.borderColor = w.isMain ? 'rgba(255, 180, 0, 0.2)' : 'rgba(255,255,255,0.05)';
-                                            e.currentTarget.style.background = 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)';
-                                        }}>
-                                        <div style={{
-                                            fontSize: '0.7rem',
-                                            fontWeight: '900',
-                                            color: w.color,
-                                            letterSpacing: '3px',
-                                            marginBottom: '15px',
-                                            opacity: 0.9,
-                                            textShadow: `0 0 10px ${w.color}40`
-                                        }}>
-                                            {w.label}
-                                        </div>
-                                        <div style={{
-                                            fontSize: w.isMain ? '4.5rem' : '3.5rem',
-                                            marginBottom: '15px',
-                                            filter: `drop-shadow(0 0 15px ${w.color}30)`,
-                                            lineHeight: 1
-                                        }}>
-                                            {w.medal}
-                                        </div>
-                                        <div style={{
-                                            fontWeight: '900',
-                                            fontSize: w.isMain ? '1.6rem' : '1.3rem',
-                                            color: '#fff',
-                                            lineHeight: '1.2',
-                                            marginBottom: w.prize ? '12px' : '0'
-                                        }}>
-                                            {w.name}
-                                        </div>
-                                        {w.prize && (
-                                            <div style={{
-                                                display: 'inline-block',
-                                                padding: '6px 16px',
-                                                background: w.isMain ? 'rgba(255, 180, 0, 0.15)' : 'rgba(255,255,255,0.05)',
-                                                borderRadius: '12px',
-                                                fontSize: '1rem',
-                                                color: w.isMain ? '#FFB400' : 'var(--primary-orange)',
-                                                fontWeight: '900',
-                                                border: `1px solid ${w.isMain ? 'rgba(255, 180, 0, 0.2)' : 'rgba(255,255,255,0.05)'}`
-                                            }}>
-                                                {w.prize}
-                                            </div>
-                                        )}
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '50%',
-                                            transform: 'translate(-50%, -50%)',
-                                            width: '120%',
-                                            height: '120%',
-                                            background: `radial-gradient(circle, ${w.color}08 0%, transparent 70%)`,
-                                            pointerEvents: 'none',
-                                            zIndex: -1
-                                        }} />
-                                    </div>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    <section style={{ marginBottom: '50px' }}>
-                        <h2 style={{
-                            fontSize: '2rem',
-                            fontWeight: '900',
-                            marginBottom: '25px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '15px'
-                        }}>
-                            <Info size={28} color="var(--primary-orange)" />
-                            {t.description}
-                        </h2>
-                        <p style={{
-                            fontSize: '1.2rem',
-                            lineHeight: '1.8',
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            whiteSpace: 'pre-line',
-                            fontWeight: '500'
-                        }}>
-                            {(language === 'en' && tournament.fullDescriptionEn)
-                                ? tournament.fullDescriptionEn
-                                : tournament.fullDescription}
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 style={{
-                            fontSize: '2rem',
-                            fontWeight: '900',
-                            marginBottom: '25px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '15px'
-                        }}>
-                            <ShieldCheck size={28} color="var(--primary-orange)" />
-                            {t.rules}
-                        </h2>
-                        <ul style={{
-                            paddingLeft: '0',
-                            listStyle: 'none',
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            fontSize: '1.1rem',
-                            lineHeight: '2.5'
-                        }}>
-                            {((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules) ? ((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules).split('\n').filter(r => r.trim()).map((rule, idx) => (
-                                <li key={idx} style={{
-                                    display: 'flex',
-                                    alignItems: 'flex-start',
-                                    gap: '12px',
-                                    padding: '12px 20px',
-                                    background: 'rgba(255, 255, 255, 0.02)',
-                                    borderRadius: '12px',
-                                    marginBottom: '8px',
-                                    border: '1px solid rgba(255, 255, 255, 0.03)'
-                                }}>
+                {/* Left Column: Switchable Content */}
+                <div ref={contentRef}>
+                    {activeTab === 'info' && (
+                        <>
+                            {!tournament.isActive && (tournament.winner1 || tournament.winner2 || tournament.winner3) && (
+                                <section style={{ marginBottom: '50px', animation: 'fadeIn 0.8s ease-out' }}>
                                     <div style={{
-                                        minWidth: '24px',
-                                        height: '24px',
-                                        borderRadius: '8px',
-                                        background: 'rgba(255, 107, 0, 0.1)',
                                         display: 'flex',
                                         alignItems: 'center',
-                                        justifyContent: 'center',
-                                        color: 'var(--primary-orange)',
-                                        fontSize: '0.85rem',
-                                        fontWeight: '900',
-                                        marginTop: '4px'
+                                        gap: '15px',
+                                        marginBottom: '40px',
+                                        justifyContent: window.innerWidth < 1024 ? 'center' : 'flex-start'
                                     }}>
-                                        {idx + 1}
+                                        <div style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '12px',
+                                            background: 'rgba(255, 107, 0, 0.1)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            color: 'var(--primary-orange)'
+                                        }}>
+                                            <Trophy size={24} />
+                                        </div>
+                                        <h2 style={{
+                                            fontSize: '2rem',
+                                            fontWeight: '900',
+                                            margin: 0,
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '1px',
+                                            background: 'linear-gradient(to right, #fff, rgba(255,255,255,0.7))',
+                                            WebkitBackgroundClip: 'text',
+                                            WebkitTextFillColor: 'transparent'
+                                        }}>
+                                            {language === 'ru' ? 'Победители турнира' : 'Tournament Winners'}
+                                        </h2>
                                     </div>
-                                    <span style={{ paddingTop: '2px' }}>{rule.replace(/^\d+\.\s*/, '')}</span>
-                                </li>
-                            )) : (
-                                <>
-                                    <li>Fair play policy and anti-cheat requirements.</li>
-                                    <li>Team registration must be confirmed 24h prior.</li>
-                                    <li>Players must be 18+ or have parental consent.</li>
-                                </>
+
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(3, 1fr)',
+                                        gap: '40px',
+                                        alignItems: 'flex-end',
+                                        maxWidth: '1000px',
+                                        margin: '0 auto',
+                                        paddingTop: '45px'
+                                    }}>
+                                        {[
+                                            { rank: 2, name: tournament.winner2, prize: tournament.winner2Prize, medal: '🥈', color: '#c0c0c0', label: language === 'ru' ? 'II МЕСТО' : '2ND PLACE', scale: '1.0', order: window.innerWidth < 768 ? 2 : 1 },
+                                            { rank: 1, name: tournament.winner1, prize: tournament.winner1Prize, medal: '🥇', color: '#FFD700', label: language === 'ru' ? 'I МЕСТО' : '1ST PLACE', scale: '1.15', order: window.innerWidth < 768 ? 1 : 2, isMain: true },
+                                            { rank: 3, name: tournament.winner3, prize: tournament.winner3Prize, medal: '🥉', color: '#cd7f32', label: language === 'ru' ? 'III МЕСТО' : '3RD PLACE', scale: '0.95', order: window.innerWidth < 768 ? 3 : 3 }
+                                        ].filter(w => w.name).sort((a, b) => a.order - b.order).map((w, i) => (
+                                            <div key={i} style={{
+                                                background: 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
+                                                padding: w.isMain ? '45px 30px' : '35px 25px',
+                                                borderRadius: '35px',
+                                                border: `1px solid ${w.isMain ? 'rgba(255, 180, 0, 0.2)' : 'rgba(255,255,255,0.05)'}`,
+                                                textAlign: 'center',
+                                                position: 'relative',
+                                                transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                                transform: `scale(${w.scale})`,
+                                                boxShadow: w.isMain ? '0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(255, 180, 0, 0.05)' : '0 15px 40px rgba(0,0,0,0.3)',
+                                                zIndex: w.isMain ? 2 : 1
+                                            }}>
+                                                <div style={{ fontSize: '0.7rem', fontWeight: '900', color: w.color, letterSpacing: '3px', marginBottom: '15px', opacity: 0.9 }}>{w.label}</div>
+                                                <div style={{ fontSize: w.isMain ? '4.5rem' : '3.5rem', marginBottom: '15px', lineHeight: 1 }}>{w.medal}</div>
+                                                <div style={{ fontWeight: '900', fontSize: w.isMain ? '1.6rem' : '1.3rem', color: '#fff', lineHeight: '1.2', marginBottom: w.prize ? '12px' : '0' }}>{w.name}</div>
+                                                {w.prize && (
+                                                    <div style={{ display: 'inline-block', padding: '6px 16px', background: w.isMain ? 'rgba(255, 180, 0, 0.15)' : 'rgba(255,255,255,0.05)', borderRadius: '12px', fontSize: '1rem', color: w.isMain ? '#FFB400' : 'var(--primary-orange)', fontWeight: '900', border: `1px solid ${w.isMain ? 'rgba(255, 180, 0, 0.2)' : 'rgba(255,255,255,0.05)'}` }}>{w.prize}</div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
                             )}
-                        </ul>
-                    </section>
+
+                            <section style={{ marginBottom: '50px' }}>
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <Info size={28} color="var(--primary-orange)" />
+                                    {t.description}
+                                </h2>
+
+                                <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.8)', whiteSpace: 'pre-line', fontWeight: '500' }}>
+                                    {(language === 'en' && tournament.fullDescriptionEn) ? tournament.fullDescriptionEn : tournament.fullDescription}
+                                </p>
+                            </section>
+
+                            {/* Map Pool Section */}
+                            {(mapPool.length > 0 || isFaceitTournament) && (
+                                <section style={{ marginBottom: '50px' }}>
+                                    <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                        <MapIcon size={28} color="var(--primary-orange)" />
+                                        {t.mapPoolTitle}
+                                    </h2>
+                                    <div style={{
+                                        display: 'grid',
+                                        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                                        gap: '20px',
+                                        marginBottom: mapStats.length > 0 ? '40px' : '0'
+                                    }}>
+                                        {(mapPool.length > 0 ? mapPool : ['de_mirage', 'de_inferno', 'de_nuke', 'de_overpass', 'de_vertigo', 'de_ancient', 'de_anubis']).map((map, idx) => {
+                                            const mapClean = map.toLowerCase().startsWith('de_') ? map.toLowerCase() : `de_${map.toLowerCase()}`;
+                                            const mapDisplay = map.toLowerCase().replace('de_', '').toUpperCase();
+
+                                            // GhostCap Stable CS2 Map Images (Verified)
+                                            const bgImg = `https://raw.githubusercontent.com/ghostcap-gaming/cs2-map-images/main/cs2/${mapClean}.png`;
+
+                                            return (
+                                                <div key={idx} style={{
+                                                    height: '140px',
+                                                    borderRadius: '24px',
+                                                    overflow: 'hidden',
+                                                    position: 'relative',
+                                                    border: '1px solid rgba(255,255,255,0.08)',
+                                                    transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                                    cursor: 'default',
+                                                    background: `#111 url("${bgImg}") center/cover no-repeat`,
+                                                    backgroundColor: '#111',
+                                                    boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+                                                }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
+                                                        e.currentTarget.style.borderColor = 'rgba(255, 107, 0, 0.4)';
+                                                        e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255,107,0,0.1)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.transform = 'none';
+                                                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                                                        e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+                                                    }}>
+                                                    {/* Gradient Overlay for better text readability */}
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        inset: 0,
+                                                        background: 'linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, transparent 100%)'
+                                                    }} />
+
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        bottom: '20px',
+                                                        left: '20px',
+                                                        right: '20px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        zIndex: 2
+                                                    }}>
+                                                        <span style={{
+                                                            fontSize: '1.3rem',
+                                                            fontWeight: '900',
+                                                            color: '#fff',
+                                                            textTransform: 'uppercase',
+                                                            letterSpacing: '1px',
+                                                            textShadow: '0 2px 10px rgba(0,0,0,0.8)'
+                                                        }}>{mapDisplay}</span>
+                                                        <div style={{
+                                                            padding: '5px 10px',
+                                                            background: 'rgba(255,107,0,0.2)',
+                                                            backdropFilter: 'blur(8px)',
+                                                            borderRadius: '10px',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: '900',
+                                                            color: 'var(--primary-orange)',
+                                                            border: '1px solid rgba(255,107,0,0.3)',
+                                                            textTransform: 'uppercase',
+                                                            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                                                        }}>ACTIVE</div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                </section>
+                            )}
+
+                            <section>
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '25px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <ShieldCheck size={28} color="var(--primary-orange)" />
+                                    {t.rules}
+                                </h2>
+                                <ul style={{ paddingLeft: '0', listStyle: 'none', color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem', lineHeight: '2.5' }}>
+                                    {((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules)?.split('\n').filter(r => r.trim()).map((rule, idx) => (
+                                        <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '12px', marginBottom: '8px', border: '1px solid rgba(255, 255, 255, 0.03)' }}>
+                                            <div style={{ minWidth: '24px', height: '24px', borderRadius: '8px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)', fontSize: '0.85rem', fontWeight: '900', marginTop: '4px' }}>{idx + 1}</div>
+                                            <span style={{ paddingTop: '2px' }}>{rule.replace(/^\d+\.\s*/, '')}</span>
+                                        </li>
+                                    )) || <li>No rules provided.</li>}
+                                </ul>
+                            </section>
+                        </>
+                    )}
+
+                    {activeTab === 'bracket' && (
+                        <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
+                                <LayoutGrid size={28} color="var(--primary-orange)" />
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{language === 'ru' ? 'Сетка и результаты' : 'Brackets & Results'}</h2>
+                            </div>
+
+                            {matches.length > 0 ? (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                                    {(() => {
+                                        const maxRound = Math.max(...matches.map(m => m.round || 0));
+                                        const grouped = matches.reduce((acc, m) => {
+                                            const r = m.round || 0;
+                                            if (!acc[r]) acc[r] = [];
+                                            acc[r].push(m);
+                                            return acc;
+                                        }, {});
+
+                                        return Object.entries(grouped)
+                                            .sort(([a], [b]) => Number(b) - Number(a))
+                                            .map(([roundNum, roundMatches]) => {
+                                                const currentRound = Number(roundNum);
+                                                let roundName = (language === 'ru' ? 'Раунд ' : 'Round ') + currentRound;
+
+                                                if (currentRound === maxRound) roundName = language === 'ru' ? 'Финал' : 'Final';
+                                                else if (currentRound === maxRound - 1) roundName = language === 'ru' ? 'Полуфинал' : 'Semifinal';
+                                                else if (currentRound === maxRound - 2) roundName = language === 'ru' ? 'Четвертьфинал' : 'Quarterfinal';
+                                                else if (currentRound === maxRound - 3) roundName = language === 'ru' ? '1/8 финала' : 'Round of 16';
+                                                else if (currentRound === maxRound - 4) roundName = language === 'ru' ? '1/16 финала' : 'Round of 32';
+                                                else if (currentRound === maxRound - 5) roundName = language === 'ru' ? '1/32 финала' : 'Round of 64';
+
+                                                return (
+                                                    <div key={currentRound} style={{ animation: 'fadeIn 0.4s ease-out' }}>
+                                                        <div style={{
+                                                            display: 'flex', alignItems: 'center', gap: '15px',
+                                                            paddingBottom: '12px', marginBottom: '20px',
+                                                            borderBottom: '1px solid rgba(255,255,255,0.08)'
+                                                        }}>
+                                                            <h3 style={{ margin: 0, fontSize: '1.4rem', fontWeight: '900', color: 'var(--primary-orange)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                                                {roundName}
+                                                            </h3>
+                                                            <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: '800', padding: '4px 10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                                                                {roundMatches.length} {language === 'ru' ? (roundMatches.length === 1 ? 'Матч' : (roundMatches.length > 1 && roundMatches.length < 5 ? 'Матча' : 'Матчей')) : (roundMatches.length === 1 ? 'Match' : 'Matches')}
+                                                            </span>
+                                                        </div>
+                                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                            {roundMatches.map((match, idx) => {
+                                                                if (!match) return null;
+                                                                return (
+                                                                    <div key={idx} onClick={() => handleMatchClick(match)} style={{
+                                                                        background: 'rgba(255,255,255,0.02)',
+                                                                        padding: '20px 24px',
+                                                                        borderRadius: '20px',
+                                                                        border: '1px solid rgba(255,255,255,0.05)',
+                                                                        display: 'flex',
+                                                                        flexDirection: 'column',
+                                                                        gap: '15px',
+                                                                        transition: 'all 0.3s',
+                                                                        cursor: 'pointer'
+                                                                    }} onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,107,0,0.3)'; }}
+                                                                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}>
+                                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <div style={{
+                                                                                fontSize: '0.7rem',
+                                                                                background: 'rgba(255,255,255,0.05)',
+                                                                                padding: '4px 10px',
+                                                                                borderRadius: '6px',
+                                                                                color: 'rgba(255,255,255,0.5)',
+                                                                                fontWeight: '800',
+                                                                                textTransform: 'uppercase',
+                                                                                letterSpacing: '1px'
+                                                                            }}>
+                                                                                {match.round_label || match.competition_type || (match.round >= 0 ? `Round ${match.round + 1}` : 'Match')}
+                                                                            </div>
+                                                                            <div style={{
+                                                                                fontSize: '0.7rem',
+                                                                                fontWeight: '900',
+                                                                                color: match.status === 'FINISHED' ? 'rgba(255,255,255,0.3)' : '#4ade80',
+                                                                                textTransform: 'uppercase'
+                                                                            }}>
+                                                                                {match.status === 'FINISHED' ? (language === 'ru' ? 'Завершен' : 'Finished') : (language === 'ru' ? 'В эфире' : 'Live')}
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div style={{
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'space-between',
+                                                                            flexDirection: window.innerWidth < 480 ? 'column' : 'row',
+                                                                            gap: '15px'
+                                                                        }}>
+                                                                            <div style={{ flex: 1, textAlign: window.innerWidth < 480 ? 'center' : 'right', fontWeight: '850', fontSize: '1rem' }}>
+                                                                                {match.teams?.faction1?.name || match.teams?.find?.(t => t.team_id === match.teams_ids?.[0])?.nickname || match.teams?.[0]?.nickname || 'TBD'}
+                                                                            </div>
+                                                                            <div style={{
+                                                                                padding: '8px 20px',
+                                                                                background: match.status === 'FINISHED' ? 'rgba(255,255,255,0.05)' : 'rgba(255,107,0,0.15)',
+                                                                                borderRadius: '12px',
+                                                                                margin: window.innerWidth < 480 ? '0' : '0 25px',
+                                                                                fontWeight: '900',
+                                                                                fontSize: '1.2rem',
+                                                                                color: match.status === 'FINISHED' ? '#fff' : 'var(--primary-orange)',
+                                                                                minWidth: '85px',
+                                                                                textAlign: 'center',
+                                                                                border: `1px solid ${match.status === 'FINISHED' ? 'rgba(255,255,255,0.05)' : 'rgba(255,107,0,0.3)'}`,
+                                                                                boxShadow: match.status === 'FINISHED' ? 'none' : '0 4px 15px rgba(255,107,0,0.2)'
+                                                                            }}>
+                                                                                {match.results?.score?.faction1 ?? match.results?.score?.team1 ?? 0} : {match.results?.score?.faction2 ?? match.results?.score?.team2 ?? 0}
+                                                                            </div>
+                                                                            <div style={{ flex: 1, textAlign: window.innerWidth < 480 ? 'center' : 'left', fontWeight: '850', fontSize: '1rem' }}>
+                                                                                {match.teams?.faction2?.name || match.teams?.find?.(t => t.team_id === match.teams_ids?.[1])?.nickname || match.teams?.[1]?.nickname || 'TBD'}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            });
+                                    })()}
+                                </div>
+                            ) : (
+                                <div style={{ padding: '60px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
+                                    <Activity size={48} style={{ marginBottom: '20px', opacity: 0.2 }} />
+                                    <div>{language === 'ru' ? 'Матчи еще не начались или данные недоступны' : 'Matches haven\'t started yet or data is unavailable'}</div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'teams' && (
+                        <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
+                                <Users size={28} color="var(--primary-orange)" />
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{language === 'ru' ? 'Список команд' : 'Teams List'}</h2>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
+                                {teams.length > 0 ? teams.map((sub, idx) => (
+                                    <div key={idx} style={{
+                                        background: 'rgba(255,255,255,0.03)',
+                                        padding: '15px 20px',
+                                        borderRadius: '18px',
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '12px'
+                                    }}>
+                                        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(0,0,0,0.3)', overflow: 'hidden', flexShrink: 0 }}>
+                                            {sub.team?.avatar ? <img src={sub.team.avatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,107,0,0.1)', color: 'var(--primary-orange)' }}><Users size={20} /></div>}
+                                        </div>
+                                        <div style={{ fontWeight: '800', fontSize: '1rem', color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sub.team?.name || sub.nickname}</div>
+                                    </div>
+                                )) : (
+                                    <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
+                                        {language === 'ru' ? 'Список участников пока пуст' : 'Teams list is empty'}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column: Sidebar Stats */}
@@ -357,6 +756,22 @@ const TournamentDetail = ({ tournaments, language }) => {
                                 <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>{tournament.format}</div>
                             </div>
                         </div>
+                        <div style={{ padding: '15px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)' }}>
+                                    <Trophy size={24} />
+                                </div>
+                                <div>
+                                    <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: '700' }}>{t.joinedCount}</div>
+                                    <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>
+                                        <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#fff', marginBottom: '4px' }}>
+                                            {totalJoined} / {faceitData?.slots || faceitData?.slots_total || (tournament.joinedCount?.toString().includes('/') ? tournament.joinedCount.toString().split('/')[1].replace(/[^0-9]/g, '') : 256)} {language === 'ru' ? 'участников' : 'participants'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div style={{ padding: '15px', background: 'rgba(255,255,255,0.02)', borderRadius: '20px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                 <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)' }}>
@@ -460,12 +875,56 @@ const TournamentDetail = ({ tournaments, language }) => {
                         {tournament.isActive ? t.participate : t.viewResults}
                     </button>
 
-                    <div style={{ textAlign: 'center', marginTop: '25px', color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem', fontWeight: '600' }}>
-                        Join over {tournament.joinedCount || '2,400'} players
+                    <div style={{ textAlign: 'center', marginTop: '25px', color: 'rgba(255,255,255,0.4)', fontSize: '1rem', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', letterSpacing: '1px' }}>
+                        <Users size={18} />
+                        {isFaceitTournament && faceitData ? (
+                            `${totalJoined} / ${faceitData?.slots || faceitData?.slots_total || 256}`
+                        ) : (
+                            tournament.joinedCount ? tournament.joinedCount.toString().split('/')[0].replace(/[^0-9]/g, '') + ' / ' + (tournament.joinedCount.toString().split('/')[1]?.replace(/[^0-9]/g, '') || '256') : `${teams.length} / 32`
+                        )}
                     </div>
+
+                    {/* Map Stats */}
+                    {isFaceitTournament && matches.length > 0 && mapStats.length > 0 && (
+                        <div style={{ marginTop: '40px', paddingTop: '30px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', textTransform: 'uppercase', fontWeight: '800', marginBottom: '20px', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <MapIcon size={18} color="var(--primary-orange)" /> {language === 'ru' ? 'Популярные карты' : 'Popular Maps'}
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                {mapStats.map(([mapName, count], idx) => {
+                                    const name = mapName.includes('/') ? mapName.split('/').pop() : mapName;
+                                    return (
+                                        <div key={idx} style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            padding: '12px 18px',
+                                            background: 'rgba(255,255,255,0.02)',
+                                            borderRadius: '15px',
+                                            border: '1px solid rgba(255,255,255,0.03)'
+                                        }}>
+                                            <div style={{ fontWeight: '800', fontSize: '0.95rem', color: '#fff', textTransform: 'capitalize' }}>{name.replace('de_', '')}</div>
+                                            <div style={{ color: 'var(--primary-orange)', fontWeight: '900', fontSize: '0.85rem' }}>{count} {language === 'ru' ? (count === 1 ? 'игра' : 'игр') : 'matches'}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+
+            {selectedMatch && (
+                <MatchModal
+                    match={selectedMatch}
+                    details={selectedMatchDetails}
+                    stats={selectedMatchStats}
+                    onClose={() => setSelectedMatch(null)}
+                    language={language}
+                    loading={loadingMatchDetails}
+                />
+            )}
+        </div >
     );
 };
 

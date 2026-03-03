@@ -101,7 +101,10 @@ const AppContent = () => {
           winner2: dbT.winner_2,
           winner2Prize: dbT.winner_2_prize,
           winner3: dbT.winner_3,
-          winner3Prize: dbT.winner_3_prize
+          winner3Prize: dbT.winner_3_prize,
+          faceitId: dbT.faceit_id,
+          faceitSyncEnabled: dbT.faceit_sync_enabled,
+          mapPool: dbT.map_pool
         }));
         setTournaments(mappedTournaments);
       }

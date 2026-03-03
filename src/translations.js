@@ -90,6 +90,9 @@ export const translations = {
         viewResults: 'View Results',
         winners: 'Winners',
         sponsor: 'Sponsor',
+        mapPoolTitle: 'Tournament Map Pool',
+        mapStatsTitle: 'Most Played Maps',
+        timesPlayed: 'times played',
 
         // Tiger Cup
         tigerCup: {
@@ -223,6 +226,9 @@ export const translations = {
         viewResults: 'Посмотреть результаты',
         winners: 'Победители',
         sponsor: 'Спонсор',
+        mapPoolTitle: 'Маппул турнира',
+        mapStatsTitle: 'Самые популярные карты',
+        timesPlayed: 'раз(а) сыграно',
 
         // Tiger Cup
         tigerCup: {
