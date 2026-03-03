@@ -207,7 +207,7 @@ export const translations = {
         streamerLive: 'Стример сейчас на Kick!',
         streamerOffline: 'Стример отдыхает...',
         joinAction: 'Присоединяйся к экшену и выигрывай по-крупному.',
-        offlineMessage: 'Подпишись и жди трансляцию!',
+        offlineMessage: 'Стример отдыхает, но ты если что подписывайся! 🧡',
         watchStream: 'Смотреть стрим',
         subscribe: 'Подписаться',
 

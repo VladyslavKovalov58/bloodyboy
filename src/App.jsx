@@ -14,6 +14,7 @@ import SupportModal from './components/SupportModal';
 import ThanksPopup from './components/ThanksPopup';
 import { supabase } from './supabaseClient';
 import { checkRecentDeposits } from './services/whitebit';
+import { checkKickStatus } from './services/kick';
 import { Flame, Gamepad2, Video, Sparkles, TrendingUp, Medal, Wallet, ChevronDown, Trophy, ArrowLeft, MessageSquare, CreditCard, X, Loader2 } from 'lucide-react';
 import { translations } from './translations';
 
@@ -21,7 +22,7 @@ import { translations } from './translations';
 const AppContent = () => {
   const [language, setLanguage] = useState('ru');
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [isLive, setIsLive] = useState(true);
+  const [isLive, setIsLive] = useState(false); // Default to false until checked
   const [user, setUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [config, setConfig] = useState({});
@@ -179,6 +180,31 @@ const AppContent = () => {
     const interval = setInterval(checkDeposits, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  // Check Kick Status
+  useEffect(() => {
+    const updateKickStatus = async () => {
+      // 1. Check for manual override in config
+      if (config.stream_status_mode === 'manual') {
+        setIsLive(config.stream_is_live === 'true');
+        return;
+      }
+
+      // 2. Otherwise use Automatic (API)
+      const url = config.kick_link || 'https://kick.com/bloodyboy58';
+      const username = url.split('/').pop() || 'bloodyboy58';
+
+      const status = await checkKickStatus(username);
+      setIsLive(status);
+    };
+
+    if (Object.keys(config).length > 0) {
+      updateKickStatus();
+    }
+
+    const interval = setInterval(updateKickStatus, 300000); // Check every 5 minutes
+    return () => clearInterval(interval);
+  }, [config.kick_link, config.stream_status_mode, config.stream_is_live]);
 
   // For demonstration purposes
   useEffect(() => {

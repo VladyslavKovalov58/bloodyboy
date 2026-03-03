@@ -1,6 +1,12 @@
 [[redirects]]
   from = "/api/kick/*"
-  to = "https://kick.com/api/v1/:splat"
+  to = "https://api.kick.com/public/v1/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/kick-v2/*"
+  to = "https://api.kick.com/public/v2/:splat"
   status = 200
   force = true
 

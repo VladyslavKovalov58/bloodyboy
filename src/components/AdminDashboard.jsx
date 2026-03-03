@@ -605,6 +605,45 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             style={inputStyle}
                                         />
                                     </div>
+                                    <div style={{ gridColumn: '1 / -1', marginTop: '10px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                        <label style={labelStyle}>Stream Status Control</label>
+                                        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                                            <select
+                                                value={config.stream_status_mode || 'auto'}
+                                                onChange={(e) => setConfig({ ...config, stream_status_mode: e.target.value })}
+                                                style={{ ...inputStyle, width: '200px', margin: 0 }}
+                                            >
+                                                <option value="auto">Automatic (API)</option>
+                                                <option value="manual">Manual Override</option>
+                                            </select>
+
+                                            {config.stream_status_mode === 'manual' && (
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                    <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Manual Status:</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setConfig({ ...config, stream_is_live: config.stream_is_live === 'true' ? 'false' : 'true' })}
+                                                        style={{
+                                                            padding: '8px 16px',
+                                                            borderRadius: '8px',
+                                                            background: config.stream_is_live === 'true' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(255, 68, 68, 0.2)',
+                                                            color: config.stream_is_live === 'true' ? '#4CAF50' : '#FF4444',
+                                                            border: `1px solid ${config.stream_is_live === 'true' ? '#4CAF50' : '#FF4444'}`,
+                                                            cursor: 'pointer',
+                                                            fontWeight: '800',
+                                                            fontSize: '0.8rem'
+                                                        }}
+                                                    >
+                                                        {config.stream_is_live === 'true' ? 'ONLINE' : 'OFFLINE'}
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            <span style={{ fontSize: '0.8rem', opacity: 0.5, maxWidth: '400px' }}>
+                                                Use Manual mode if Kick API is blocked or unstable.
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <h3 style={{ color: 'var(--primary-orange)', marginBottom: '15px', fontSize: '1.1rem' }}>Community Socials (Tiger)</h3>
