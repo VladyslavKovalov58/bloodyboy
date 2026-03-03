@@ -32,7 +32,7 @@ const TournamentDetail = ({ tournaments, language }) => {
     const [showTelegramInput, setShowTelegramInput] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [needsBotStart, setNeedsBotStart] = useState(false);
-    const [botUsername, setBotUsername] = useState('TigerNotifyBot');
+    const [botUsername, setBotUsername] = useState('tiger_cs_bot');
 
     const handleTelegramSubscribe = async () => {
         if (!telegramId || telegramId.length < 5) {
