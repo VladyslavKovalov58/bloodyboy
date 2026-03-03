@@ -33,6 +33,32 @@ const TournamentDetail = ({ tournaments, language }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [needsBotStart, setNeedsBotStart] = useState(false);
     const [botUsername, setBotUsername] = useState('tiger_cs_bot');
+    const [isAlreadySubscribed, setIsAlreadySubscribed] = useState(false);
+
+    // Filter out the current tournament to use in translations easily
+    const currentTournamentTitle = tournament?.title || tournament?.name || 'Турнир';
+
+    // Check if user is already subscribed on load
+    useEffect(() => {
+        const checkSubscription = async () => {
+            if (!telegramId || !id) return;
+            try {
+                const { data, error } = await supabase
+                    .from('tournament_subscriptions')
+                    .select('id')
+                    .eq('tournament_id', id)
+                    .eq('telegram_user_id', telegramId)
+                    .maybeSingle();
+
+                if (data) {
+                    setIsAlreadySubscribed(true);
+                }
+            } catch (err) {
+                console.error('Error checking subscription:', err);
+            }
+        };
+        checkSubscription();
+    }, [id, telegramId]);
 
     const handleTelegramSubscribe = async () => {
         if (!telegramId || telegramId.length < 5) {
@@ -44,7 +70,7 @@ const TournamentDetail = ({ tournaments, language }) => {
         setNeedsBotStart(false);
         try {
             // Verify if user has started the bot by sending a test message
-            const testMsg = `👋 *ПОДПИСКА АКТИВНА*\nВы успешно подписались на уведомления о турнире *${tournament.title}*!`;
+            const testMsg = `👋 *ПОДПИСКА АКТИВНА*\nВы успешно подписались на уведомления о турнире *${currentTournamentTitle}*!`;
             const testResult = await sendTelegramMessage(telegramId, testMsg);
 
             if (!testResult) {
@@ -80,13 +106,14 @@ const TournamentDetail = ({ tournaments, language }) => {
                 .insert({
                     tournament_id: id,
                     telegram_user_id: telegramId,
-                    tournament_title: tournament.name
+                    tournament_title: currentTournamentTitle
                 });
 
             if (insertError && insertError.code !== '23505') throw insertError;
 
             localStorage.setItem('telegramId', telegramId);
             setSubscriptionDone(true);
+            setIsAlreadySubscribed(true);
             setTimeout(() => {
                 setSubscriptionDone(false);
                 setShowTelegramInput(false);
@@ -1032,22 +1059,22 @@ const TournamentDetail = ({ tournaments, language }) => {
                     {tournament.isActive && (!tournament.targetDate || new Date() < new Date(tournament.targetDate)) && (
                         <div style={{
                             marginTop: '20px',
-                            background: 'rgba(255, 255, 255, 0.02)',
+                            background: isAlreadySubscribed ? 'rgba(74, 222, 128, 0.05)' : 'rgba(255, 255, 255, 0.02)',
                             borderRadius: '20px',
                             padding: '15px',
-                            border: '1px solid rgba(255, 255, 255, 0.05)',
+                            border: isAlreadySubscribed ? '1px solid rgba(74, 222, 128, 0.1)' : '1px solid rgba(255, 255, 255, 0.05)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '12px'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    {subscriptionDone ? <BellRing size={20} color="#4ade80" /> : <Bell size={20} color="#0088cc" />}
-                                    <span style={{ fontWeight: '800', fontSize: '0.9rem', color: subscriptionDone ? '#4ade80' : '#fff' }}>
-                                        {subscriptionDone ? (t.subscribeSuccess || 'Подписка оформлена!') : (t.notifyMe || 'Сповістити у Telegram')}
+                                    {subscriptionDone || isAlreadySubscribed ? <BellRing size={20} color="#4ade80" /> : <Bell size={20} color="#0088cc" />}
+                                    <span style={{ fontWeight: '800', fontSize: '0.9rem', color: subscriptionDone || isAlreadySubscribed ? '#4ade80' : '#fff' }}>
+                                        {subscriptionDone || isAlreadySubscribed ? (t.subscribeSuccess || 'Вы подписаны!') : (t.notifyMe || 'Сповістити у Telegram')}
                                     </span>
                                 </div>
-                                {!subscriptionDone && (
+                                {!subscriptionDone && !isAlreadySubscribed && (
                                     <button
                                         onClick={() => setShowTelegramInput(v => !v)}
                                         style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '5px', cursor: 'pointer' }}
@@ -1057,7 +1084,13 @@ const TournamentDetail = ({ tournaments, language }) => {
                                 )}
                             </div>
 
-                            {!subscriptionDone && (
+                            {isAlreadySubscribed && !subscriptionDone && (
+                                <div style={{ fontSize: '0.8rem', color: 'rgba(74, 222, 128, 0.8)', fontWeight: '600', textAlign: 'center', padding: '5px 0' }}>
+                                    {language === 'ru' ? 'Вы получите уведомление перед началом турнира' : (language === 'ua' ? 'Ви отримаєте сповіщення перед початком турніру' : 'You will receive a notification before the tournament starts')}
+                                </div>
+                            )}
+
+                            {!subscriptionDone && !isAlreadySubscribed && (
                                 <>
                                     {showTelegramInput ? (
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
