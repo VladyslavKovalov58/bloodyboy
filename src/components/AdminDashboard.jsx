@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 const CS2_MAPS = ['de_mirage', 'de_nuke', 'de_inferno', 'de_dust2', 'de_ancient', 'de_anubis', 'de_vertigo', 'de_overpass', 'de_train', 'cs_office', 'cs_italy'];
 import { supabase } from '../supabaseClient';
 import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../services/discord';
+import { sendTelegramTournamentReminder } from '../services/telegram';
 import { fetchChampionshipDetails, extractChampionshipId, fetchChampionshipResults } from '../services/faceit';
-import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff, RefreshCw, BellRing, ShieldCheck } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { translations } from '../translations';
 
@@ -246,6 +247,22 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
             alert('Уведомление успешно отправлено в Discord!');
         } else {
             alert('Ошибка при отправке уведомления в Discord. Проверьте консоль или .env.');
+        }
+        setPushingId(null);
+    };
+
+    const handleMassNotifySubscribers = async (tournament) => {
+        const customMsg = window.prompt(`📣 Вы хотите сделать ручную рассылку всем подписчикам турнира "${tournament.title}"?\n\nОставьте поле ПУСТЫМ, чтобы отправить стандартное напоминание:\n"🏆 ${tournament.title}\n⏳ Напоминание: Турнир скоро начнется!\nПодготовься, зайди в Discord и на Faceit."\n\nИЛИ введите СВОЙ текст для ручного уведомления (например, об изменении времени, правил или других новостях):`);
+
+        if (customMsg === null) return; // User cancelled
+
+        setPushingId(`notify-${tournament.id}`);
+        const result = await sendTelegramTournamentReminder(tournament.id, tournament.title, customMsg.trim() || null);
+
+        if (result.success) {
+            alert(`Успешно отправлено сообщений в Telegram: ${result.count} из ${result.total}`);
+        } else {
+            alert('Ошибка при массовой рассылке в Telegram: ' + result.error);
         }
         setPushingId(null);
     };
@@ -1318,9 +1335,9 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                         disabled={pushingId === `results-${t.id}`}
                                                         title="Push Results to Discord"
                                                         style={{
-                                                            background: 'rgba(88, 101, 242, 0.1)',
-                                                            border: '1px solid rgba(88, 101, 242, 0.2)',
-                                                            color: '#5865F2',
+                                                            background: 'rgba(74, 222, 128, 0.1)',
+                                                            border: '1px solid rgba(74, 222, 128, 0.2)',
+                                                            color: '#4ade80',
                                                             padding: isMobile ? '8px' : '10px',
                                                             borderRadius: '10px',
                                                             cursor: 'pointer',
@@ -1331,7 +1348,27 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                             flex: isMobile ? 1 : 'none'
                                                         }}
                                                     >
-                                                        {pushingId === `results-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />}
+                                                        {pushingId === `results-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleMassNotifySubscribers(t)}
+                                                        disabled={pushingId === `notify-${t.id}`}
+                                                        title="Notify Subscribers via Telegram"
+                                                        style={{
+                                                            background: 'rgba(255, 180, 0, 0.1)',
+                                                            border: '1px solid rgba(255, 180, 0, 0.2)',
+                                                            color: '#FFB400',
+                                                            padding: isMobile ? '8px' : '10px',
+                                                            borderRadius: '10px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            opacity: pushingId === `notify-${t.id}` ? 0.5 : 1,
+                                                            flex: isMobile ? 1 : 'none'
+                                                        }}
+                                                    >
+                                                        {pushingId === `notify-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <BellRing size={16} />}
                                                     </button>
                                                     <button
                                                         onClick={() => {

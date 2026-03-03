@@ -191,6 +191,16 @@ export const translations = {
         tryAgain: 'Try again',
         errorTitle: 'Error loading address',
         noDemo: 'No demo',
+        notifyMe: 'Telegram Notify',
+        notifyMeDesc: 'Subscribe',
+        telegramIdLabel: 'Your Telegram ID',
+        subscribeSuccess: 'Successfully subscribed!',
+        subscribeError: 'Failed to subscribe. Please check your ID.',
+        howToGetId: 'How to get my ID?',
+        telegramIdHelp: 'Search for @userinfobot in Telegram to get your numeric ID',
+        startBotRequired: 'Please start our bot first so it can send you messages.',
+        openBotButton: 'Open Bot',
+        verifySubscription: 'Verify Subscription',
 
         // Admin Dashboard
         admin: {
@@ -422,6 +432,16 @@ export const translations = {
         tryAgain: 'Попробовать снова',
         errorTitle: 'Ошибка загрузки адреса',
         noDemo: 'Демо недоступно',
+        notifyMe: 'Уведомить в Telegram',
+        notifyMeDesc: 'Подписаться',
+        telegramIdLabel: 'Твой Telegram ID',
+        subscribeSuccess: 'Вы успешно подписались!',
+        subscribeError: 'Ошибка подписки. Проверьте ID.',
+        howToGetId: 'Как узнать мой ID?',
+        telegramIdHelp: 'Найди бота @userinfobot в Telegram, чтобы узнать свой цифровой ID',
+        startBotRequired: 'Сначала запустите нашего бота, чтобы он мог отправить вам подтверждение.',
+        openBotButton: 'Открыть бота',
+        verifySubscription: 'Проверить подписку',
 
         // Admin Dashboard
         admin: {
@@ -654,6 +674,16 @@ export const translations = {
         tryAgain: 'Спробувати знову',
         errorTitle: 'Помилка завантаження адреси',
         noDemo: 'Демо недоступно',
+        notifyMe: 'Сповістити у Telegram',
+        notifyMeDesc: 'Підписатися',
+        telegramIdLabel: 'Твій Telegram ID',
+        subscribeSuccess: 'Ви успішно підписалися!',
+        subscribeError: 'Помилка підписки. Перевірте ID.',
+        howToGetId: 'Як дізнатися мій ID?',
+        telegramIdHelp: 'Знайди бота @userinfobot у Telegram, щоб дізнатися свій цифровой ID',
+        startBotRequired: 'Спочатку запустіть нашого бота, щоб він міг надіслати вам підтвердження.',
+        openBotButton: 'Відкрити бота',
+        verifySubscription: 'Перевірити підписку',
 
         // Admin Dashboard
         admin: {

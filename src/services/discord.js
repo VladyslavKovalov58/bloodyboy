@@ -1,5 +1,7 @@
 const DISCORD_WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL;
 const DISCORD_RESULTS_WEBHOOK_URL = import.meta.env.VITE_DISCORD_RESULTS_WEBHOOK_URL;
+const DISCORD_BOT_TOKEN = import.meta.env.VITE_DISCORD_BOT_TOKEN;
+import { supabase } from '../supabaseClient';
 
 /**
  * Sends a tournament notification to Discord
@@ -110,5 +112,69 @@ const postToWebhook = async (url, embed) => {
     } catch (error) {
         console.error('Failed to send Discord notification:', error);
         return false;
+    }
+};
+
+/**
+ * Sends a Direct Message to a Discord user via the Supabase Edge Function
+ */
+export const sendDMToUser = async (userId, content, embed = null) => {
+    try {
+        const { data, error } = await supabase.functions.invoke('send-discord-dm', {
+            body: { userId, content, embed }
+        });
+
+        if (error) {
+            console.error(`Edge Function Error for user ${userId}:`, error);
+            return false;
+        }
+
+        if (data && data.error) {
+            console.error(`Discord API Error via Edge Function for user ${userId}:`, data.error);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error(`Critical error sending DM to user ${userId}:`, error);
+        return false;
+    }
+};
+
+/**
+ * Mass notify all subscribers of a tournament
+ */
+export const sendTournamentReminderToSubscribers = async (tournamentId, tournamentTitle) => {
+    try {
+        // Fetch subscribers
+        const { data: subs, error } = await supabase
+            .from('tournament_subscriptions')
+            .select('discord_user_id')
+            .eq('tournament_id', tournamentId);
+
+        if (error) throw error;
+        if (!subs || subs.length === 0) return { success: true, count: 0 };
+
+        const baseUrl = window.location.origin;
+        const tournamentUrl = `${baseUrl}/tournaments/${tournamentId}`;
+
+        const embed = {
+            title: `🔔 НАПОМИНАНИЕ: ${tournamentTitle.toUpperCase()}`,
+            description: `Турнир скоро начнется! Подготовься и заходи на Faceit.\n\n🔗 **[Окрыть страницу турнира](${tournamentUrl})**`,
+            color: 0xFFB400,
+            timestamp: new Date().toISOString(),
+            footer: { text: 'BloodyBoy Tournaments' }
+        };
+
+        let successCount = 0;
+        for (const sub of subs) {
+            const success = await sendDMToUser(sub.discord_user_id, `Привет! Напоминание о турнире **${tournamentTitle}**! 🎮`, embed);
+            if (success) successCount++;
+        }
+
+        return { success: true, count: successCount, total: subs.length };
+    } catch (error) {
+        console.error('Mass notification error:', error);
+        return { success: false, error: error.message };
     }
 };
