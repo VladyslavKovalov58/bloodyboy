@@ -2,10 +2,10 @@ import React from 'react';
 import { translations } from '../translations';
 import { Play } from 'lucide-react';
 
-const StreamInfo = ({ language = 'en', isLive = false, kickLink }) => {
+const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) => {
     const t = translations[language];
 
-    const statusColor = isLive ? 'var(--primary-orange)' : '#ff4444'; // Orange or Red
+    const statusColor = isLive ? 'var(--primary-orange)' : '#ff4444';
     const statusShadow = isLive ? 'var(--primary-orange)' : '#ff4444';
 
     return (
@@ -63,30 +63,162 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink }) => {
                 {isLive ? t.joinAction : t.offlineMessage}
             </p>
 
-            <a
-                href={kickLink || "https://kick.com/bloodyboy58"}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                    background: statusColor,
-                    color: '#fff',
-                    padding: '16px 40px',
-                    borderRadius: '12px',
-                    fontWeight: '800',
-                    fontSize: '1.1rem',
-                    textTransform: 'uppercase',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    boxShadow: `0 0 20px ${statusShadow}40`,
-                    transition: 'transform 0.2s',
-                    textDecoration: 'none'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-                <Play size={24} fill="currentColor" /> {isLive ? t.watchStream : t.subscribe}
-            </a>
+            <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 400px))',
+                gap: '20px',
+                justifyContent: 'center',
+                maxWidth: '900px',
+                margin: '0 auto'
+            }}>
+                {/* Kick Platform Card */}
+                <a
+                    href={kickLink || "https://kick.com/bloodyboy58"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        background: 'rgba(83, 252, 24, 0.03)',
+                        border: '1px solid rgba(83, 252, 24, 0.15)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '20px',
+                        borderRadius: '20px',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '15px',
+                        transition: 'all 0.3s ease',
+                        position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.background = 'rgba(83, 252, 24, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(83, 252, 24, 0.4)';
+                        e.currentTarget.style.boxShadow = '0 15px 30px rgba(83, 252, 24, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.background = 'rgba(83, 252, 24, 0.03)';
+                        e.currentTarget.style.borderColor = 'rgba(83, 252, 24, 0.15)';
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{
+                            width: '45px',
+                            height: '45px',
+                            background: 'linear-gradient(135deg, #53FC18 0%, #29B200 100%)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 5px 15px rgba(83, 252, 24, 0.2)'
+                        }}>
+                            <Play size={22} color="#000" fill="#000" />
+                        </div>
+                        <span style={{ color: '#53FC18', fontWeight: '900', fontSize: '1.2rem', letterSpacing: '1px' }}>KICK</span>
+                    </div>
+
+                    <div style={{
+                        padding: '8px 20px',
+                        background: '#53FC18',
+                        color: '#000',
+                        borderRadius: '100px',
+                        fontWeight: '800',
+                        fontSize: '0.8rem',
+                        textTransform: 'uppercase',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 15px rgba(83, 252, 24, 0.3)',
+                        transition: 'all 0.3s ease'
+                    }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(83, 252, 24, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(83, 252, 24, 0.3)';
+                        }}>
+                        <div className="shimmer-effect" style={{ opacity: 0.4 }} />
+                        {isLive ? t.watchStream : t.subscribe}
+                    </div>
+                </a>
+
+                {/* Twitch Platform Card */}
+                <a
+                    href={twitchLink || "https://www.twitch.tv/bloodyboy41"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        background: 'rgba(145, 70, 255, 0.03)',
+                        border: '1px solid rgba(145, 70, 255, 0.15)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '20px',
+                        borderRadius: '20px',
+                        textDecoration: 'none',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '15px',
+                        transition: 'all 0.3s ease',
+                        position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-5px)';
+                        e.currentTarget.style.background = 'rgba(145, 70, 255, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(145, 70, 255, 0.4)';
+                        e.currentTarget.style.boxShadow = '0 15px 30px rgba(145, 70, 255, 0.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.background = 'rgba(145, 70, 255, 0.03)';
+                        e.currentTarget.style.borderColor = 'rgba(145, 70, 255, 0.15)';
+                        e.currentTarget.style.boxShadow = 'none';
+                    }}
+                >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{
+                            width: '45px',
+                            height: '45px',
+                            background: 'linear-gradient(135deg, #9146FF 0%, #6441A5 100%)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 5px 15px rgba(145, 70, 255, 0.2)'
+                        }}>
+                            <Play size={22} color="#fff" fill="#fff" />
+                        </div>
+                        <span style={{ color: '#9146FF', fontWeight: '900', fontSize: '1.2rem', letterSpacing: '1px' }}>TWITCH</span>
+                    </div>
+
+                    <div style={{
+                        padding: '8px 20px',
+                        background: '#9146FF',
+                        color: '#fff',
+                        borderRadius: '100px',
+                        fontWeight: '800',
+                        fontSize: '0.8rem',
+                        textTransform: 'uppercase',
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 15px rgba(145, 70, 255, 0.3)',
+                        transition: 'all 0.3s ease'
+                    }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(145, 70, 255, 0.5)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(145, 70, 255, 0.3)';
+                        }}>
+                        <div className="shimmer-effect" style={{ opacity: 0.4 }} />
+                        {isLive ? t.watchStream : t.subscribe}
+                    </div>
+                </a>
+            </div>
 
             <style>{`
         @keyframes pulse {

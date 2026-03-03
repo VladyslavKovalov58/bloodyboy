@@ -12,6 +12,7 @@ import LoginPage from './components/LoginPage';
 import AdminDashboard from './components/AdminDashboard';
 import SupportModal from './components/SupportModal';
 import ThanksPopup from './components/ThanksPopup';
+import DonationPrompt from './components/DonationPrompt';
 import { supabase } from './supabaseClient';
 import { checkRecentDeposits } from './services/whitebit';
 import { checkKickStatus } from './services/kick';
@@ -223,6 +224,7 @@ const AppContent = () => {
   const tgGroup = config.tg_group || 'https://t.me/bloodyboy58';
   const tgChat = config.tg_chat || 'https://t.me/+7b4HEtKQoqBkMzgy';
   const kickLink = config.kick_link || 'https://kick.com/bloodyboy58';
+  const twitchLink = config.twitch_link || 'https://www.twitch.tv/bloodyboy41';
   const discordLink = config.discord_link || 'https://discord.gg/gTkYrBDf';
   const faceitLink = config.faceit_link || 'https://www.faceit.com/ru/club/44e432a6-3d12-49b8-b591-8b4f820e5d9e/parties';
   const communityTg = config.community_tg || 'https://t.me/tigercasinoofficial';
@@ -559,7 +561,7 @@ const AppContent = () => {
 
           <Route path="/streams" element={
             <div className="animate-fade-in" style={{ maxWidth: '1000px', margin: '0 auto' }}>
-              <StreamInfo language={language} isLive={isLive} kickLink={kickLink} />
+              <StreamInfo language={language} isLive={isLive} kickLink={kickLink} twitchLink={twitchLink} />
 
               {/* Support Widget (Replacing Chat Rules) */}
               <div style={{
@@ -639,6 +641,11 @@ const AppContent = () => {
         isVisible={showThanks}
         onClose={() => setShowThanks(false)}
         language={language}
+      />
+
+      <DonationPrompt
+        language={language}
+        onOpenSupport={() => setIsSupportModalOpen(true)}
       />
 
       {/* Game Iframe Modal */}

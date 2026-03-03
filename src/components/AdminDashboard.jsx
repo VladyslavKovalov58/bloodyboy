@@ -605,15 +605,25 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             style={inputStyle}
                                         />
                                     </div>
+                                    <div>
+                                        <label style={labelStyle}>Twitch Stream URL</label>
+                                        <input
+                                            type="text"
+                                            placeholder="https://twitch.tv/username..."
+                                            value={config.twitch_link || ''}
+                                            onChange={(e) => setConfig({ ...config, twitch_link: e.target.value })}
+                                            style={inputStyle}
+                                        />
+                                    </div>
                                     <div style={{ gridColumn: '1 / -1', marginTop: '10px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <label style={labelStyle}>Stream Status Control</label>
+                                        <label style={labelStyle}>Stream Status Control (Kick Auto-Check)</label>
                                         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                                             <select
                                                 value={config.stream_status_mode || 'auto'}
                                                 onChange={(e) => setConfig({ ...config, stream_status_mode: e.target.value })}
                                                 style={{ ...inputStyle, width: '200px', margin: 0 }}
                                             >
-                                                <option value="auto">Automatic (API)</option>
+                                                <option value="auto">Automatic (Kick API)</option>
                                                 <option value="manual">Manual Override</option>
                                             </select>
 
@@ -640,7 +650,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             )}
 
                                             <span style={{ fontSize: '0.8rem', opacity: 0.5, maxWidth: '400px' }}>
-                                                Use Manual mode if Kick API is blocked or unstable.
+                                                Use Manual if API check is blocked.
                                             </span>
                                         </div>
                                     </div>
