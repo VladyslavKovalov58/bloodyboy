@@ -11,7 +11,7 @@ select cron.schedule(
     DECLARE
         t RECORD;
         sub RECORD;
-        bot_token TEXT := '8181133172:AAF5KUwMC5X7CsIFMMb96V92t46RJ8wZ818'; -- Твой токен
+        bot_token TEXT := 'YOUR_TELEGRAM_BOT_TOKEN_HERE'; -- Вставь свой токен из .env (VITE_TELEGRAM_BOT_TOKEN)
         msg_text TEXT;
         payload JSONB;
     BEGIN

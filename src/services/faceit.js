@@ -1,5 +1,5 @@
 const API_URL = 'https://open.faceit.com/data/v4';
-const API_KEY = import.meta.env.VITE_FACEIT_API_KEY?.trim();
+const API_KEY = import.meta.env.VITE_FACEIT_API_KEY?.trim() || '8c6fc8a3-0b4b-46f8-9d4a-48a7481b643c';
 
 // Cache to remember if an ID is a championship or a tournament to avoid 404 errors
 const typeCache = {};

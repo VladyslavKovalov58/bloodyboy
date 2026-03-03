@@ -25,7 +25,7 @@ const TournamentDetail = ({ tournaments, language }) => {
     const [selectedMatchStats, setSelectedMatchStats] = useState(null);
     const [loadingMatchDetails, setLoadingMatchDetails] = useState(false);
 
-    // Telegram Notification State
+    // Telegram Bot logic
     const [telegramId, setTelegramId] = useState(localStorage.getItem('telegramId') || '');
     const [isSubscribing, setIsSubscribing] = useState(false);
     const [subscriptionDone, setSubscriptionDone] = useState(false);
@@ -1028,8 +1028,6 @@ const TournamentDetail = ({ tournaments, language }) => {
                         {tournament.isActive ? t.participate : t.viewResults}
                     </button>
 
-
-
                     {/* Telegram Notification Section */}
                     {tournament.isActive && (!tournament.targetDate || new Date() < new Date(tournament.targetDate)) && (
                         <div style={{
@@ -1044,14 +1042,14 @@ const TournamentDetail = ({ tournaments, language }) => {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    {subscriptionDone ? <BellRing size={20} color="#4ade80" className="animate-pulse" /> : <Bell size={20} color="var(--primary-orange)" />}
+                                    {subscriptionDone ? <BellRing size={20} color="#4ade80" /> : <Bell size={20} color="#0088cc" />}
                                     <span style={{ fontWeight: '800', fontSize: '0.9rem', color: subscriptionDone ? '#4ade80' : '#fff' }}>
-                                        {subscriptionDone ? t.subscribeSuccess : t.notifyMe}
+                                        {subscriptionDone ? (t.subscribeSuccess || 'Подписка оформлена!') : (t.notifyMe || 'Сповістити у Telegram')}
                                     </span>
                                 </div>
-                                {!showTelegramInput && !subscriptionDone && (
+                                {!subscriptionDone && (
                                     <button
-                                        onClick={() => setShowTelegramInput(true)}
+                                        onClick={() => setShowTelegramInput(v => !v)}
                                         style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '5px', cursor: 'pointer' }}
                                     >
                                         <X size={16} />
@@ -1066,21 +1064,21 @@ const TournamentDetail = ({ tournaments, language }) => {
                                             {needsBotStart ? (
                                                 <div style={{ background: 'rgba(255, 180, 0, 0.1)', border: '1px solid rgba(255, 180, 0, 0.2)', padding: '15px', borderRadius: '12px', textAlign: 'center' }}>
                                                     <div style={{ color: '#FFB400', fontWeight: '800', lineHeight: '1.4', fontSize: '0.85rem', marginBottom: '12px' }}>
-                                                        {t.startBotRequired}
+                                                        {t.startBotRequired || `Сначала запусти бота:\n1. Открой @${botUsername} в Telegram\n2. Нажми /start\n3. Вернись и нажми «Проверить»`}
                                                     </div>
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         <button
                                                             onClick={() => window.open(`https://t.me/${botUsername}`, '_blank')}
                                                             style={{ flex: 1, background: '#0088cc', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontWeight: '900', cursor: 'pointer', fontSize: '0.85rem' }}
                                                         >
-                                                            {t.openBotButton}
+                                                            {t.openBotButton || 'Открыть бота'}
                                                         </button>
                                                         <button
                                                             onClick={handleTelegramSubscribe}
                                                             disabled={isSubmitting}
-                                                            style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', fontWeight: '900', cursor: isSubmitting ? 'default' : 'pointer', fontSize: '0.85rem', opacity: isSubmitting ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                            style={{ flex: 1, background: 'rgba(255,255,255,0.1)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '10px', borderRadius: '8px', fontWeight: '900', cursor: isSubmitting ? 'default' : 'pointer', fontSize: '0.85rem', opacity: isSubmitting ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                                                         >
-                                                            {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : t.verifySubscription}
+                                                            {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : (t.verifySubscription || 'Проверить')}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1091,32 +1089,24 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                             type="text"
                                                             value={telegramId}
                                                             onChange={(e) => setTelegramId(e.target.value.replace(/\D/g, ''))}
-                                                            placeholder={t.telegramIdLabel}
+                                                            placeholder={t.telegramIdLabel || 'Твой Telegram ID (только цифры)'}
                                                             style={{
                                                                 width: '100%',
                                                                 background: 'rgba(0,0,0,0.3)',
                                                                 border: '1px solid rgba(255,255,255,0.1)',
-                                                                padding: '12px 15px',
+                                                                padding: '12px 40px 12px 15px',
                                                                 borderRadius: '12px',
                                                                 color: '#fff',
                                                                 fontSize: '0.9rem',
                                                                 fontWeight: '700',
-                                                                boxSizing: 'border-box'
+                                                                boxSizing: 'border-box',
+                                                                outline: 'none'
                                                             }}
                                                         />
                                                         <button
                                                             onClick={() => window.open('https://t.me/userinfobot', '_blank')}
-                                                            title={t.telegramIdHelp}
-                                                            style={{
-                                                                position: 'absolute',
-                                                                right: '10px',
-                                                                top: '50%',
-                                                                transform: 'translateY(-50%)',
-                                                                cursor: 'pointer',
-                                                                background: 'none',
-                                                                border: 'none',
-                                                                color: '#0088cc'
-                                                            }}
+                                                            title={t.telegramIdHelp || 'Узнать свой Telegram ID'}
+                                                            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', background: 'none', border: 'none', color: '#0088cc' }}
                                                         >
                                                             <HelpCircle size={18} />
                                                         </button>
@@ -1126,42 +1116,46 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                         disabled={isSubmitting || !telegramId}
                                                         style={{
                                                             width: '100%',
-                                                            background: '#0088cc', // Telegram blue for the button
+                                                            background: '#0088cc',
                                                             color: '#fff',
                                                             border: 'none',
                                                             padding: '10px',
                                                             borderRadius: '10px',
                                                             fontWeight: '900',
-                                                            cursor: isSubmitting ? 'default' : 'pointer',
-                                                            opacity: isSubmitting || !telegramId ? 0.5 : 1
+                                                            cursor: isSubmitting || !telegramId ? 'default' : 'pointer',
+                                                            opacity: isSubmitting || !telegramId ? 0.5 : 1,
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            gap: '8px'
                                                         }}
                                                     >
-                                                        {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : t.notifyMeDesc}
+                                                        {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : (t.notifyMeDesc || 'Підписатися')}
                                                     </button>
                                                     <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', fontWeight: '700', textAlign: 'center' }}>
-                                                        {t.telegramIdHelp}
+                                                        {t.telegramIdHelp || 'Дізнатись свій ID можна через @userinfobot'}
                                                     </div>
                                                 </>
                                             )}
                                         </div>
                                     ) : (
                                         <button
-                                            onClick={handleTelegramSubscribe}
+                                            onClick={() => setShowTelegramInput(true)}
                                             style={{
                                                 background: 'rgba(0,136,204,0.1)',
-                                                border: '1px solid rgba(0,136,204,0.2)',
+                                                border: '1px solid rgba(0,136,204,0.3)',
                                                 color: '#0088cc',
                                                 padding: '10px',
                                                 borderRadius: '12px',
                                                 fontWeight: '900',
                                                 cursor: 'pointer',
-                                                fontSize: '0.85rem'
+                                                fontSize: '0.85rem',
+                                                width: '100%'
                                             }}
                                         >
-                                            {t.notifyMeDesc}
+                                            {t.notifyMeDesc || 'Підписатися'}
                                         </button>
-                                    )
-                                    }
+                                    )}
                                 </>
                             )}
                         </div>
@@ -1206,18 +1200,16 @@ const TournamentDetail = ({ tournaments, language }) => {
                 </div>
             </div>
 
-            {
-                selectedMatch && (
-                    <MatchModal
-                        match={selectedMatch}
-                        details={selectedMatchDetails}
-                        stats={selectedMatchStats}
-                        onClose={() => setSelectedMatch(null)}
-                        language={language}
-                        loading={loadingMatchDetails}
-                    />
-                )
-            }
+            {selectedMatch && (
+                <MatchModal
+                    match={selectedMatch}
+                    details={selectedMatchDetails}
+                    stats={selectedMatchStats}
+                    onClose={() => setSelectedMatch(null)}
+                    language={language}
+                    loading={loadingMatchDetails}
+                />
+            )}
         </div >
     );
 };

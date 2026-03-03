@@ -202,6 +202,17 @@ export const translations = {
         openBotButton: 'Open Bot',
         verifySubscription: 'Verify Subscription',
 
+        // Telegram Notifications
+        notifyMe: 'Notify in Telegram',
+        notifyMeDesc: 'Subscribe',
+        subscribeSuccess: 'Subscribed!',
+        subscribeError: 'Error. Try again.',
+        telegramIdLabel: 'Your Telegram ID (numbers only)',
+        telegramIdHelp: 'Find your ID via @userinfobot',
+        startBotRequired: 'First, open our bot so it can send you a confirmation.',
+        openBotButton: 'Open Bot',
+        verifySubscription: 'Verify',
+
         // Admin Dashboard
         admin: {
             dashboard: 'Admin Dashboard',
@@ -442,6 +453,17 @@ export const translations = {
         startBotRequired: 'Сначала запустите нашего бота, чтобы он мог отправить вам подтверждение.',
         openBotButton: 'Открыть бота',
         verifySubscription: 'Проверить подписку',
+
+        // Telegram Notifications
+        notifyMe: 'Уведомить в Telegram',
+        notifyMeDesc: 'Подписаться',
+        subscribeSuccess: 'Подписка оформлена!',
+        subscribeError: 'Ошибка. Попробуйте ещё раз.',
+        telegramIdLabel: 'Твой Telegram ID (только цифры)',
+        telegramIdHelp: 'Узнать свой ID можно через @userinfobot',
+        startBotRequired: 'Сначала запустите нашего бота,\nчтобы он мог отправить вам подтверждение.',
+        openBotButton: 'Открыть бота',
+        verifySubscription: 'Проверить',
 
         // Admin Dashboard
         admin: {
@@ -684,6 +706,17 @@ export const translations = {
         startBotRequired: 'Спочатку запустіть нашого бота, щоб він міг надіслати вам підтвердження.',
         openBotButton: 'Відкрити бота',
         verifySubscription: 'Перевірити підписку',
+
+        // Telegram Notifications
+        notifyMe: 'Сповістити у Telegram',
+        notifyMeDesc: 'Підписатися',
+        subscribeSuccess: 'Підписку оформлено!',
+        subscribeError: 'Помилка. Спробуйте ще раз.',
+        telegramIdLabel: 'Твій Telegram ID (тільки цифри)',
+        telegramIdHelp: 'Дізнатись свій ID можна через @userinfobot',
+        startBotRequired: 'Спочатку запусти нашого бота,\nщоб він міг надіслати вам підтвердження.',
+        openBotButton: 'Відкрити бота',
+        verifySubscription: 'Перевірити',
 
         // Admin Dashboard
         admin: {

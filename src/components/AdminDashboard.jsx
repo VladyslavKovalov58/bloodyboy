@@ -282,6 +282,28 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         setPushingId(null);
     };
 
+    const handleSendTelegramReminder = async (tournament) => {
+        const subsQuery = await import('../supabaseClient').then(m =>
+            m.supabase.from('tournament_subscriptions').select('telegram_user_id', { count: 'exact' }).eq('tournament_id', tournament.id)
+        );
+        const count = subsQuery.count || 0;
+        if (count === 0) {
+            alert('Нет подписчиков для этого турнира в Telegram.');
+            return;
+        }
+        const confirmed = window.confirm(`Отправить напоминание ${count} подписчик(ам) в Telegram?`);
+        if (!confirmed) return;
+
+        setPushingId(`tg-${tournament.id}`);
+        const result = await sendTelegramTournamentReminder(tournament.id, tournament.title);
+        if (result.success) {
+            alert(`✅ Telegram: отправлено ${result.count} из ${result.total} подписчиков!`);
+        } else {
+            alert(`❌ Ошибка: ${result.error}`);
+        }
+        setPushingId(null);
+    };
+
     const handleLogout = async () => {
         await supabase.auth.signOut();
         onLogout();
@@ -1369,6 +1391,26 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                         }}
                                                     >
                                                         {pushingId === `notify-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <BellRing size={16} />}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleSendTelegramReminder(t)}
+                                                        disabled={pushingId === `tg-${t.id}`}
+                                                        title="Send Telegram Reminder to Subscribers"
+                                                        style={{
+                                                            background: 'rgba(0, 136, 204, 0.1)',
+                                                            border: '1px solid rgba(0, 136, 204, 0.3)',
+                                                            color: '#0088cc',
+                                                            padding: isMobile ? '8px' : '10px',
+                                                            borderRadius: '10px',
+                                                            cursor: 'pointer',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            opacity: pushingId === `tg-${t.id}` ? 0.5 : 1,
+                                                            flex: isMobile ? 1 : 'none'
+                                                        }}
+                                                    >
+                                                        {pushingId === `tg-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} color="#0088cc" />}
                                                     </button>
                                                     <button
                                                         onClick={() => {

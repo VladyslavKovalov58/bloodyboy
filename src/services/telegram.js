@@ -14,8 +14,6 @@ export const getTelegramBotInfo = async () => {
 
 /**
  * Sends a message to a Telegram user
- * @param {string} chatId - Telegram chat ID
- * @param {string} text - Message text (Markdown supported)
  */
 export const sendTelegramMessage = async (chatId, text) => {
     if (!TELEGRAM_BOT_TOKEN) {
@@ -58,13 +56,17 @@ export const sendTelegramTournamentReminder = async (tournamentId, tournamentTit
 
         let baseUrl = window.location.origin;
         if (baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1')) {
-            baseUrl = 'https://bloodyboy.top'; // To make links clickable in Telegram during local development
+            baseUrl = 'https://bloodyboy.top';
         }
         const tournamentUrl = `${baseUrl}/tournaments/${tournamentId}`;
 
-        const text = customMessage
-            ? `🗣 *${tournamentTitle}*\n\n${customMessage}\n\n👉 [Перейти к турниру](${tournamentUrl})`
-            : `🏆 *${tournamentTitle}*\n\n⏳ *Напоминание: Турнир скоро начнется!*\nПодготовься, зайди в Discord и на Faceit.\n\n👉 [Перейти к турниру](${tournamentUrl})`;
+        const defaultMsg =
+            `🏆 *${tournamentTitle}*\n\n` +
+            `⏳ *Напоминание: Турнир скоро начнется!*\n` +
+            `Подготовься, зайди в Discord и на Faceit.\n\n` +
+            `👉 [Перейти к турниру](${tournamentUrl})`;
+
+        const text = customMessage || defaultMsg;
 
         let successCount = 0;
         for (const sub of subs) {
@@ -74,7 +76,7 @@ export const sendTelegramTournamentReminder = async (tournamentId, tournamentTit
 
         return { success: true, count: successCount, total: subs.length };
     } catch (error) {
-        console.error('Telegram Mass Notify Error:', error);
+        console.error('Mass notification error:', error);
         return { success: false, error: error.message };
     }
 };
