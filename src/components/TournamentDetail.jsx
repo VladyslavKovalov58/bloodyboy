@@ -44,7 +44,7 @@ const TournamentDetail = ({ tournaments, language }) => {
         setNeedsBotStart(false);
         try {
             // Verify if user has started the bot by sending a test message
-            const testMsg = `👋 *ПОДПИСКА АКТИВНА*\nВы успешно подписались на уведомления о турнире *${tournament.name}*!`;
+            const testMsg = `👋 *ПОДПИСКА АКТИВНА*\nВы успешно подписались на уведомления о турнире *${tournament.title}*!`;
             const testResult = await sendTelegramMessage(telegramId, testMsg);
 
             if (!testResult) {
@@ -1066,6 +1066,27 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                     <div style={{ color: '#FFB400', fontWeight: '800', lineHeight: '1.4', fontSize: '0.85rem', marginBottom: '12px' }}>
                                                         {t.startBotRequired || `Сначала запусти бота:\n1. Открой @${botUsername} в Telegram\n2. Нажми /start\n3. Вернись и нажми «Проверить»`}
                                                     </div>
+                                                    {/* Show ID input in case user didn't enter it yet */}
+                                                    {!telegramId && (
+                                                        <input
+                                                            type="text"
+                                                            value={telegramId}
+                                                            onChange={(e) => setTelegramId(e.target.value.replace(/\D/g, ''))}
+                                                            placeholder={t.telegramIdLabel || 'Твой Telegram ID (цифры)'}
+                                                            style={{
+                                                                width: '100%',
+                                                                background: 'rgba(0,0,0,0.3)',
+                                                                border: '1px solid rgba(255,255,255,0.15)',
+                                                                padding: '10px 15px',
+                                                                borderRadius: '10px',
+                                                                color: '#fff',
+                                                                fontSize: '0.9rem',
+                                                                fontWeight: '700',
+                                                                boxSizing: 'border-box',
+                                                                marginBottom: '8px'
+                                                            }}
+                                                        />
+                                                    )}
                                                     <div style={{ display: 'flex', gap: '10px' }}>
                                                         <button
                                                             onClick={() => window.open(`https://t.me/${botUsername}`, '_blank')}

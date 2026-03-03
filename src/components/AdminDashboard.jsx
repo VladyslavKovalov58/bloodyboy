@@ -1393,26 +1393,6 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                         {pushingId === `notify-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <BellRing size={16} />}
                                                     </button>
                                                     <button
-                                                        onClick={() => handleSendTelegramReminder(t)}
-                                                        disabled={pushingId === `tg-${t.id}`}
-                                                        title="Send Telegram Reminder to Subscribers"
-                                                        style={{
-                                                            background: 'rgba(0, 136, 204, 0.1)',
-                                                            border: '1px solid rgba(0, 136, 204, 0.3)',
-                                                            color: '#0088cc',
-                                                            padding: isMobile ? '8px' : '10px',
-                                                            borderRadius: '10px',
-                                                            cursor: 'pointer',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            opacity: pushingId === `tg-${t.id}` ? 0.5 : 1,
-                                                            flex: isMobile ? 1 : 'none'
-                                                        }}
-                                                    >
-                                                        {pushingId === `tg-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} color="#0088cc" />}
-                                                    </button>
-                                                    <button
                                                         onClick={() => {
                                                             const { id, created_at, ...copyData } = t;
                                                             setEditingTournament({ ...copyData, title: `${t.title} (Copy)` });
