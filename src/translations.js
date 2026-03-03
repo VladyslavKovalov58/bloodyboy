@@ -3,9 +3,9 @@ export const translations = {
         // Sidebar
         logo: 'BloodyBoy',
         menu: 'Menu',
-        bestCasinos: 'Best casinos',
-        bestSlots: 'Best slots',
-        liveStream: 'Live stream',
+        bestCasinos: 'Casinos',
+        bestSlots: 'Slots',
+        liveStream: 'Stream',
         socials: 'Socials',
         chatRules: 'Chat rules',
         comingSoon: 'Coming Soon',
@@ -79,7 +79,7 @@ export const translations = {
         subscribe: 'Subscribe',
 
         // Tournaments
-        tournaments: 'CS2 Tournaments',
+        tournaments: 'Tournaments',
         activeTournaments: 'Active',
         finishedTournaments: 'Finished',
         prizePool: 'Prize Pool',
@@ -233,9 +233,9 @@ export const translations = {
         // Sidebar
         logo: 'BloodyBoy',
         menu: 'Меню',
-        bestCasinos: 'Лучшие казино',
-        bestSlots: 'Лучшие слоты',
-        liveStream: 'Прямой эфир',
+        bestCasinos: 'Казино',
+        bestSlots: 'Слоты',
+        liveStream: 'Стрим',
         socials: 'Соцсети',
         chatRules: 'Правила чата',
         comingSoon: 'Скоро выйдут',
@@ -309,7 +309,7 @@ export const translations = {
         subscribe: 'Подписаться',
 
         // Tournaments
-        tournaments: 'CS2 Турниры',
+        tournaments: 'Турниры',
         activeTournaments: 'Активные',
         finishedTournaments: 'Завершенные',
         prizePool: 'Призовой фонд',
@@ -465,9 +465,9 @@ export const translations = {
         // Sidebar
         logo: 'BloodyBoy',
         menu: 'Меню',
-        bestCasinos: 'Найкращі казино',
-        bestSlots: 'Найкращі слоти',
-        liveStream: 'Прямий ефір',
+        bestCasinos: 'Казино',
+        bestSlots: 'Слоти',
+        liveStream: 'Ефір',
         socials: 'Соцмережі',
         chatRules: 'Правила чату',
         comingSoon: 'Незабаром',
@@ -541,7 +541,7 @@ export const translations = {
         subscribe: 'Підписатися',
 
         // Tournaments
-        tournaments: 'CS2 Турніри',
+        tournaments: 'Турніри',
         activeTournaments: 'Активні',
         finishedTournaments: 'Завершені',
         prizePool: 'Призовий фонд',
