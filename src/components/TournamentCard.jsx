@@ -127,9 +127,11 @@ const TournamentCard = ({ tournament, language }) => {
                     marginBottom: '30px',
                     fontWeight: '500'
                 }}>
-                    {language === 'en' && tournament.briefDescriptionEn
-                        ? tournament.briefDescriptionEn
-                        : tournament.briefDescription}
+                    {language === 'ua' && tournament.briefDescriptionUa
+                        ? tournament.briefDescriptionUa
+                        : language === 'en' && tournament.briefDescriptionEn
+                            ? tournament.briefDescriptionEn
+                            : tournament.briefDescription}
                 </p>
 
                 {/* Info Pills */}
@@ -149,7 +151,7 @@ const TournamentCard = ({ tournament, language }) => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Trophy size={20} color="var(--primary-orange)" />
                         <span style={{ fontWeight: '800' }}>
-                            {displaySlots} {language === 'ru' ? 'команды' : 'teams'}
+                            {displaySlots} {language === 'ua' ? 'команди' : language === 'ru' ? 'команды' : 'teams'}
                         </span>
                     </div>
 
@@ -181,6 +183,7 @@ const TournamentCard = ({ tournament, language }) => {
                                 padding: window.innerWidth < 480 ? '14px 24px' : '16px 40px',
                                 fontSize: window.innerWidth < 480 ? '1rem' : '1.1rem',
                                 fontWeight: '900',
+                                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',

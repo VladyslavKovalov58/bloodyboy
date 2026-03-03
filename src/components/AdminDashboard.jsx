@@ -5,10 +5,23 @@ import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../serv
 import { fetchChampionshipDetails, extractChampionshipId, fetchChampionshipResults } from '../services/faceit';
 import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { translations } from '../translations';
 
 const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'general';
+
+    const t = translations[language];
+    const ad = t.admin;
+
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const isMobile = windowWidth < 768;
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const setActiveTab = (tab) => {
         setSearchParams({ tab });
@@ -121,7 +134,11 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
             setIsAdding(false);
             fetchData();
         } else {
-            alert('Error saving tournament: ' + error.message);
+            let msg = 'Error saving tournament: ' + error.message;
+            if (error.message.includes('brief_description_ua')) {
+                msg += '\n\nIMPORTANT: You need to add Ukrainian columns to your database. Run this in Supabase SQL Editor:\nALTER TABLE tournaments ADD COLUMN brief_description_ua TEXT, ADD COLUMN full_description_ua TEXT, ADD COLUMN rules_ua TEXT;';
+            }
+            alert(msg);
         }
         setSaving(false);
     };
@@ -353,10 +370,13 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         link: '',
         brief_description: '',
         brief_description_en: '',
+        brief_description_ua: '',
         full_description: '',
         full_description_en: '',
+        full_description_ua: '',
         rules: '',
         rules_en: '',
+        rules_ua: '',
         sponsor_name: '',
         sponsor_icon: '',
         sponsor_link: '',
@@ -367,6 +387,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         winner_3: '',
         winner_3_prize: '',
         is_active: true,
+        show_sponsor: true,
         faceit_id: '',
         faceit_sync_enabled: false
     };
@@ -407,7 +428,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
         <div style={{ minHeight: '100vh', background: 'var(--bg-dark)', color: '#fff' }}>
             {/* Header */}
             <header style={{
-                padding: '20px 40px',
+                padding: isMobile ? '15px 20px' : '20px 40px',
                 background: 'var(--bg-sidebar)',
                 borderBottom: '1px solid rgba(255,255,255,0.05)',
                 display: 'flex',
@@ -417,22 +438,22 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                 top: 0,
                 zIndex: 100
             }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '15px' }}>
                     <div style={{
-                        width: '40px',
-                        height: '40px',
+                        width: isMobile ? '32px' : '40px',
+                        height: isMobile ? '32px' : '40px',
                         background: 'var(--primary-orange)',
-                        borderRadius: '10px',
+                        borderRadius: '8px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center'
                     }}>
-                        <Settings size={24} color="#fff" />
+                        <Settings size={isMobile ? 18 : 24} color="#fff" />
                     </div>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Admin Dashboard</h1>
+                    <h1 style={{ fontSize: isMobile ? '1.1rem' : '1.5rem', fontWeight: '800' }}>{ad.dashboard}</h1>
                 </div>
 
-                <div style={{ display: 'flex', gap: '15px' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '8px' : '15px' }}>
                     <button
                         onClick={() => window.open('/', '_blank')}
                         style={{
@@ -441,14 +462,15 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             gap: '8px',
                             background: 'rgba(255,107,0,0.1)',
                             border: '1px solid rgba(255,107,0,0.2)',
-                            padding: '10px 20px',
+                            padding: isMobile ? '8px 12px' : '10px 20px',
                             borderRadius: '10px',
                             color: 'var(--primary-orange)',
                             cursor: 'pointer',
-                            fontWeight: '600'
+                            fontWeight: '600',
+                            fontSize: isMobile ? '0.8rem' : '1rem'
                         }}
                     >
-                        View Site
+                        {isMobile ? 'Site' : ad.viewSite}
                     </button>
                     <button onClick={handleLogout} style={{
                         display: 'flex',
@@ -456,24 +478,38 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                         gap: '8px',
                         background: 'rgba(255,255,255,0.05)',
                         border: '1px solid rgba(255,255,255,0.1)',
-                        padding: '10px 20px',
+                        padding: isMobile ? '8px 12px' : '10px 20px',
                         borderRadius: '10px',
                         color: '#fff',
                         cursor: 'pointer',
-                        fontWeight: '600'
+                        fontWeight: '600',
+                        fontSize: isMobile ? '0.8rem' : '1rem'
                     }}>
-                        <LogOut size={18} /> Logout
+                        <LogOut size={isMobile ? 16 : 18} /> {isMobile ? '' : ad.logout}
                     </button>
                 </div>
             </header>
 
-            <div style={{ display: 'flex', padding: '40px', gap: '40px' }}>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', padding: isMobile ? '20px' : '40px', gap: isMobile ? '20px' : '40px' }}>
                 {/* Sidebar Navigation */}
-                <nav style={{ width: '250px', display: 'flex', flexDirection: 'column', gap: '10px', height: 'fit-content', position: 'sticky', top: '120px' }}>
+                <nav style={{
+                    width: isMobile ? '100%' : '250px',
+                    display: 'flex',
+                    flexDirection: isMobile ? 'row' : 'column',
+                    gap: isMobile ? '10px' : '10px',
+                    height: 'fit-content',
+                    position: isMobile ? 'sticky' : 'sticky',
+                    top: isMobile ? '70px' : '120px',
+                    zIndex: 90,
+                    background: isMobile ? 'var(--bg-dark)' : 'transparent',
+                    overflowX: isMobile ? 'auto' : 'visible',
+                    padding: isMobile ? '5px 0' : '0',
+                    scrollbarWidth: 'none'
+                }}>
                     <button
                         onClick={() => setActiveTab('general')}
                         style={{
-                            padding: '15px 20px',
+                            padding: isMobile ? '10px 15px' : '15px 20px',
                             textAlign: 'left',
                             borderRadius: '12px',
                             background: activeTab === 'general' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
@@ -484,15 +520,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             alignItems: 'center',
                             gap: '12px',
                             fontWeight: '600',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            fontSize: isMobile ? '0.85rem' : '1rem'
                         }}
                     >
-                        <LinkIcon size={20} /> General Links
+                        <LinkIcon size={isMobile ? 18 : 20} /> {ad.general}
                     </button>
                     <button
                         onClick={() => setActiveTab('tournaments')}
                         style={{
-                            padding: '15px 20px',
+                            padding: isMobile ? '10px 15px' : '15px 20px',
                             textAlign: 'left',
                             borderRadius: '12px',
                             background: activeTab === 'tournaments' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
@@ -503,15 +541,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             alignItems: 'center',
                             gap: '12px',
                             fontWeight: '600',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            fontSize: isMobile ? '0.85rem' : '1rem'
                         }}
                     >
-                        <Trophy size={20} /> Tournaments
+                        <Trophy size={isMobile ? 18 : 20} /> {ad.tournaments}
                     </button>
                     <button
                         onClick={() => setActiveTab('slots')}
                         style={{
-                            padding: '15px 20px',
+                            padding: isMobile ? '10px 15px' : '15px 20px',
                             textAlign: 'left',
                             borderRadius: '12px',
                             background: activeTab === 'slots' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
@@ -522,15 +562,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             alignItems: 'center',
                             gap: '12px',
                             fontWeight: '600',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            fontSize: isMobile ? '0.85rem' : '1rem'
                         }}
                     >
-                        <Gamepad2 size={20} /> Game Slots
+                        <Gamepad2 size={isMobile ? 18 : 20} /> {isMobile ? 'Slots' : ad.slots}
                     </button>
                     <button
                         onClick={() => setActiveTab('bonuses')}
                         style={{
-                            padding: '15px 20px',
+                            padding: isMobile ? '10px 15px' : '15px 20px',
                             textAlign: 'left',
                             borderRadius: '12px',
                             background: activeTab === 'bonuses' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
@@ -541,15 +583,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             alignItems: 'center',
                             gap: '12px',
                             fontWeight: '600',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            fontSize: isMobile ? '0.85rem' : '1rem'
                         }}
                     >
-                        <Settings size={20} /> Casino Bonuses
+                        <Settings size={isMobile ? 18 : 20} /> {isMobile ? 'Bonuses' : ad.bonuses}
                     </button>
                     <button
                         onClick={() => setActiveTab('donations')}
                         style={{
-                            padding: '15px 20px',
+                            padding: isMobile ? '10px 15px' : '15px 20px',
                             textAlign: 'left',
                             borderRadius: '12px',
                             background: activeTab === 'donations' ? 'var(--primary-orange)' : 'rgba(255,255,255,0.03)',
@@ -560,21 +604,23 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                             alignItems: 'center',
                             gap: '12px',
                             fontWeight: '600',
-                            transition: 'all 0.2s'
+                            transition: 'all 0.2s',
+                            whiteSpace: 'nowrap',
+                            fontSize: isMobile ? '0.85rem' : '1rem'
                         }}
                     >
-                        <Bell size={20} /> Donations History
+                        <Bell size={isMobile ? 18 : 20} /> {isMobile ? 'Donates' : ad.donations}
                     </button>
                 </nav>
 
                 {/* Content Area */}
-                <main style={{ flex: 1, background: 'var(--bg-card)', borderRadius: '24px', padding: '40px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <main style={{ flex: 1, background: 'var(--bg-card)', borderRadius: isMobile ? '16px' : '24px', padding: isMobile ? '20px' : '40px', border: '1px solid rgba(255,255,255,0.05)', overflowX: 'hidden' }}>
                     {activeTab === 'general' && (
                         <section className="animate-fade-in">
                             <h2 style={{ fontSize: '1.5rem', marginBottom: '30px', fontWeight: '800' }}>General Site Settings</h2>
                             <form onSubmit={handleSaveConfig} style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
                                 <h3 style={{ color: 'var(--primary-orange)', marginBottom: '15px', fontSize: '1.1rem' }}>Personal Socials (BloodyBoy)</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginBottom: '30px', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '250px' : '280px'}, 1fr))`, gap: '20px', marginBottom: '30px', background: 'rgba(255,255,255,0.02)', padding: isMobile ? '15px' : '20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <div>
                                         <label style={labelStyle}>Personal Telegram Chat</label>
                                         <input
@@ -617,18 +663,18 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                     </div>
                                     <div style={{ gridColumn: '1 / -1', marginTop: '10px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                         <label style={labelStyle}>Stream Status Control (Kick Auto-Check)</label>
-                                        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                                        <div style={{ display: 'flex', gap: '15px', alignItems: isMobile ? 'flex-start' : 'center', flexDirection: isMobile ? 'column' : 'row', flexWrap: 'wrap' }}>
                                             <select
                                                 value={config.stream_status_mode || 'auto'}
                                                 onChange={(e) => setConfig({ ...config, stream_status_mode: e.target.value })}
-                                                style={{ ...inputStyle, width: '200px', margin: 0 }}
+                                                style={{ ...inputStyle, width: isMobile ? '100%' : '200px', margin: 0 }}
                                             >
                                                 <option value="auto">Automatic (Kick API)</option>
                                                 <option value="manual">Manual Override</option>
                                             </select>
 
                                             {config.stream_status_mode === 'manual' && (
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: isMobile ? '100%' : 'auto', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
                                                     <span style={{ fontSize: '0.9rem', opacity: 0.7 }}>Manual Status:</span>
                                                     <button
                                                         type="button"
@@ -657,7 +703,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 </div>
 
                                 <h3 style={{ color: 'var(--primary-orange)', marginBottom: '15px', fontSize: '1.1rem' }}>Community Socials (Tiger)</h3>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${isMobile ? '250px' : '280px'}, 1fr))`, gap: '20px', background: 'rgba(255,255,255,0.02)', padding: isMobile ? '15px' : '20px', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.05)' }}>
                                     <div>
                                         <label style={labelStyle}>Community Telegram Group</label>
                                         <input
@@ -693,7 +739,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    style={submitButtonStyle}
+                                    style={{ ...submitButtonStyle, width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}
                                 >
                                     {saving ? <Loader2 size={20} className="animate-spin" /> : (saveStatus === 'success' ? <CheckCircle size={20} /> : <Save size={20} />)}
                                     {saveStatus === 'success' ? 'Saved Successfully' : 'Save General Settings'}
@@ -704,13 +750,14 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
 
                     {activeTab === 'donations' && (
                         <section className="animate-fade-in">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                    <h2 style={{ fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>Recent Donations</h2>
-                                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: '30px', gap: isMobile ? '20px' : '0' }}>
+                                <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '12px' : '20px', flexDirection: isMobile ? 'column' : 'row' }}>
+                                    <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: '800', margin: 0 }}>Recent Donations</h2>
+                                    <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', padding: '4px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.1)', width: isMobile ? '100%' : 'auto' }}>
                                         <button
                                             onClick={() => setDonationFilter('all')}
                                             style={{
+                                                flex: isMobile ? 1 : 'none',
                                                 padding: '6px 15px',
                                                 borderRadius: '8px',
                                                 border: 'none',
@@ -726,6 +773,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <button
                                             onClick={() => setDonationFilter('today')}
                                             style={{
+                                                flex: isMobile ? 1 : 'none',
                                                 padding: '6px 15px',
                                                 borderRadius: '8px',
                                                 border: 'none',
@@ -743,7 +791,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 <button
                                     onClick={fetchDonations}
                                     disabled={loadingDonations}
-                                    style={{ ...submitButtonStyle, width: 'auto', margin: 0, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                    style={{ ...submitButtonStyle, width: isMobile ? '100%' : 'auto', margin: 0, padding: isMobile ? '12px 20px' : '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
                                 >
                                     {loadingDonations ? <Loader2 size={18} className="animate-spin" /> : <Settings size={18} />}
                                     Refresh History
@@ -824,7 +872,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <button onClick={() => { setEditingTournament(null); setIsAdding(false); }} style={cancelButtonStyle}>Cancel</button>
                                     </div>
 
-                                    <form onSubmit={handleSaveTournament} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                    <form onSubmit={handleSaveTournament} style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                                         <div style={{ gridColumn: '1 / -1' }}>
                                             <label style={labelStyle}>Tournament Title</label>
                                             <input required type="text" value={editingTournament?.title || ''} onChange={(e) => setEditingTournament({ ...editingTournament, title: e.target.value })} style={inputStyle} />
@@ -909,7 +957,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', gridColumn: '1 / -1' }}>
                                             <div>
                                                 <label style={labelStyle}>Brief Description (RU)</label>
                                                 <textarea value={editingTournament?.brief_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
@@ -918,9 +966,13 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                 <label style={labelStyle}>Brief Description (EN)</label>
                                                 <textarea value={editingTournament?.brief_description_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description_en: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
                                             </div>
+                                            <div>
+                                                <label style={labelStyle}>Brief Description (UA)</label>
+                                                <textarea value={editingTournament?.brief_description_ua || ''} onChange={(e) => setEditingTournament({ ...editingTournament, brief_description_ua: e.target.value })} style={{ ...inputStyle, height: '80px', resize: 'vertical' }} />
+                                            </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', gridColumn: '1 / -1' }}>
                                             <div>
                                                 <label style={labelStyle}>Full Description (RU)</label>
                                                 <textarea value={editingTournament?.full_description || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
@@ -929,9 +981,13 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                 <label style={labelStyle}>Full Description (EN)</label>
                                                 <textarea value={editingTournament?.full_description_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description_en: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
                                             </div>
+                                            <div>
+                                                <label style={labelStyle}>Full Description (UA)</label>
+                                                <textarea value={editingTournament?.full_description_ua || ''} onChange={(e) => setEditingTournament({ ...editingTournament, full_description_ua: e.target.value })} style={{ ...inputStyle, height: '120px', resize: 'vertical' }} />
+                                            </div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', gridColumn: '1 / -1' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', gridColumn: '1 / -1' }}>
                                             <div>
                                                 <label style={labelStyle}>Rules (RU)</label>
                                                 <textarea value={editingTournament?.rules || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
@@ -939,6 +995,10 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                             <div>
                                                 <label style={labelStyle}>Rules (EN)</label>
                                                 <textarea value={editingTournament?.rules_en || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules_en: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
+                                            </div>
+                                            <div>
+                                                <label style={labelStyle}>Rules (UA)</label>
+                                                <textarea value={editingTournament?.rules_ua || ''} onChange={(e) => setEditingTournament({ ...editingTournament, rules_ua: e.target.value })} style={{ ...inputStyle, height: '100px', resize: 'vertical' }} />
                                             </div>
                                         </div>
 
@@ -949,6 +1009,16 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <div>
                                             <label style={labelStyle}>Sponsor Link</label>
                                             <input type="text" value={editingTournament?.sponsor_link || ''} onChange={(e) => setEditingTournament({ ...editingTournament, sponsor_link: e.target.value })} style={inputStyle} />
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <input
+                                                type="checkbox"
+                                                id="show_sponsor"
+                                                checked={editingTournament?.show_sponsor ?? true}
+                                                onChange={(e) => setEditingTournament({ ...editingTournament, show_sponsor: e.target.checked })}
+                                                style={{ width: '20px', height: '20px', accentColor: 'var(--primary-orange)', cursor: 'pointer' }}
+                                            />
+                                            <label htmlFor="show_sponsor" style={{ ...labelStyle, marginBottom: 0, cursor: 'pointer', color: '#fff' }}>{ad.showSponsor}</label>
                                         </div>
                                         <div style={{ gridColumn: '1 / -1', background: 'rgba(255,255,255,0.02)', padding: '25px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', marginTop: '10px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -1172,11 +1242,11 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 </div>
                             ) : (
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Manage Tournaments</h2>
+                                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', marginBottom: '30px', gap: isMobile ? '15px' : '0' }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: '800' }}>Manage Tournaments</h2>
                                         <button
                                             onClick={() => { setIsAdding(true); setEditingTournament(emptyTournament); }}
-                                            style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)' }}
+                                            style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: isMobile ? '12px 24px' : '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)', width: isMobile ? '100%' : 'auto', fontSize: isMobile ? '0.85rem' : '1rem' }}
                                         >
                                             + Add New Tournament
                                         </button>
@@ -1189,17 +1259,20 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                 borderRadius: '20px',
                                                 border: '1px solid rgba(255,255,255,0.05)',
                                                 display: 'flex',
+                                                display: 'flex',
+                                                flexDirection: isMobile ? 'column' : 'row',
                                                 justifyContent: 'space-between',
-                                                alignItems: 'center',
+                                                alignItems: isMobile ? 'stretch' : 'center',
+                                                gap: isMobile ? '20px' : '0',
                                                 transition: 'transform 0.2s ease'
                                             }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                                                    <div style={{ width: '60px', height: '60px', borderRadius: '14px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '12px' : '20px' }}>
+                                                    <div style={{ width: isMobile ? '44px' : '60px', height: isMobile ? '44px' : '60px', borderRadius: '14px', background: 'rgba(255,255,255,0.05)', overflow: 'hidden', flexShrink: 0 }}>
                                                         {t.image_url && <img src={t.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
                                                     </div>
                                                     <div>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '5px' }}>
-                                                            <div style={{ fontWeight: '800', fontSize: '1.2rem' }}>{t.title}</div>
+                                                        <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', gap: '10px', marginBottom: '5px', flexDirection: isMobile ? 'column' : 'row' }}>
+                                                            <div style={{ fontWeight: '800', fontSize: isMobile ? '1rem' : '1.2rem' }}>{t.title}</div>
                                                             <div style={{
                                                                 padding: '4px 10px',
                                                                 borderRadius: '6px',
@@ -1213,13 +1286,13 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                                 {t.is_active ? (language === 'ru' ? 'Активный' : 'Active') : (language === 'ru' ? 'Завершен' : 'Finished')}
                                                             </div>
                                                         </div>
-                                                        <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem', display: 'flex', gap: '15px' }}>
+                                                        <div style={{ color: 'var(--text-dim)', fontSize: '0.85rem', display: 'flex', gap: '12px', flexWrap: 'nowrap' }}>
                                                             <span>📅 {t.date}</span>
                                                             <span>💰 {t.prize_pool}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
+                                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                                     <button
                                                         onClick={() => handlePushToDiscord(t)}
                                                         disabled={pushingId === t.id}
@@ -1228,16 +1301,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                             background: 'rgba(255, 107, 0, 0.1)',
                                                             border: '1px solid rgba(255, 107, 0, 0.2)',
                                                             color: 'var(--primary-orange)',
-                                                            padding: '10px',
+                                                            padding: isMobile ? '8px' : '10px',
                                                             borderRadius: '10px',
                                                             cursor: 'pointer',
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            opacity: pushingId === t.id ? 0.5 : 1
+                                                            opacity: pushingId === t.id ? 0.5 : 1,
+                                                            flex: isMobile ? 1 : 'none'
                                                         }}
                                                     >
-                                                        {pushingId === t.id ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                                                        {pushingId === t.id ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                                                     </button>
                                                     <button
                                                         onClick={() => handlePushResultsToDiscord(t)}
@@ -1247,16 +1321,17 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                             background: 'rgba(88, 101, 242, 0.1)',
                                                             border: '1px solid rgba(88, 101, 242, 0.2)',
                                                             color: '#5865F2',
-                                                            padding: '10px',
+                                                            padding: isMobile ? '8px' : '10px',
                                                             borderRadius: '10px',
                                                             cursor: 'pointer',
                                                             display: 'flex',
                                                             alignItems: 'center',
                                                             justifyContent: 'center',
-                                                            opacity: pushingId === `results-${t.id}` ? 0.5 : 1
+                                                            opacity: pushingId === `results-${t.id}` ? 0.5 : 1,
+                                                            flex: isMobile ? 1 : 'none'
                                                         }}
                                                     >
-                                                        {pushingId === `results-${t.id}` ? <Loader2 size={18} className="animate-spin" /> : <Bell size={18} />}
+                                                        {pushingId === `results-${t.id}` ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />}
                                                     </button>
                                                     <button
                                                         onClick={() => {
@@ -1265,12 +1340,12 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                                             setIsAdding(true);
                                                         }}
                                                         title="Copy Tournament"
-                                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: isMobile ? '8px' : '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: isMobile ? 1 : 'none' }}
                                                     >
-                                                        <Copy size={18} />
+                                                        <Copy size={16} />
                                                     </button>
-                                                    <button onClick={() => { setEditingTournament(t); setIsAdding(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
-                                                    <button onClick={() => handleDeleteTournament(t.id)} style={{ background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600' }}>Delete</button>
+                                                    <button onClick={() => { setEditingTournament(t); setIsAdding(false); }} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: isMobile ? '8px 12px' : '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', flex: isMobile ? 2 : 'none' }}>Edit</button>
+                                                    <button onClick={() => handleDeleteTournament(t.id)} style={{ background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', padding: isMobile ? '8px 12px' : '10px 20px', borderRadius: '10px', cursor: 'pointer', fontWeight: '600', fontSize: '0.85rem', flex: isMobile ? 2 : 'none' }}>Delete</button>
                                                 </div>
                                             </div>
                                         ))}
@@ -1295,7 +1370,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <button onClick={() => { setEditingSlot(null); setIsAddingSlot(false); }} style={cancelButtonStyle}>Cancel</button>
                                     </div>
 
-                                    <form onSubmit={handleSaveSlot} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                    <form onSubmit={handleSaveSlot} style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                                         <div style={{ gridColumn: '1 / -1' }}>
                                             <label style={labelStyle}>Slot Name</label>
                                             <input required type="text" value={editingSlot?.name || ''} onChange={(e) => setEditingSlot({ ...editingSlot, name: e.target.value })} style={inputStyle} />
@@ -1382,19 +1457,19 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 </div>
                             ) : (
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Manage Game Slots</h2>
-                                        <div style={{ display: 'flex', gap: '15px' }}>
+                                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', marginBottom: '30px', gap: isMobile ? '15px' : '0' }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: '800' }}>Manage Game Slots</h2>
+                                        <div style={{ display: 'flex', gap: '10px', flexDirection: isMobile ? 'column' : 'row' }}>
                                             <button
                                                 onClick={handleRestoreSlots}
                                                 disabled={restoringSlots}
-                                                style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer' }}
+                                                style={{ background: 'rgba(255,255,255,0.05)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', fontSize: isMobile ? '0.85rem' : '1rem' }}
                                             >
                                                 {restoringSlots ? <Loader2 size={18} className="animate-spin" /> : 'Restore Initial Slots'}
                                             </button>
                                             <button
                                                 onClick={() => { setIsAddingSlot(true); setEditingSlot(emptySlot); }}
-                                                style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)' }}
+                                                style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)', fontSize: isMobile ? '0.85rem' : '1rem' }}
                                             >
                                                 + Add New Slot
                                             </button>
@@ -1469,7 +1544,7 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                         <button onClick={() => { setEditingBonus(null); setIsAddingBonus(false); }} style={cancelButtonStyle}>Cancel</button>
                                     </div>
 
-                                    <form onSubmit={handleSaveBonus} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                    <form onSubmit={handleSaveBonus} style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
                                         <div>
                                             <label style={labelStyle}>Casino Name</label>
                                             <input required type="text" value={editingBonus?.site_name || ''} onChange={(e) => setEditingBonus({ ...editingBonus, site_name: e.target.value })} style={inputStyle} />
@@ -1516,11 +1591,11 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                 </div>
                             ) : (
                                 <div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-                                        <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>Manage Bonuses</h2>
+                                    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', marginBottom: '30px', gap: isMobile ? '15px' : '0' }}>
+                                        <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', fontWeight: '800' }}>Manage Bonuses</h2>
                                         <button
                                             onClick={() => { setIsAddingBonus(true); setEditingBonus(emptyBonus); }}
-                                            style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)' }}
+                                            style={{ background: 'var(--primary-orange)', color: '#fff', border: 'none', padding: isMobile ? '12px 24px' : '12px 24px', borderRadius: '12px', fontWeight: '750', cursor: 'pointer', boxShadow: '0 4px 15px rgba(255,107,0,0.3)', width: isMobile ? '100%' : 'auto', fontSize: isMobile ? '0.85rem' : '1rem' }}
                                         >
                                             + Add New Bonus
                                         </button>
@@ -1528,24 +1603,26 @@ const AdminDashboard = ({ onLogout, language = 'ru' }) => {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                                         {bonuses.map(b => (
                                             <div key={b.id} style={{
-                                                padding: '24px',
+                                                padding: isMobile ? '15px' : '24px',
                                                 background: 'rgba(255,255,255,0.03)',
                                                 borderRadius: '20px',
                                                 border: '1px solid rgba(255,255,255,0.05)',
                                                 display: 'flex',
+                                                flexDirection: isMobile ? 'column' : 'row',
                                                 justifyContent: 'space-between',
-                                                alignItems: 'center'
+                                                alignItems: isMobile ? 'flex-start' : 'center',
+                                                gap: isMobile ? '15px' : '0'
                                             }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                                     <div style={{ width: '12px', height: '40px', borderRadius: '4px', background: b.color }}></div>
                                                     <div>
-                                                        <div style={{ fontWeight: '800', fontSize: '1.2rem', marginBottom: '5px' }}>{b.site_name}</div>
-                                                        <div style={{ color: 'var(--text-dim)', fontSize: '0.9rem' }}>{b.offer} • Promo: {b.promo}</div>
+                                                        <div style={{ fontWeight: '800', fontSize: isMobile ? '1.1rem' : '1.2rem', marginBottom: '5px' }}>{b.site_name}</div>
+                                                        <div style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>{b.offer} • {b.promo}</div>
                                                     </div>
                                                 </div>
-                                                <div style={{ display: 'flex', gap: '10px' }}>
-                                                    <button onClick={() => setEditingBonus(b)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer' }}>Edit</button>
-                                                    <button onClick={() => handleDeleteBonus(b.id)} style={{ background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer' }}>Delete</button>
+                                                <div style={{ display: 'flex', gap: '10px', width: isMobile ? '100%' : 'auto' }}>
+                                                    <button onClick={() => setEditingBonus(b)} style={{ flex: isMobile ? 1 : 'none', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: isMobile ? '0.85rem' : '1rem' }}>Edit</button>
+                                                    <button onClick={() => handleDeleteBonus(b.id)} style={{ flex: isMobile ? 1 : 'none', background: 'rgba(255, 68, 68, 0.1)', border: '1px solid rgba(255, 68, 68, 0.2)', color: '#ff4444', padding: '10px 20px', borderRadius: '10px', cursor: 'pointer', fontSize: isMobile ? '0.85rem' : '1rem' }}>Delete</button>
                                                 </div>
                                             </div>
                                         ))}

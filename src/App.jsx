@@ -21,7 +21,7 @@ import { translations } from './translations';
 
 // Navigation Logic Wrapper
 const AppContent = () => {
-  const [language, setLanguage] = useState('ru');
+  const [language, setLanguage] = useState(localStorage.getItem('bloodyboy_language') || 'ru');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isLive, setIsLive] = useState(false); // Default to false until checked
   const [user, setUser] = useState(null);
@@ -57,6 +57,11 @@ const AppContent = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Persist language preference
+  useEffect(() => {
+    localStorage.setItem('bloodyboy_language', language);
+  }, [language]);
+
   // Fetch site config and tournaments
   useEffect(() => {
     const fetchData = async () => {
@@ -91,10 +96,13 @@ const AppContent = () => {
           joinedCount: dbT.joined_count,
           briefDescription: dbT.brief_description,
           briefDescriptionEn: dbT.brief_description_en,
+          briefDescriptionUa: dbT.brief_description_ua,
           fullDescription: dbT.full_description,
           fullDescriptionEn: dbT.full_description_en,
+          fullDescriptionUa: dbT.full_description_ua,
           rules: dbT.rules,
           rulesEn: dbT.rules_en,
+          rulesUa: dbT.rules_ua,
           sponsorName: dbT.sponsor_name,
           sponsorIcon: dbT.sponsor_icon,
           sponsorLink: dbT.sponsor_link,
@@ -106,7 +114,8 @@ const AppContent = () => {
           winner3Prize: dbT.winner_3_prize,
           faceitId: dbT.faceit_id,
           faceitSyncEnabled: dbT.faceit_sync_enabled,
-          mapPool: dbT.map_pool
+          mapPool: dbT.map_pool,
+          showSponsor: dbT.show_sponsor ?? true
         }));
         setTournaments(mappedTournaments);
       }
@@ -266,7 +275,7 @@ const AppContent = () => {
           fontWeight: '600'
         }}
       >
-        <span style={{ fontSize: '1.2rem' }}>{language === 'ru' ? '🇷🇺' : '🇺🇸'}</span>
+        <span style={{ fontSize: '1.2rem' }}>{language === 'ru' ? '🇷🇺' : language === 'ua' ? '🇺🇦' : '🇺🇸'}</span>
         <ChevronDown size={16} style={{
           transform: langDropdownOpen ? 'rotate(180deg)' : 'none',
           transition: 'transform 0.3s ease',
@@ -322,6 +331,23 @@ const AppContent = () => {
             }}
           >
             <span style={{ fontSize: '1.2rem' }}>🇷🇺</span> Русский
+          </div>
+          <div
+            onClick={() => { setLanguage('ua'); setLangDropdownOpen(false); }}
+            style={{
+              padding: '10px 12px',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              cursor: 'pointer',
+              background: language === 'ua' ? 'rgba(255,107,0,0.1)' : 'transparent',
+              color: language === 'ua' ? 'var(--primary-orange)' : '#ccc',
+              transition: 'all 0.2s',
+              fontWeight: language === 'ua' ? '600' : '400'
+            }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🇺🇦</span> Українська
           </div>
         </div>
       )}
@@ -381,7 +407,7 @@ const AppContent = () => {
                   }}
                   className={`slots-switcher-item ${slotCategory === 'popular' ? 'active' : ''}`}
                 >
-                  <Flame size={18} /> {language === 'ru' ? 'Популярные' : 'Popular'}
+                  <Flame size={18} /> {t.popular}
                 </div>
                 <div
                   onClick={() => {
@@ -390,7 +416,7 @@ const AppContent = () => {
                   }}
                   className={`slots-switcher-item ${slotCategory === 'soon' ? 'active' : ''}`}
                 >
-                  <Sparkles size={18} /> {language === 'ru' ? 'Новые игры' : 'New Games'}
+                  <Sparkles size={18} /> {t.newGames}
                 </div>
               </div>
             ) : currentTab === 'tournaments' ? (
@@ -493,7 +519,7 @@ const AppContent = () => {
                     border: '1px dashed rgba(255,255,255,0.1)',
                     color: 'var(--text-dim)'
                   }} className="animate-fade-in">
-                    {language === 'ru' ? 'Здесь скоро появятся новинки...' : 'New slots coming soon...'}
+                    {t.newSlotsComingSoon}
                   </div>
                 )}
               </div>
@@ -535,13 +561,13 @@ const AppContent = () => {
                     <Trophy size={48} style={{ marginBottom: '20px', opacity: 0.2, color: 'var(--primary-orange)' }} />
                     <div style={{ fontSize: '1.2rem', fontWeight: '800', color: '#fff', marginBottom: '8px' }}>
                       {tournamentCategory === 'active'
-                        ? (language === 'ru' ? 'Активных турниров пока нет' : 'No active tournaments yet')
-                        : (language === 'ru' ? 'Результаты скоро появятся' : 'Results coming soon')}
+                        ? t.noActiveTournaments
+                        : t.resultsComingSoon}
                     </div>
                     <div style={{ fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto' }}>
                       {tournamentCategory === 'active'
-                        ? (language === 'ru' ? 'Следи за анонсами новых турниров в наших социальных сетях!' : 'Follow our social media to stay updated on new tournament announcements!')
-                        : (language === 'ru' ? 'Здесь будут отображаться итоги завершенных турниров' : 'The results of completed tournaments will be displayed here')}
+                        ? t.followSocialsTournaments
+                        : t.resultsDisplayedHere}
                     </div>
                   </div>
                 )}
@@ -569,12 +595,10 @@ const AppContent = () => {
                 boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
               }}>
                 <h3 style={{ marginBottom: '10px', color: '#fff', fontSize: '1.4rem', fontWeight: '800' }}>
-                  {language === 'ru' ? 'ПОДДЕРЖАТЬ СТРИМЕРА' : 'SUPPORT STREAMER'}
+                  {t.supportStreamerTitle}
                 </h3>
                 <p style={{ color: 'var(--text-dim)', marginBottom: '25px', fontSize: '0.95rem' }}>
-                  {language === 'ru'
-                    ? 'Ваша поддержка помогает улучшать качество контента и проводить больше турниров!'
-                    : 'Your support helps improve content quality and host more tournaments!'}
+                  {t.supportStreamerDesc}
                 </p>
                 <button
                   onClick={() => setIsSupportModalOpen(true)}
@@ -612,7 +636,7 @@ const AppContent = () => {
                   <div className="shimmer-effect" />
 
                   <CreditCard size={22} />
-                  {language === 'ru' ? 'СДЕЛАТЬ ДОНАТ' : 'MAKE A DONATION'}
+                  {t.makeDonation}
                 </button>
               </div>
             </div>

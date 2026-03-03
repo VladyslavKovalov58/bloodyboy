@@ -40,6 +40,62 @@ const TournamentDetail = ({ tournaments, language }) => {
         setLoadingMatchDetails(false);
     };
 
+    // Helper to render text with clickable links (Markdown style [Text](URL) or raw URLs)
+    const renderClickableText = (text) => {
+        if (!text) return null;
+
+        const combinedRegex = /(\[([^\]]+)\]\s*\((https?:\/\/[^\s)]+)\)|https?:\/\/[^\s]+)/g;
+        const elements = [];
+        let lastIndex = 0;
+        let match;
+
+        combinedRegex.lastIndex = 0;
+        while ((match = combinedRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                elements.push(text.substring(lastIndex, match.index));
+            }
+
+            const fullMatch = match[0];
+            const isMarkdownLink = fullMatch.startsWith('[');
+            const linkTitle = isMarkdownLink ? match[2] : fullMatch;
+            const linkUrl = isMarkdownLink ? match[3] : fullMatch;
+
+            elements.push(
+                <a
+                    key={match.index}
+                    href={linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        color: 'var(--primary-orange)',
+                        textDecoration: 'none',
+                        fontWeight: '800',
+                        borderBottom: '1px solid rgba(255, 107, 0, 0.3)',
+                        transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderBottomColor = 'var(--primary-orange)';
+                        e.currentTarget.style.opacity = '0.8';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderBottomColor = 'rgba(255, 107, 0, 0.3)';
+                        e.currentTarget.style.opacity = '1';
+                    }}
+                >
+                    {linkTitle}
+                </a>
+            );
+
+            lastIndex = combinedRegex.lastIndex;
+        }
+
+        if (lastIndex < text.length) {
+            elements.push(text.substring(lastIndex));
+        }
+
+        return elements.length > 0 ? elements : text;
+    };
+
     // Scroll to content when tab changes (especially on mobile)
     useEffect(() => {
         if (activeTab !== 'info' && contentRef.current) {
@@ -199,7 +255,7 @@ const TournamentDetail = ({ tournaments, language }) => {
             <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                 <Loader2 size={48} className="animate-spin" color="var(--primary-orange)" />
                 <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>
-                    {language === 'ru' ? 'Загрузка данных турнира...' : 'Loading tournament data...'}
+                    {t.loadingTournamentData}
                 </div>
             </div>
         );
@@ -211,7 +267,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                 <div style={{ height: '80vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px', background: 'var(--bg-dark)' }}>
                     <Loader2 size={48} className="animate-spin" color="var(--primary-orange)" />
                     <div style={{ color: 'rgba(255,255,255,0.5)', fontWeight: '700' }}>
-                        {language === 'ru' ? 'Загрузка турнира...' : 'Loading tournament...'}
+                        {t.loadingTournament}
                     </div>
                 </div>
             );
@@ -221,10 +277,10 @@ const TournamentDetail = ({ tournaments, language }) => {
             <div style={{ padding: '80px 40px', textAlign: 'center', color: '#fff', background: 'var(--bg-dark)', minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Trophy size={64} style={{ marginBottom: '20px', opacity: 0.2, color: 'var(--primary-orange)' }} />
                 <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '10px' }}>
-                    {language === 'ru' ? 'Турнир не найден' : 'Tournament not found'}
+                    {t.tournamentNotFound}
                 </h2>
                 <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '30px' }}>
-                    {language === 'ru' ? 'Возможно, ссылка устарела или турнир был удален' : 'The link might be outdated or the tournament was deleted'}
+                    {t.tournamentLinkOutdated}
                 </p>
                 <button
                     onClick={() => navigate('/tournaments')}
@@ -238,7 +294,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                         cursor: 'pointer'
                     }}
                 >
-                    {language === 'ru' ? 'К списку турниров' : 'Back to tournaments'}
+                    {t.backToTournaments}
                 </button>
             </div>
         );
@@ -295,7 +351,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
             >
                 <ArrowLeft size={20} />
-                {language === 'ru' ? 'Назад' : 'Back'}
+                {t.back}
             </button>
 
             {/* New Title Section */}
@@ -337,9 +393,9 @@ const TournamentDetail = ({ tournaments, language }) => {
                 isFaceitTournament && (
                     <div className="tabs-container" style={{ display: 'flex', gap: '30px', marginBottom: '40px', borderBottom: '1px solid rgba(255,255,255,0.05)', overflowX: 'auto', whiteSpace: 'nowrap' }}>
                         {[
-                            { id: 'info', label: language === 'ru' ? 'Информация' : 'Info', icon: <Info size={18} /> },
-                            { id: 'bracket', label: language === 'ru' ? 'Сетка и Счет' : 'Brackets & Live', icon: <LayoutGrid size={18} /> },
-                            { id: 'teams', label: language === 'ru' ? 'Участники' : 'Teams', icon: <Users size={18} /> }
+                            { id: 'info', label: t.infoTab, icon: <Info size={18} /> },
+                            { id: 'bracket', label: t.bracketsTab, icon: <LayoutGrid size={18} /> },
+                            { id: 'teams', label: t.teamsTab, icon: <Users size={18} /> }
                         ].map(tab => (
                             <div
                                 key={tab.id}
@@ -407,7 +463,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                             WebkitBackgroundClip: 'text',
                                             WebkitTextFillColor: 'transparent'
                                         }}>
-                                            {language === 'ru' ? 'Победители турнира' : 'Tournament Winners'}
+                                            {t.tournamentWinners}
                                         </h2>
                                     </div>
 
@@ -421,9 +477,9 @@ const TournamentDetail = ({ tournaments, language }) => {
                                         paddingTop: '45px'
                                     }}>
                                         {[
-                                            { rank: 2, name: tournament.winner2, prize: tournament.winner2Prize, medal: '🥈', color: '#c0c0c0', label: language === 'ru' ? 'II МЕСТО' : '2ND PLACE', scale: '1.0', order: window.innerWidth < 768 ? 2 : 1 },
-                                            { rank: 1, name: tournament.winner1, prize: tournament.winner1Prize, medal: '🥇', color: '#FFD700', label: language === 'ru' ? 'I МЕСТО' : '1ST PLACE', scale: '1.15', order: window.innerWidth < 768 ? 1 : 2, isMain: true },
-                                            { rank: 3, name: tournament.winner3, prize: tournament.winner3Prize, medal: '🥉', color: '#cd7f32', label: language === 'ru' ? 'III МЕСТО' : '3RD PLACE', scale: '0.95', order: window.innerWidth < 768 ? 3 : 3 }
+                                            { rank: 2, name: tournament.winner2, prize: tournament.winner2Prize, medal: '🥈', color: '#c0c0c0', label: t.place2, scale: '1.0', order: window.innerWidth < 768 ? 2 : 1 },
+                                            { rank: 1, name: tournament.winner1, prize: tournament.winner1Prize, medal: '🥇', color: '#FFD700', label: t.place1, scale: '1.15', order: window.innerWidth < 768 ? 1 : 2, isMain: true },
+                                            { rank: 3, name: tournament.winner3, prize: tournament.winner3Prize, medal: '🥉', color: '#cd7f32', label: t.place3, scale: '0.95', order: window.innerWidth < 768 ? 3 : 3 }
                                         ].filter(w => w.name).sort((a, b) => a.order - b.order).map((w, i) => (
                                             <div key={i} style={{
                                                 background: 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%)',
@@ -455,9 +511,15 @@ const TournamentDetail = ({ tournaments, language }) => {
                                     {t.description}
                                 </h2>
 
-                                <p style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.8)', whiteSpace: 'pre-line', fontWeight: '500' }}>
-                                    {(language === 'en' && tournament.fullDescriptionEn) ? tournament.fullDescriptionEn : tournament.fullDescription}
-                                </p>
+                                <div style={{ fontSize: '1.2rem', lineHeight: '1.8', color: 'rgba(255, 255, 255, 0.8)', whiteSpace: 'pre-line', fontWeight: '500' }}>
+                                    {renderClickableText(
+                                        language === 'ua' && tournament.fullDescriptionUa
+                                            ? tournament.fullDescriptionUa
+                                            : (language === 'en' && tournament.fullDescriptionEn)
+                                                ? tournament.fullDescriptionEn
+                                                : tournament.fullDescription
+                                    )}
+                                </div>
                             </section>
 
                             {/* Map Pool Section */}
@@ -521,25 +583,28 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                         zIndex: 2
                                                     }}>
                                                         <span style={{
-                                                            fontSize: '1.3rem',
+                                                            fontSize: '1rem',
                                                             fontWeight: '900',
                                                             color: '#fff',
                                                             textTransform: 'uppercase',
-                                                            letterSpacing: '1px',
-                                                            textShadow: '0 2px 10px rgba(0,0,0,0.8)'
+                                                            letterSpacing: '0.5px',
+                                                            textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+                                                            whiteSpace: 'nowrap',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis'
                                                         }}>{mapDisplay}</span>
                                                         <div style={{
-                                                            padding: '5px 10px',
+                                                            padding: '4px 8px',
                                                             background: 'rgba(255,107,0,0.2)',
                                                             backdropFilter: 'blur(8px)',
-                                                            borderRadius: '10px',
-                                                            fontSize: '0.7rem',
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.65rem',
                                                             fontWeight: '900',
                                                             color: 'var(--primary-orange)',
                                                             border: '1px solid rgba(255,107,0,0.3)',
                                                             textTransform: 'uppercase',
                                                             boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-                                                        }}>ACTIVE</div>
+                                                        }}>{t.live}</div>
                                                     </div>
                                                 </div>
                                             );
@@ -555,12 +620,18 @@ const TournamentDetail = ({ tournaments, language }) => {
                                     {t.rules}
                                 </h2>
                                 <ul style={{ paddingLeft: '0', listStyle: 'none', color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem', lineHeight: '2.5' }}>
-                                    {((language === 'en' && tournament.rulesEn) ? tournament.rulesEn : tournament.rules)?.split('\n').filter(r => r.trim()).map((rule, idx) => (
-                                        <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '12px', marginBottom: '8px', border: '1px solid rgba(255, 255, 255, 0.03)' }}>
-                                            <div style={{ minWidth: '24px', height: '24px', borderRadius: '8px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)', fontSize: '0.85rem', fontWeight: '900', marginTop: '4px' }}>{idx + 1}</div>
-                                            <span style={{ paddingTop: '2px' }}>{rule.replace(/^\d+\.\s*/, '')}</span>
-                                        </li>
-                                    )) || <li>No rules provided.</li>}
+                                    {(language === 'ua' && tournament.rulesUa
+                                        ? tournament.rulesUa
+                                        : (language === 'en' && tournament.rulesEn)
+                                            ? tournament.rulesEn
+                                            : tournament.rules)?.split('\n').filter(r => r.trim()).map((rule, idx) => (
+                                                <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 20px', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '12px', marginBottom: '8px', border: '1px solid rgba(255, 255, 255, 0.03)' }}>
+                                                    <div style={{ minWidth: '24px', height: '24px', borderRadius: '8px', background: 'rgba(255, 107, 0, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-orange)', fontSize: '0.85rem', fontWeight: '900', marginTop: '4px' }}>{idx + 1}</div>
+                                                    <span style={{ paddingTop: '2px' }}>
+                                                        {renderClickableText(rule.replace(/^\d+\.\s*/, ''))}
+                                                    </span>
+                                                </li>
+                                            )) || <li>{t.noRulesProvided}</li>}
                                 </ul>
                             </section>
                         </>
@@ -570,7 +641,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
                                 <LayoutGrid size={28} color="var(--primary-orange)" />
-                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{language === 'ru' ? 'Сетка и результаты' : 'Brackets & Results'}</h2>
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{t.bracketsResults}</h2>
                             </div>
 
                             {matches.length > 0 ? (
@@ -588,14 +659,14 @@ const TournamentDetail = ({ tournaments, language }) => {
                                             .sort(([a], [b]) => Number(b) - Number(a))
                                             .map(([roundNum, roundMatches]) => {
                                                 const currentRound = Number(roundNum);
-                                                let roundName = (language === 'ru' ? 'Раунд ' : 'Round ') + currentRound;
+                                                let roundName = t.round + ' ' + currentRound;
 
-                                                if (currentRound === maxRound) roundName = language === 'ru' ? 'Финал' : 'Final';
-                                                else if (currentRound === maxRound - 1) roundName = language === 'ru' ? 'Полуфинал' : 'Semifinal';
-                                                else if (currentRound === maxRound - 2) roundName = language === 'ru' ? 'Четвертьфинал' : 'Quarterfinal';
-                                                else if (currentRound === maxRound - 3) roundName = language === 'ru' ? '1/8 финала' : 'Round of 16';
-                                                else if (currentRound === maxRound - 4) roundName = language === 'ru' ? '1/16 финала' : 'Round of 32';
-                                                else if (currentRound === maxRound - 5) roundName = language === 'ru' ? '1/32 финала' : 'Round of 64';
+                                                if (currentRound === maxRound) roundName = t.final;
+                                                else if (currentRound === maxRound - 1) roundName = t.semifinal;
+                                                else if (currentRound === maxRound - 2) roundName = t.quarterfinal;
+                                                else if (currentRound === maxRound - 3) roundName = t.roundOf16;
+                                                else if (currentRound === maxRound - 4) roundName = t.roundOf32;
+                                                else if (currentRound === maxRound - 5) roundName = t.roundOf64;
 
                                                 return (
                                                     <div key={currentRound} style={{ animation: 'fadeIn 0.4s ease-out' }}>
@@ -608,7 +679,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                                 {roundName}
                                                             </h3>
                                                             <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: '800', padding: '4px 10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
-                                                                {roundMatches.length} {language === 'ru' ? (roundMatches.length === 1 ? 'Матч' : (roundMatches.length > 1 && roundMatches.length < 5 ? 'Матча' : 'Матчей')) : (roundMatches.length === 1 ? 'Match' : 'Matches')}
+                                                                {roundMatches.length} {language === 'ru' ? (roundMatches.length === 1 ? t.matchCount1 : (roundMatches.length > 1 && roundMatches.length < 5 ? t.matchCount24 : t.matchCountMany)) : (roundMatches.length === 1 ? t.matchCount1 : t.matchCountMany)}
                                                             </span>
                                                         </div>
                                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -646,7 +717,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                                                                 color: match.status === 'FINISHED' ? 'rgba(255,255,255,0.3)' : '#4ade80',
                                                                                 textTransform: 'uppercase'
                                                                             }}>
-                                                                                {match.status === 'FINISHED' ? (language === 'ru' ? 'Завершен' : 'Finished') : (language === 'ru' ? 'В эфире' : 'Live')}
+                                                                                {match.status === 'FINISHED' ? t.finished : t.live}
                                                                             </div>
                                                                         </div>
 
@@ -691,7 +762,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             ) : (
                                 <div style={{ padding: '60px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
                                     <Activity size={48} style={{ marginBottom: '20px', opacity: 0.2 }} />
-                                    <div>{language === 'ru' ? 'Матчи еще не начались или данные недоступны' : 'Matches haven\'t started yet or data is unavailable'}</div>
+                                    <div>{t.matchesNotStarted}</div>
                                 </div>
                             )}
                         </div>
@@ -701,7 +772,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px' }}>
                                 <Users size={28} color="var(--primary-orange)" />
-                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{language === 'ru' ? 'Список команд' : 'Teams List'}</h2>
+                                <h2 style={{ fontSize: '2rem', fontWeight: '900', margin: 0 }}>{t.teamsList}</h2>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px' }}>
@@ -722,7 +793,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                     </div>
                                 )) : (
                                     <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}>
-                                        {language === 'ru' ? 'Список участников пока пуст' : 'Teams list is empty'}
+                                        {t.teamsListEmpty}
                                     </div>
                                 )}
                             </div>
@@ -765,7 +836,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                                     <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', fontWeight: '700' }}>{t.joinedCount}</div>
                                     <div style={{ fontWeight: '900', fontSize: '1.1rem' }}>
                                         <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#fff', marginBottom: '4px' }}>
-                                            {totalJoined} / {faceitData?.slots || faceitData?.slots_total || (tournament.joinedCount?.toString().includes('/') ? tournament.joinedCount.toString().split('/')[1].replace(/[^0-9]/g, '') : 256)} {language === 'ru' ? 'участников' : 'participants'}
+                                            {totalJoined} / {faceitData?.slots || faceitData?.slots_total || (tournament.joinedCount?.toString().includes('/') ? tournament.joinedCount.toString().split('/')[1].replace(/[^0-9]/g, '') : 256)} {t.participants}
                                         </div>
                                     </div>
                                 </div>
@@ -789,7 +860,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             )}
                         </div>
 
-                        {tournament.sponsorName && (
+                        {tournament.sponsorName && tournament.showSponsor !== false && (
                             <div
                                 onClick={() => window.open(tournament.sponsorLink, '_blank')}
                                 style={{
@@ -843,6 +914,7 @@ const TournamentDetail = ({ tournaments, language }) => {
                             padding: '20px',
                             fontSize: '1.25rem',
                             fontWeight: '900',
+                            textShadow: '0 2px 5px rgba(0,0,0,0.3)',
                             cursor: tournament.link ? 'pointer' : 'default',
                             display: 'flex',
                             alignItems: 'center',

@@ -74,7 +74,7 @@ const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
                 <div style={iconContainerStyle(activeTab === 'bonuses')}>
                     <Gift size={22} style={iconStyle(activeTab === 'bonuses')} />
                 </div>
-                <span>{language === 'ru' ? 'Бонусы' : 'Bonuses'}</span>
+                <span>{t.bonusesShort}</span>
             </Link>
 
             {/* Slots Tab */}
@@ -85,7 +85,7 @@ const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
                 <div style={iconContainerStyle(activeTab === 'slots')}>
                     <Gamepad2 size={22} style={iconStyle(activeTab === 'slots')} />
                 </div>
-                <span>{language === 'ru' ? 'Слоты' : 'Slots'}</span>
+                <span>{t.bestSlots}</span>
             </Link>
 
             {/* Tournaments Tab */}
@@ -96,7 +96,7 @@ const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
                 <div style={iconContainerStyle(activeTab === 'tournaments')}>
                     <Trophy size={22} style={iconStyle(activeTab === 'tournaments')} />
                 </div>
-                <span>{language === 'ru' ? 'Турниры' : 'Tours'}</span>
+                <span>{t.tournaments}</span>
             </Link>
 
             {/* Stream Tab */}
@@ -120,7 +120,7 @@ const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
                         }} />
                     )}
                 </div>
-                <span>{language === 'ru' ? 'Эфир' : 'Live'}</span>
+                <span>{t.liveStream}</span>
             </Link>
 
             {/* Telegram Channel Link */}
@@ -133,7 +133,7 @@ const MobileMenu = ({ activeTab, language, isLive, tgGroup }) => {
                 <div style={iconContainerStyle(false)}>
                     <Send size={22} style={iconStyle(true)} />
                 </div>
-                <span style={{ color: 'var(--primary-orange)' }}>{language === 'ru' ? 'Канал' : 'Channel'}</span>
+                <span style={{ color: 'var(--primary-orange)' }}>{t.channel}</span>
             </a>
 
         </div>

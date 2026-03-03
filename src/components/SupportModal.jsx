@@ -133,7 +133,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                     {!selectedCurrency && !loading && (
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                             <p style={{ color: 'var(--text-dim)', fontSize: '0.9rem', marginBottom: '8px', gridColumn: 'span 2' }}>
-                                {language === 'ru' ? 'Выберите валюту для перевода:' : 'Select currency for support:'}
+                                {t.selectCurrencyPrompt}
                             </p>
                             {currencies.map(curr => (
                                 <button
@@ -188,7 +188,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                     {loading && (
                         <div style={{ padding: '40px 0', textAlign: 'center' }}>
                             <Loader2 size={32} className="animate-spin" style={{ color: 'var(--primary-orange)', margin: '0 auto 16px' }} />
-                            <p style={{ color: 'var(--text-dim)' }}>{language === 'ru' ? 'Генерация адреса...' : 'Generating address...'}</p>
+                            <p style={{ color: 'var(--text-dim)' }}>{t.generatingAddress}</p>
                         </div>
                     )}
 
@@ -208,7 +208,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                                     padding: 0
                                 }}
                             >
-                                ← {language === 'ru' ? 'Выбрать другую валюту' : 'Change currency'}
+                                ← {t.changeCurrency}
                             </button>
 
                             <div style={{
@@ -234,7 +234,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                                 </div>
 
                                 <p style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginBottom: '8px' }}>
-                                    {language === 'ru' ? 'Ваш персональный адрес:' : 'Your personal address:'}
+                                    {t.yourPersonalAddress}
                                 </p>
 
                                 <div style={{
@@ -254,7 +254,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                                 {addressData.account.memo && (
                                     <div style={{ marginBottom: '12px' }}>
                                         <p style={{ color: 'var(--accent-orange)', fontSize: '0.75rem', fontWeight: '800', marginBottom: '4px', textTransform: 'uppercase' }}>
-                                            {language === 'ru' ? 'MEMO | ОБЯЗАТЕЛЬНО ДЛЯ ЗАПОЛНЕНИЯ' : '!!! MEMO / TAG REQUIRED !!!'}
+                                            {t.memoRequired}
                                         </p>
                                         <div style={{
                                             background: 'rgba(255, 61, 0, 0.1)',
@@ -304,7 +304,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                                     fontSize: '0.85rem'
                                 }}>
                                     <AlertCircle size={14} />
-                                    {language === 'ru' ? 'Мин. депозит:' : 'Min. deposit:'}
+                                    {t.minDeposit}:
                                     <span style={{ color: '#fff', fontWeight: '600' }}>
                                         {addressData.required.minAmount} {selectedCurrency.id}
                                     </span>
@@ -333,7 +333,7 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                                 color: '#fff',
                                 cursor: 'pointer'
                             }}>
-                                {language === 'ru' ? 'Попробовать снова' : 'Try again'}
+                                {t.tryAgain}
                             </button>
                         </div>
                     )}
@@ -348,9 +348,11 @@ const SupportModal = ({ isOpen, onClose, language }) => {
                     textAlign: 'center',
                     lineHeight: '1.4'
                 }}>
-                    {language === 'ru'
-                        ? 'Пожалуйста, убедитесь, что вы отправляете средства в правильной сети. Средства, отправленные в неправильной сети, могут быть утеряны.'
-                        : 'Please ensure you are sending funds on the correct network. Funds sent on the wrong network may be lost.'}
+                    {language === 'ua'
+                        ? 'Будь ласка, переконайтеся, що ви надсилаєте кошти у правильній мережі. Кошти, надіслані у неправильній мережі, можуть бути втрачені.'
+                        : language === 'ru'
+                            ? 'Пожалуйста, убедитесь, что вы отправляете средства в правильной сети. Средства, отправленные в неправильной сети, могут быть утеряны.'
+                            : 'Please ensure you are sending funds on the correct network. Funds sent on the wrong network may be lost.'}
                 </div>
             </div>
             <style>{`

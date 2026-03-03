@@ -48,7 +48,7 @@ const SlotCard = ({ name, image, hasDemo, link, language, rtp, provider, onPlay 
                     {/* Bottom: RTP Badge */}
                     <div className="slot-info-bottom">
                         <div className="slot-rtp-text">
-                            {rtp ? `RTP: ${rtp}` : (language === 'ru' ? 'Демо недоступно' : 'No demo')}
+                            {rtp ? `RTP: ${rtp}` : t.noDemo}
                         </div>
                     </div>
                 </div>
