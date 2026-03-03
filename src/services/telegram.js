@@ -1,5 +1,5 @@
-const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
 import { supabase } from '../supabaseClient';
+const TELEGRAM_BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
 
 export const getTelegramBotInfo = async () => {
     if (!TELEGRAM_BOT_TOKEN) return null;

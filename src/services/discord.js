@@ -1,7 +1,7 @@
+import { supabase } from '../supabaseClient';
 const DISCORD_WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL;
 const DISCORD_RESULTS_WEBHOOK_URL = import.meta.env.VITE_DISCORD_RESULTS_WEBHOOK_URL;
 const DISCORD_BOT_TOKEN = import.meta.env.VITE_DISCORD_BOT_TOKEN;
-import { supabase } from '../supabaseClient';
 
 /**
  * Sends a tournament notification to Discord

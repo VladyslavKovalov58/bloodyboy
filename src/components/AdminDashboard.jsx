@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-const CS2_MAPS = ['de_mirage', 'de_nuke', 'de_inferno', 'de_dust2', 'de_ancient', 'de_anubis', 'de_vertigo', 'de_overpass', 'de_train', 'cs_office', 'cs_italy'];
 import { supabase } from '../supabaseClient';
 import { sendTournamentToDiscord, sendTournamentResultsToDiscord } from '../services/discord';
 import { sendTelegramTournamentReminder } from '../services/telegram';
@@ -7,6 +6,7 @@ import { fetchChampionshipDetails, extractChampionshipId, fetchChampionshipResul
 import { Save, LogOut, Link as LinkIcon, Trophy, Settings, Loader2, CheckCircle, Flame, Copy, Bell, Send, Gamepad2, Trash2, Eye, EyeOff, RefreshCw, BellRing, ShieldCheck } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { translations } from '../translations';
+const CS2_MAPS = ['de_mirage', 'de_nuke', 'de_inferno', 'de_dust2', 'de_ancient', 'de_anubis', 'de_vertigo', 'de_overpass', 'de_train', 'cs_office', 'cs_italy'];
 
 const AdminDashboard = ({ onLogout, language = 'ru' }) => {
     const [searchParams, setSearchParams] = useSearchParams();
