@@ -9,7 +9,7 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
     const statusShadow = isLive ? 'var(--primary-orange)' : '#ff4444';
 
     return (
-        <div style={{
+        <div className="stream-info-container" style={{
             background: 'var(--bg-card)',
             borderRadius: '24px',
             padding: '50px',
@@ -76,6 +76,7 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                     href={kickLink || "https://kick.com/bloodyboy58"}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="platform-card"
                     style={{
                         background: 'rgba(83, 252, 24, 0.03)',
                         border: '1px solid rgba(83, 252, 24, 0.15)',
@@ -103,7 +104,7 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                         e.currentTarget.style.boxShadow = 'none';
                     }}
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }} className="platform-info">
                         <div style={{
                             width: '45px',
                             height: '45px',
@@ -113,25 +114,27 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                             alignItems: 'center',
                             justifyContent: 'center',
                             boxShadow: '0 5px 15px rgba(83, 252, 24, 0.2)'
-                        }}>
+                        }} className="platform-icon">
                             <Play size={22} color="#000" fill="#000" />
                         </div>
                         <span style={{ color: '#53FC18', fontWeight: '900', fontSize: '1.2rem', letterSpacing: '1px' }}>KICK</span>
                     </div>
 
-                    <div style={{
-                        padding: '8px 20px',
-                        background: '#53FC18',
-                        color: '#000',
-                        borderRadius: '100px',
-                        fontWeight: '800',
-                        fontSize: '0.8rem',
-                        textTransform: 'uppercase',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        boxShadow: '0 4px 15px rgba(83, 252, 24, 0.3)',
-                        transition: 'all 0.3s ease'
-                    }}
+                    <div
+                        className="platform-card-button"
+                        style={{
+                            padding: '8px 20px',
+                            background: '#53FC18',
+                            color: '#000',
+                            borderRadius: '100px',
+                            fontWeight: '800',
+                            fontSize: '0.8rem',
+                            textTransform: 'uppercase',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            boxShadow: '0 4px 15px rgba(83, 252, 24, 0.3)',
+                            transition: 'all 0.3s ease'
+                        }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.05)';
                             e.currentTarget.style.boxShadow = '0 6px 20px rgba(83, 252, 24, 0.5)';
@@ -150,6 +153,7 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                     href={twitchLink || "https://www.twitch.tv/bloodyboy41"}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="platform-card"
                     style={{
                         background: 'rgba(145, 70, 255, 0.03)',
                         border: '1px solid rgba(145, 70, 255, 0.15)',
@@ -177,7 +181,7 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                         e.currentTarget.style.boxShadow = 'none';
                     }}
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }} className="platform-info">
                         <div style={{
                             width: '45px',
                             height: '45px',
@@ -187,25 +191,27 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
                             alignItems: 'center',
                             justifyContent: 'center',
                             boxShadow: '0 5px 15px rgba(145, 70, 255, 0.2)'
-                        }}>
+                        }} className="platform-icon">
                             <Play size={22} color="#fff" fill="#fff" />
                         </div>
                         <span style={{ color: '#9146FF', fontWeight: '900', fontSize: '1.2rem', letterSpacing: '1px' }}>TWITCH</span>
                     </div>
 
-                    <div style={{
-                        padding: '8px 20px',
-                        background: '#9146FF',
-                        color: '#fff',
-                        borderRadius: '100px',
-                        fontWeight: '800',
-                        fontSize: '0.8rem',
-                        textTransform: 'uppercase',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        boxShadow: '0 4px 15px rgba(145, 70, 255, 0.3)',
-                        transition: 'all 0.3s ease'
-                    }}
+                    <div
+                        className="platform-card-button"
+                        style={{
+                            padding: '8px 20px',
+                            background: '#9146FF',
+                            color: '#fff',
+                            borderRadius: '100px',
+                            fontWeight: '800',
+                            fontSize: '0.8rem',
+                            textTransform: 'uppercase',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            boxShadow: '0 4px 15px rgba(145, 70, 255, 0.3)',
+                            transition: 'all 0.3s ease'
+                        }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.transform = 'scale(1.05)';
                             e.currentTarget.style.boxShadow = '0 6px 20px rgba(145, 70, 255, 0.5)';
@@ -225,6 +231,40 @@ const StreamInfo = ({ language = 'en', isLive = false, kickLink, twitchLink }) =
           0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4); }
           70% { box-shadow: 0 0 0 10px rgba(255, 107, 0, 0); }
           100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+        }
+
+        @media (max-width: 768px) {
+          .stream-info-container {
+            padding: 30px 20px !important;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .stream-info-container {
+            padding: 25px 15px !important;
+          }
+          .platform-card {
+            padding: 15px 12px !important;
+            gap: 8px !important;
+          }
+          .platform-info {
+            gap: 8px !important;
+          }
+          .platform-icon {
+            width: 35px !important;
+            height: 35px !important;
+          }
+          .platform-icon svg {
+            width: 16px !important;
+            height: 16px !important;
+          }
+          .platform-card span {
+            font-size: 0.9rem !important;
+          }
+          .platform-card-button {
+            padding: 6px 12px !important;
+            font-size: 0.7rem !important;
+          }
         }
       `}</style>
         </div>

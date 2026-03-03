@@ -346,8 +346,9 @@ const AppContent = () => {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)' }}>
-      <div className="desktop-only">
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-dark)' }}
+      className={isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}>
+      <div className="desktop-only sidebar-wrapper">
         <Sidebar
           activeTab={currentTab}
           language={language}
@@ -367,13 +368,7 @@ const AppContent = () => {
         language={language}
       />
 
-      <main style={{
-        flex: 1,
-        marginLeft: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
-        padding: '30px 40px',
-        overflowY: 'auto',
-        transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)'
-      }} className="main-content">
+      <main className="main-content">
 
         <div className="top-bar">
           <div style={{ display: 'flex', alignItems: 'center' }}>

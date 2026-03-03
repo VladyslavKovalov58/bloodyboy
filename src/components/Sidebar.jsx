@@ -28,7 +28,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
 
     return (
         <aside style={{
-            width: isCollapsed ? '80px' : '260px',
+            width: isCollapsed ? 'var(--sidebar-width-collapsed)' : 'var(--sidebar-width-expanded)',
             height: '100vh',
             background: 'var(--bg-sidebar)',
             padding: '25px 15px',

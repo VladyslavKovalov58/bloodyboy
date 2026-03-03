@@ -156,11 +156,27 @@ button {
   }
 }
 
+.sidebar-wrapper {
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  flex-shrink: 0;
+}
+
+.sidebar-collapsed .sidebar-wrapper {
+  width: var(--sidebar-width-collapsed);
+}
+
+.sidebar-expanded .sidebar-wrapper {
+  width: var(--sidebar-width-expanded);
+}
+
 .main-content {
   flex: 1;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  padding: 30px 40px;
+  overflow-y: auto;
+  min-width: 0;
   position: relative;
   overflow-x: hidden;
+  transition: padding 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .main-content::before {
