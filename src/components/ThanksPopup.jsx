@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { Sparkles, X } from 'lucide-react';
+import { translations } from '../translations';
 
 const ThanksPopup = ({ isVisible, onClose, language }) => {
+    const t = translations[language];
     useEffect(() => {
         if (isVisible) {
             const timer = setTimeout(() => {
@@ -83,7 +85,7 @@ const ThanksPopup = ({ isVisible, onClose, language }) => {
                             margin: '0 0 4px',
                             textTransform: 'uppercase'
                         }}>
-                            {language === 'ru' ? 'Пришел донат!' : 'New support!'}
+                            {t.donationReceived}
                         </h4>
                         <p style={{
                             color: 'rgba(255,255,255,0.7)',
@@ -91,9 +93,7 @@ const ThanksPopup = ({ isVisible, onClose, language }) => {
                             margin: 0,
                             lineHeight: '1.4'
                         }}>
-                            {language === 'ru'
-                                ? 'Кто-то только что поддержал стримера. Огромное спасибо!'
-                                : 'Someone just supported the streamer. Thank you so much!'}
+                            {t.donationReceivedMsg}
                         </p>
                     </div>
                 </div>

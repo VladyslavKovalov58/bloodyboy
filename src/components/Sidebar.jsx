@@ -89,7 +89,7 @@ const Sidebar = ({ activeTab, language, setLanguage, isCollapsed, setIsCollapsed
                         // Expanded Logo
                         <>
                             <img
-                                src="https://tgrcas.org/icon%20copy%20copy.svg"
+                                src="https://tgrcas.org/mobile_logo_icon.svg"
                                 alt="Logo"
                                 style={{ width: '32px', height: '32px' }}
                             />

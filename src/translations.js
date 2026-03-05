@@ -14,6 +14,8 @@ export const translations = {
         copyAddress: 'Copy Address',
         minDeposit: 'Min Deposit',
         thanksForSupport: 'Thank you for your support!',
+        donationReceived: 'Donation received!',
+        donationReceivedMsg: 'Someone just supported the streamer. Thank you so much!',
         copied: 'Copied!',
 
         // Contact
@@ -265,6 +267,8 @@ export const translations = {
         copyAddress: 'Копировать адрес',
         minDeposit: 'Мин. депозит',
         thanksForSupport: 'Спасибо за поддержку!',
+        donationReceived: 'Пришел донат!',
+        donationReceivedMsg: 'Кто-то только что поддержал стримера. Огромное спасибо!',
         copied: 'Скопировано!',
 
         // Contact
@@ -518,6 +522,8 @@ export const translations = {
         copyAddress: 'Копіювати адресу',
         minDeposit: 'Мін. депозит',
         thanksForSupport: 'Дякуємо за підтримку!',
+        donationReceived: 'Надійшов донат!',
+        donationReceivedMsg: 'Хтось щойно підтримав стрімера. Величезне спасибі!',
         copied: 'Скопійовано!',
 
         // Contact
